@@ -13,10 +13,7 @@ class TestDialer(GaiaTestCase):
     _phone_number_view_locator = ('id', 'phone-number-view')
     _call_bar_locator = ('id', 'keypad-callbar-call-action')
 
-
     # Call Screen app
-    #_calling_number_locator = ('xpath',
-    #    "//div[@class='number'][parent::div[following-sibling::div/div[@class='direction outgoing']]]")
     _calling_number_locator = ('xpath', "//section[1]//div[@class='number']")
     _outgoing_call_locator = ('css selector', 'div.direction.outgoing')
     _hangup_bar_locator = ('id', 'callbar-hang-up-action')
@@ -52,7 +49,6 @@ class TestDialer(GaiaTestCase):
             phone_view.get_attribute('value'), self._test_phone_number)
 
         # Now press call!
-        # TODO before this step we need to use a real phone number passed in by testvars
         self.marionette.find_element(*self._call_bar_locator).click()
 
         # Switch to top level frame
@@ -84,10 +80,9 @@ class TestDialer(GaiaTestCase):
         '''
 
         for i in phone_number:
-            # ignore non-numeric part of phone number until we have gestures
             if i == "+":
-                zero_element = self.marionette.find_element('css selector', 'div.keypad-key div[data-value="0"]')
-                self.marionette.long_press(zero_element, 1200)
+                zero_button = self.marionette.find_element('css selector', 'div.keypad-key div[data-value="0"]')
+                self.marionette.long_press(zero_button, 1200)
                 # Wait same time as the long_press to bust the asynchronous
                 time.sleep(2)
             else:
