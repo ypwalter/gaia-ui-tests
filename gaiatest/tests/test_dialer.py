@@ -76,10 +76,11 @@ class TestDialer(GaiaTestCase):
 
         for i in phone_number:
             if i is "+":
-                zero_element = self.marionette.find_element('css selector', 'div.keypad-key div[data-value="0"]')
-                self.marionette.long_press(zero_element, 1200)
+                zero_button = self.marionette.find_element('css selector', 'div.keypad-key div[data-value="0"]')
+                self.marionette.long_press(zero_button, 1200)
                 # Wait same time as the long_press to bust the asynchronous
                 time.sleep(2)
+
             else:
                 self.marionette.find_element('css selector', 'div.keypad-key div[data-value="%s"]' % i).click()
                 time.sleep(0.25)
