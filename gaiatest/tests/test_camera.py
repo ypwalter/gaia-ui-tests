@@ -16,13 +16,14 @@ class TestCamera(GaiaTestCase):
     def setUp(self):
         GaiaTestCase.setUp(self)
 
-        self.assertTrue(self.lockscreen.unlock())
+        self.lockscreen.unlock()
 
         # launch the Camera app
         self.app = self.apps.launch('camera')
 
     def test_capture_a_photo(self):
-        # https://moztrap.mozilla.org/manage/case/1309/
+        # https://moztrap.mozilla.org/manage/case/1325/
+
         self.wait_for_capture_ready()
 
         self.marionette.find_element(*self._capture_button_locator).click()
@@ -34,11 +35,13 @@ class TestCamera(GaiaTestCase):
             *self._film_strip_image_locator).is_displayed())
 
     def test_capture_a_video(self):
-        self.wait_for_capture_ready()
+        # https://moztrap.mozilla.org/manage/case/2477/
 
+        self.wait_for_capture_ready()
         self.marionette.find_element(
             *self._switch_source_button_locator).click()
 
+        self.wait_for_capture_ready()
         self.marionette.find_element(*self._capture_button_locator).click()
 
         self.wait_for_element_displayed(*self._video_timer_locator)
@@ -57,15 +60,10 @@ class TestCamera(GaiaTestCase):
     def wait_for_capture_ready(self):
         self.marionette.set_script_timeout(10000)
         self.marionette.execute_async_script("""
-        function check_ready_state() {
-            if (document.getElementById('viewfinder').readyState > 1) {
-                marionetteScriptFinished();
-            }
-            else {
-                setTimeout(check_ready_state, 500);
-            }
-        }
-        setTimeout(check_ready_state, 0);
+            waitFor(
+                function () { marionetteScriptFinished(); },
+                function () { return document.getElementById('viewfinder').readyState > 1; }
+            );
         """)
 
     def tearDown(self):

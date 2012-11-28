@@ -24,12 +24,14 @@ class TestCallLog(GaiaTestCase):
         # This test will fail if no calls have been made
 
         # unlock the lockscreen if it's locked
-        self.assertTrue(self.lockscreen.unlock())
+        self.lockscreen.unlock()
 
         # launch the app
         self.app = self.apps.launch('Phone')
 
     def test_call_log_all_calls(self):
+        # https://moztrap.mozilla.org/manage/case/1306/
+
         self.wait_for_element_displayed(
             *self._recent_calls_toolbar_button_locator)
 
@@ -54,6 +56,7 @@ class TestCallLog(GaiaTestCase):
         self.assertTrue(all_calls[0].is_displayed())
 
     def test_call_log_missed_calls(self):
+        # https://moztrap.mozilla.org/manage/case/1306/
 
         self.wait_for_element_displayed(
             *self._recent_calls_toolbar_button_locator)

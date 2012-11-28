@@ -22,12 +22,13 @@ class TestCalendar(GaiaTestCase):
         GaiaTestCase.setUp(self)
 
         # unlock the lockscreen if it's locked
-        self.assertTrue(self.lockscreen.unlock())
+        self.lockscreen.unlock()
 
         # launch the Calendar app
         self.app = self.apps.launch('calendar')
 
     def test_check_today_date(self):
+        # https://moztrap.mozilla.org/manage/case/3751/
 
         # wait for the selected day and month title to render
         self.wait_for_element_displayed(

@@ -18,12 +18,13 @@ class TestCalculator(GaiaTestCase):
         GaiaTestCase.setUp(self)
 
         # unlock the lockscreen if it's locked
-        self.assertTrue(self.lockscreen.unlock())
+        self.lockscreen.unlock()
 
         # launch the Calculator app
         self.app = self.apps.launch('Calculator')
 
     def test_calculator_basic(self):
+        # https://moztrap.mozilla.org/manage/case/2844/
 
         # wait for the elements to show up
         self.wait_for_element_displayed(*self._clear_button_locator)

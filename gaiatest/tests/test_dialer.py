@@ -25,7 +25,7 @@ class TestDialer(GaiaTestCase):
         GaiaTestCase.setUp(self)
 
         # unlock the lockscreen if it's locked
-        self.assertTrue(self.lockscreen.unlock())
+        self.lockscreen.unlock()
 
         # set audio volume to 0
         self.data_layer.set_volume(0)
@@ -36,6 +36,7 @@ class TestDialer(GaiaTestCase):
         self._test_phone_number = self.testvars['remote_phone_number']
 
     def test_dialer_make_call(self):
+        # https://moztrap.mozilla.org/manage/case/1298/
 
         self.wait_for_element_displayed(*self._keyboard_container_locator)
 
@@ -84,7 +85,9 @@ class TestDialer(GaiaTestCase):
                 zero_button = self.marionette.find_element('css selector', 'div.keypad-key div[data-value="0"]')
                 self.marionette.long_press(zero_button, 1200)
                 # Wait same time as the long_press to bust the asynchronous
+                # TODO https://bugzilla.mozilla.org/show_bug.cgi?id=815115
                 time.sleep(2)
+
             else:
                 self.marionette.find_element('css selector', 'div.keypad-key div[data-value="%s"]' % i).click()
                 time.sleep(0.25)

@@ -16,8 +16,8 @@ Installation is simple:
 
 If you anticipate modifying gaiatest, you can instead:
 
-    git clone git://github.com/mozilla-b2g/gaia.git
-    cd gaia/tests/python
+    git clone git://github.com/mozilla/gaia-ui-tests.git
+    cd gaia-ui-tests
     python setup.py develop
 
 Running Tests
@@ -27,6 +27,10 @@ To run tests using gaia test, your command-line will vary a little bit
 depending on what device you're using.  The general format is:
 
     gaiatest [options] /path/to/test_foo.py
+
+If you are running tests directly in the repository, you will instead want to run (assuming you are in the gaia-ui-tests directory):
+
+    python gaiatest/runtests.py /path/to/test_foo.py
 
 Options:
 

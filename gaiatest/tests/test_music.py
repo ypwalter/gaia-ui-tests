@@ -7,37 +7,45 @@ import time
 
 class TestMusic(GaiaTestCase):
 
-  _album_tile_locator = ('xpath', ".//*[@id='views-list']/li/a")
+  _body_list_mode_locator = ('css selector', 'body.list-mode')
+
+  _album_tile_locator = ('css selector', '#views-tiles div.tile-container')
+  _album_list_locator = ('css selector', '#views-list li > a')
+
+  _album_title_locator = ('class name', "list-main-title")
   _player_seek_elapsed_locator = ('id', 'player-seek-elapsed')
   _player_controls_play_locator = ('id', 'player-controls-play')
   _tab_albums_locator = ('id', 'tabs-albums')
-  _throbber_locator = ('id', 'throbber')
   _views_player_locator = ('id', 'views-player')
   _views_sublist_controls_play_locator = ('id', 'views-sublist-controls-play')
+
 
   def setUp(self):
       GaiaTestCase.setUp(self)
 
-      self.assertTrue(self.lockscreen.unlock())
+      self.lockscreen.unlock()
 
       # launch the Music application
       self.app = self.apps.launch("music")
 
   def test_select_album_play(self):
+      # https://moztrap.mozilla.org/manage/case/4031/
 
-      # wait for loaded music
-      self.wait_for_element_not_displayed(*self._throbber_locator)
+      # wait for music tiles to appear as indication of indexing
+      self.wait_for_element_displayed(*self._album_tile_locator, timeout=60)
 
       # switch to albums view
       self.marionette.find_element(*self._tab_albums_locator).click()
 
-      # check that an album is displayed
-      self.wait_for_element_displayed(*self._album_tile_locator)
-      self.assertTrue(
-          self.marionette.find_element(*self._album_tile_locator).is_displayed())
+      # wait for it to switch into list mode
+      self.wait_for_element_present(*self._body_list_mode_locator)
+
+      # check that albums (at least one) are available
+      albums = self.marionette.find_elements(*self._album_list_locator)
+      self.assertGreater(len(albums), 0, 'no albums found')
 
       # select an album
-      self.marionette.find_element(*self._album_tile_locator).click()
+      self.marionette.find_element(*self._album_list_locator).click()
 
       # select play
       self.marionette.find_element(*self._views_sublist_controls_play_locator).click()
