@@ -5,7 +5,7 @@
 from gaiatest import GaiaTestCase
 
 
-class TestMarketplace(GaiaTestCase):
+class TestMarketplaceLogin(GaiaTestCase):
 
     _login_button = ('css selector', 'a.button.browserid')
     _persona_frame = ('css selector', "iframe[name='__persona_dialog']")
@@ -17,10 +17,13 @@ class TestMarketplace(GaiaTestCase):
         # unlock the lockscreen if it's locked
         self.lockscreen.unlock()
 
+        self.data_layer.enable_wifi()
+        self.data_layer.connect_to_wifi(self.testvars['wifi'])
+
         # launch the app
         self.app = self.apps.launch('Marketplace')
 
-    def test_load_marketplace(self):
+    def test_login_marketplace(self):
         # https://moztrap.mozilla.org/manage/case/4134/
 
         self.wait_for_element_displayed(*self._login_button)
@@ -48,4 +51,5 @@ class TestMarketplace(GaiaTestCase):
         if self.app:
             self.apps.kill(self.app)
 
+        self.data_layer.disable_wifi()
         GaiaTestCase.tearDown(self)
