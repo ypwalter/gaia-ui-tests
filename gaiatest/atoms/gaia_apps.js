@@ -154,8 +154,8 @@ var GaiaApps = {
               // wait until the new iframe sends the mozbrowserfirstpaint event
               let frame = runningApps[origin].frame;
               if (frame.dataset.unpainted) {
-                window.addEventListener('appopen', function firstpaint() {
-                  window.removeEventListener('appopen', firstpaint);
+                window.addEventListener('mozbrowserfirstpaint', function firstpaint() {
+                  window.removeEventListener('mozbrowserfirstpaint', firstpaint);
                   sendResponse(origin);
                 });
               }
