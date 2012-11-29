@@ -23,6 +23,7 @@ class TestGallery(GaiaTestCase):
         self.app = self.apps.launch('Gallery')
 
     def test_gallery_view(self):
+        # https://moztrap.mozilla.org/manage/case/1326/
 
         # throbber is throbbing forever
         self.wait_for_element_displayed(*self._gallery_items_locator)

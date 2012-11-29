@@ -26,6 +26,7 @@ class TestBrowser(GaiaTestCase):
         self.app = self.apps.launch('Browser')
 
     def test_browser_basic(self):
+        # https://moztrap.mozilla.org/manage/case/1327/
 
         awesome_bar = self.marionette.find_element(*self._awesome_bar_locator)
         awesome_bar.click()

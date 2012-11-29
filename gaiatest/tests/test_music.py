@@ -29,6 +29,7 @@ class TestMusic(GaiaTestCase):
       self.app = self.apps.launch("music")
 
   def test_select_album_play(self):
+      # https://moztrap.mozilla.org/manage/case/4031/
 
       # wait for music tiles to appear as indication of indexing
       self.wait_for_element_displayed(*self._album_tile_locator, timeout=60)

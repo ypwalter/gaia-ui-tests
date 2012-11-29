@@ -30,6 +30,7 @@ class TestDialer(GaiaTestCase):
         self.app = self.apps.launch('Phone')
 
     def test_dialer_make_call(self):
+        # https://moztrap.mozilla.org/manage/case/1298/
 
         self.wait_for_element_displayed(*self._keyboard_container_locator)
 

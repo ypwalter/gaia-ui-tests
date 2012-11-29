@@ -31,6 +31,7 @@ class TestVideoPlayer(GaiaTestCase):
         self.wait_for_element_displayed(*self._video_items_locator)
 
     def test_play_video(self):
+        # https://moztrap.mozilla.org/manage/case/2478/
 
         all_videos = self.marionette.find_elements(*self._video_items_locator)
 

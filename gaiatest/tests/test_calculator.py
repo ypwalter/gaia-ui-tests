@@ -24,6 +24,7 @@ class TestCalculator(GaiaTestCase):
         self.app = self.apps.launch('Calculator')
 
     def test_calculator_basic(self):
+        # https://moztrap.mozilla.org/manage/case/2844/
 
         # wait for the elements to show up
         self.wait_for_element_displayed(*self._clear_button_locator)

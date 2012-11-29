@@ -28,6 +28,7 @@ class TestCalendar(GaiaTestCase):
         self.app = self.apps.launch('calendar')
 
     def test_check_today_date(self):
+        # https://moztrap.mozilla.org/manage/case/3751/
 
         # wait for the selected day and month title to render
         self.wait_for_element_displayed(

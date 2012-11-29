@@ -8,6 +8,7 @@ from gaiatest import GaiaTestCase
 class TestCamera(GaiaTestCase):
 
     _capture_button_locator = ('id', 'capture-button')
+    _focus_ring = ('id','focus-ring')
     _switch_source_button_locator = ('id', 'switch-button')
     _film_strip_image_locator = (
         'css selector', 'div#film-strip div.image > img')
@@ -22,10 +23,18 @@ class TestCamera(GaiaTestCase):
         self.app = self.apps.launch('camera')
 
     def test_capture_a_photo(self):
-        # https://moztrap.mozilla.org/manage/case/1309/
+        # https://moztrap.mozilla.org/manage/case/1325/
+
         self.wait_for_capture_ready()
 
         self.marionette.find_element(*self._capture_button_locator).click()
+
+        # Wait to complete focusing
+        self.wait_for_condition(lambda m: m.find_element(*self._focus_ring).get_attribute('data-state') != 'focusing')
+
+        focus_state = self.marionette.find_element(*self._focus_ring).get_attribute('data-state')
+        # The focus state will be either 'focused' or 'fail'
+        self.assertEqual(focus_state, 'focused', "Camera failed to focus with error: %s" % focus_state)
 
         self.wait_for_element_present(*self._film_strip_image_locator)
 
@@ -34,6 +43,8 @@ class TestCamera(GaiaTestCase):
             *self._film_strip_image_locator).is_displayed())
 
     def test_capture_a_video(self):
+        # https://moztrap.mozilla.org/manage/case/2477/
+
         self.wait_for_capture_ready()
         self.marionette.find_element(
             *self._switch_source_button_locator).click()

@@ -23,6 +23,7 @@ class TestLockScreen(GaiaTestCase):
         self.lockscreen.lock()
 
     def test_unlock_swipe_to_homescreen(self):
+        # https://moztrap.mozilla.org/manage/case/1296/
 
         self._swipe_and_unlock()
 

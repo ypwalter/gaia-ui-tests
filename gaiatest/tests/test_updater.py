@@ -21,6 +21,7 @@ class TestUpdater(GaiaTestCase):
 
     # TODO finish this test as per https://github.com/zacc/gaia-ui-tests/issues/5
     def test_ota_update(self):
+        # https://moztrap.mozilla.org/manage/case/2313/
 
         # Device information
         self.marionette.find_element(*self._device_info_link).click()

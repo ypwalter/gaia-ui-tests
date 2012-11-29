@@ -36,6 +36,8 @@ class TestSms(GaiaTestCase):
         self.app = self.apps.launch('Messages')
 
     def test_sms_send(self):
+        # https://moztrap.mozilla.org/manage/case/1322/
+
         '''
         This test sends a text message to itself. It waits for a reply message.
         It does not yet clean up after itself but it can handle it.
