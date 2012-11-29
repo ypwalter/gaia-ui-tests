@@ -37,7 +37,6 @@ class TestSettings(GaiaTestCase):
         self.data_layer.disable_cell_roaming()
         self.assertFalse(self.data_layer.get_setting(setting_name))
 
-
     def test_set_wifi(self):
         setting_name = 'wifi.enabled'
 

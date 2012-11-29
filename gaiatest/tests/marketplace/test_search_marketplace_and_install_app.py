@@ -35,7 +35,7 @@ class TestSearchMarketplaceAndInstallApp(GaiaTestCase):
         GaiaTestCase.setUp(self)
 
         # unlock the lockscreen if it's locked
-        self.assertTrue(self.lockscreen.unlock())
+        self.lockscreen.unlock()
 
         # launch the app
         self.app = self.apps.launch('Marketplace')

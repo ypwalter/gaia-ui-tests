@@ -2,10 +2,14 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from gaiatest import GaiaTestCase
-from gaiatest.mocks.mock_contact import MockContact
 import unittest
 import time
+
+from gaiatest import GaiaTestCase
+from gaiatest.mocks.mock_contact import MockContact
+
+from marionette.errors import NoSuchElementException
+
 
 class TestContacts(GaiaTestCase):
 
@@ -41,7 +45,7 @@ class TestContacts(GaiaTestCase):
     def setUp(self):
         GaiaTestCase.setUp(self)
 
-        self.assertTrue(self.lockscreen.unlock())
+        self.lockscreen.unlock()
 
         self.contact = MockContact()
 
@@ -50,7 +54,7 @@ class TestContacts(GaiaTestCase):
         self.wait_for_element_not_displayed(*self._loading_overlay)
 
     def create_contact_locator(self, contact):
-        return ('xpath', "//strong[text()='%s']" % contact)
+        return ('xpath', "//a[descendant::strong[text()='%s']]" % contact)
 
     def test_add_new_contact(self):
         # https://moztrap.mozilla.org/manage/case/1309/
@@ -88,14 +92,13 @@ class TestContacts(GaiaTestCase):
         contact_locator = self.create_contact_locator(self.contact['givenName'])
         self.wait_for_element_displayed(*contact_locator)
 
-
     def test_edit_contact(self):
         # https://moztrap.mozilla.org/manage/case/1310/
         # First insert a new contact to edit
 
         self.data_layer.insert_contact(self.contact)
         self.marionette.refresh()
-        
+
         contact_locator = self.create_contact_locator(self.contact['givenName'])
         self.wait_for_element_displayed(*contact_locator)
 
@@ -123,20 +126,32 @@ class TestContacts(GaiaTestCase):
 
         self.marionette.find_element(*self._done_button_locator).click()
 
+        # Construct a new locator using the edited givenName
+        edited_contact_locator = self.create_contact_locator(self.contact['givenName'])
+
         self.marionette.find_element(*self._details_back_button_locator).click()
 
         # click back into the contact
-        edited_contact = self.wait_for_element_present(*contact_locator)
+        self.wait_for_element_displayed(*edited_contact_locator)
+
+        edited_contact = self.marionette.find_element(*edited_contact_locator)
+
+        # Due to a previous issue this will check that the original contact is no longer present
+        self.assertRaises(NoSuchElementException,
+                          self.marionette.find_element, contact_locator[0], contact_locator[1])
+
+        self.assertTrue(edited_contact.is_displayed(),
+                        "Expected the edited contact to be present")
+
         edited_contact.click()
 
         # Now assert that the values have updated
         full_name = self.contact['givenName'] + " " + self.contact['familyName']
 
         self.assertEqual(self.marionette.find_element(*self._contact_name_title).text,
-            full_name)
+                         full_name)
         self.assertEqual(self.marionette.find_element(*self._call_phone_number_button_locator).text,
-            self.contact['tel']['value'])
-
+                         self.contact['tel']['value'])
 
     @unittest.skip("Scheduled for deletion as this makes a call")
     def test_call_contact(self):
@@ -156,7 +171,6 @@ class TestContacts(GaiaTestCase):
         self.marionette.switch_to_frame()
 
         # TODO Verify the dialer has opened and displays the phone number in dialer
-
 
     def test_sms_contact(self):
         # https://moztrap.mozilla.org/manage/case/1314/
@@ -186,7 +200,7 @@ class TestContacts(GaiaTestCase):
 
         self.assertEqual(header_element.text, expected_name)
         self.assertEqual(header_element.get_attribute('data-phone-number'),
-            expected_tel)
+                         expected_tel)
 
     def tearDown(self):
 

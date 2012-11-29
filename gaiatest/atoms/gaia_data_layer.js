@@ -43,77 +43,106 @@ var GaiaDataLayer = {
         req.onsuccess = function () {
             console.log('setting retrieved');
             marionetteScriptFinished(req.result[aName]);
-        }
+        };
         req.onerror = function () {
             console.log('error getting setting', req.error.name);
         }
     },
 
-    setSetting: function(aName, aValue) {
+    setSetting: function(aName, aValue, aReturnOnSuccess) {
+        var returnOnSuccess = aReturnOnSuccess || aReturnOnSuccess === undefined;
         var setting = {};
         setting[aName] = aValue;
+        console.log('setting ' + aName + ' to ' + aValue);
         req = window.navigator.mozSettings.createLock().set(setting);
         req.onsuccess = function () {
             console.log('setting changed');
-            marionetteScriptFinished(true);
-        }
+            if (returnOnSuccess) {
+                marionetteScriptFinished(true);
+            }
+        };
         req.onerror = function () {
             console.log('error changing setting', req.error.name);
             marionetteScriptFinished(false);
         }
     },
 
-    connectToWiFi: function(ssid){
+    connectToWiFi: function (aNetwork) {
         var manager = window.navigator.mozWifiManager;
-        var req = manager.getNetworks();
 
-        req.onsuccess = function onScanSuccess() {
-            var allNetworks = req.result;
-            var preferredNetwork = allNetworks[ssid];
-
-            connect = manager.associate(preferredNetwork);
-            connect.onerror = function (){
-                console.log('Connection to '+ ssid + ' failed', connect.error.name);
-                return false;
-            }
-
-            connect.onsuccess = function() {
-                console.log('Connected to ' + ssid);
-                return true;
-            }
+        if (this.isWiFiConnected(aNetwork)) {
+            console.log('already connected to network');
+            marionetteScriptFinished(true);
         }
 
-        req.onerror = function(){
-            console.log('Could not get the available network list', req.error.name);
-            return false;
-        }
-
-    },
-
-    forgetWiFi: function(ssid){
-        var manager = window.navigator.mozWifiManager;
-        var req = manager.getKnownNetworks();
+        var req = manager.associate(aNetwork);
 
         req.onsuccess = function () {
-            var allNetworks = req.result;
-            var preferredNetwork = allNetworks[ssid];
-
-            forget = manager.forget(preferredNetwork);
-            forget.onerror = function (){
-                console.log('Forgetting network' + ssid + ' failed', forget.error.name);
-                return false;
+            manager.onstatuschange = function(event) {
+                console.log('status: ' + manager.connection.status);
+                if (manager.connection.status === 'connected') {
+                    manager.onstatuschange = null;
+                    marionetteScriptFinished(true);
+                }
             }
+        };
 
-            forget.onsuccess = function() {
-                console.log('Forgotten network ' + ssid);
-                return true;
-            }
+        req.onerror = function () {
+            console.log('error connecting to network', req.error.name);
+            marionetteScriptFinished(false);
         }
+    },
 
-        req.onerror = function(){
-            console.log('Could not get the known network list', req.error.name);
-            return false;
+    disableWiFi: function () {
+        var manager = window.navigator.mozWifiManager;
+        if (manager.enabled) {
+            manager.ondisabled = function() {
+                manager.ondisabled = null;
+                console.log('wifi disabled');
+                marionetteScriptFinished(true);
+            };
+            this.setSetting('wifi.enabled', false, false);
         }
+        else {
+            console.log('wifi already disabled');
+            marionetteScriptFinished(true);
+        }
+    },
 
+    enableWiFi: function () {
+        var manager = window.navigator.mozWifiManager;
+        if (!manager.enabled) {
+            manager.onenabled = function() {
+                manager.onenabled = null;
+                console.log('wifi enabled');
+                marionetteScriptFinished(true);
+            };
+            this.setSetting('wifi.enabled', true, false);
+        }
+        else {
+            console.log('wifi already enabled');
+            marionetteScriptFinished(true);
+        }
+    },
+
+    forgetWiFi: function (aNetwork) {
+        var manager = window.navigator.mozWifiManager;
+        var req = manager.forget(aNetwork);
+
+        req.onsuccess = function () {
+            console.log('network forgotten');
+            marionetteScriptFinished(true);
+        };
+
+        req.onerror = function () {
+            console.log('error forgetting network', req.error.name);
+            marionetteScriptFinished(true);
+        }
+    },
+
+    isWiFiConnected: function (aNetwork) {
+        var manager = window.navigator.mozWifiManager;
+        return manager.connection.status === 'connected' &&
+               manager.connection.network.ssid === aNetwork.ssid;
     }
 };

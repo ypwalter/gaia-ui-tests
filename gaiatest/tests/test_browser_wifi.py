@@ -3,12 +3,11 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from gaiatest import GaiaTestCase
-import time
-import unittest
 
 
 class TestBrowser(GaiaTestCase):
 
+    # Firefox/chrome locators
     _awesome_bar_locator = ("id", "url-input")
     _url_button_locator = ("id", "url-button")
     _throbber_locator = ("id", "throbber")
@@ -18,38 +17,40 @@ class TestBrowser(GaiaTestCase):
         GaiaTestCase.setUp(self)
 
         # unlock the lockscreen if it's locked
-        self.assertTrue(self.lockscreen.unlock())
+        self.lockscreen.unlock()
+
+        self.data_layer.enable_wifi()
+        self.data_layer.connect_to_wifi(self.testvars['wifi'])
 
         # launch the app
         self.app = self.apps.launch('Browser')
 
     def test_browser_basic(self):
+        # https://moztrap.mozilla.org/manage/case/1327/
 
         awesome_bar = self.marionette.find_element(*self._awesome_bar_locator)
         awesome_bar.click()
-        awesome_bar.send_keys("www.mozilla.com")
+        awesome_bar.send_keys('http://mozqa.com/data/firefox/layout/mozilla.html')
 
         self.marionette.find_element(*self._url_button_locator).click()
 
-        # This is returning True even though I cannot see it
-        self.wait_for_condition(lambda m: self.is_throbber_visible() == False)
+        self.wait_for_condition(lambda m: not self.is_throbber_visible())
 
-        # TODO This does not work
         browser_frame = self.marionette.find_element(
             *self._browser_frame_locator)
-        print browser_frame
 
         self.marionette.switch_to_frame(browser_frame)
-        print self.marionette.page_source
 
-        # TODO
-        # Assert that the page has loaded correctly
-        # Assert the error page is not shown
+        heading = self.marionette.find_element('id', 'page-title')
+        self.assertEqual(heading.text, 'We believe that the internet should be public, open and accessible.')
+
     def tearDown(self):
 
         # close the app
         if hasattr(self, 'app'):
             self.apps.kill(self.app)
+
+        self.data_layer.disable_wifi()
 
         GaiaTestCase.tearDown(self)
 

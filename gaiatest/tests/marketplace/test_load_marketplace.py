@@ -15,12 +15,13 @@ class TestMarketplace(GaiaTestCase):
         GaiaTestCase.setUp(self)
 
         # unlock the lockscreen if it's locked
-        self.assertTrue(self.lockscreen.unlock())
+        self.lockscreen.unlock()
 
         # launch the app
         self.app = self.apps.launch('Marketplace')
 
     def test_load_marketplace(self):
+        # https://moztrap.mozilla.org/manage/case/4134/
 
         self.wait_for_element_displayed(*self._login_button)
         self.marionette.find_element(*self._login_button).click()

@@ -11,7 +11,7 @@ class TestKillAll(GaiaTestCase):
         self.lockscreen.unlock()
 
         for app in ['Calculator', 'Clock']:
-            self.apps.launch(app)
+            self.apps.launch(app, switch_to_frame=False)
 
         self.apps.kill_all()
         self.check_no_apps_running()
@@ -27,13 +27,13 @@ class TestKillAll(GaiaTestCase):
 
         apps = ['Calculator', 'Clock']
         for app in apps:
-            self.apps.launch(app)
+            self.apps.launch(app, switch_to_frame=False)
 
         self.apps.kill_all()
         self.check_no_apps_running()
 
         for app in apps:
-            self.apps.launch(app)
+            self.apps.launch(app, switch_to_frame=False)
 
         self.apps.kill_all()
 

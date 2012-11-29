@@ -2,14 +2,16 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import json
+import os
+import time
+
 from marionette import MarionetteTestCase
 from marionette import Marionette
 from marionette import MarionetteTouchMixin
 from marionette.errors import NoSuchElementException
 from marionette.errors import ElementNotVisibleException
 from marionette.errors import TimeoutException
-import os
-import time
 
 
 class LockScreen(object):
@@ -20,10 +22,12 @@ class LockScreen(object):
         self.marionette.import_script(js)
 
     def lock(self):
-        return self.marionette.execute_async_script("GaiaLockScreen.lock()")
+        result = self.marionette.execute_async_script('GaiaLockScreen.lock()')
+        assert result, 'Unable to lock screen'
 
     def unlock(self):
-        return self.marionette.execute_async_script("GaiaLockScreen.unlock()")
+        result = self.marionette.execute_async_script('GaiaLockScreen.unlock()')
+        assert result, 'Unable to unlock screen'
 
 
 class GaiaApp(object):
@@ -131,16 +135,24 @@ class GaiaData(object):
         self.set_setting('ril.data.roaming_enabled', False)
 
     def enable_wifi(self):
-        self.set_setting('wifi.enabled', True)
+        result = self.marionette.execute_async_script("return GaiaDataLayer.enableWiFi()")
+        assert result, 'Unable to enable WiFi'
 
     def disable_wifi(self):
-        self.set_setting('wifi.enabled', False)
+        result = self.marionette.execute_async_script("return GaiaDataLayer.disableWiFi()")
+        assert result, 'Unable to disable WiFi'
 
-    def connect_to_wifi(self, ssid):
-        self.marionette.execute_script("return GaiaDataLayer.connectToWiFi('%s')" % ssid)
+    def connect_to_wifi(self, network):
+        result = self.marionette.execute_async_script("return GaiaDataLayer.connectToWiFi(%s)" % json.dumps(network))
+        assert result, 'Unable to connect to WiFi network'
 
-    def forget_wifi(self, ssid):
-        self.marionette.execute_script("return GaiaDataLayer.forgetWiFi('%s')" % ssid)
+    def forget_wifi(self, network):
+        result = self.marionette.execute_async_script("return GaiaDataLayer.forgetWiFi(%s)" % json.dumps(network))
+        assert result, 'Unable to forget WiFi network'
+
+    def is_wifi_connected(self, network):
+        return self.marionette.execute_script("return GaiaDataLayer.isWiFiConnected(%s)" % json.dumps(network))
+
 
 
 class GaiaTestCase(MarionetteTestCase):

@@ -14,14 +14,14 @@ class TestDialer(GaiaTestCase):
     _hangup_bar_locator = ('id', 'callbar-hang-up-action')
     _call_screen_locator = ('css selector', "iframe[name='call_screen']")
 
-    _test_phone_number = "1234567890"
+    _test_phone_number = "+1234567890"
 
     def setUp(self):
 
         GaiaTestCase.setUp(self)
 
         # unlock the lockscreen if it's locked
-        self.assertTrue(self.lockscreen.unlock())
+        self.lockscreen.unlock()
 
         # set audio volume to 0
         self.data_layer.set_volume(0)
@@ -30,6 +30,7 @@ class TestDialer(GaiaTestCase):
         self.app = self.apps.launch('Phone')
 
     def test_dialer_make_call(self):
+        # https://moztrap.mozilla.org/manage/case/1298/
 
         self.wait_for_element_displayed(*self._keyboard_container_locator)
 
@@ -74,9 +75,14 @@ class TestDialer(GaiaTestCase):
         Dial a number using the keypad
         '''
 
-        # TODO Doesn't work for + yet, requires click/hold gestures
         for i in phone_number:
-            # ignore non-numeric part of phone number until we have gestures
-            if int(i) in range(0, 10):
+            if i == "+":
+                zero_button = self.marionette.find_element('css selector', 'div.keypad-key div[data-value="0"]')
+                self.marionette.long_press(zero_button, 1200)
+                # Wait same time as the long_press to bust the asynchronous
+                # TODO https://bugzilla.mozilla.org/show_bug.cgi?id=815115
+                time.sleep(2)
+
+            else:
                 self.marionette.find_element('css selector', 'div.keypad-key div[data-value="%s"]' % i).click()
                 time.sleep(0.25)

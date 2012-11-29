@@ -17,12 +17,13 @@ class TestGallery(GaiaTestCase):
         GaiaTestCase.setUp(self)
 
         # unlock the lockscreen if it's locked
-        self.assertTrue(self.lockscreen.unlock())
+        self.lockscreen.unlock()
 
         # launch the Gallery app
         self.app = self.apps.launch('Gallery')
 
     def test_gallery_view(self):
+        # https://moztrap.mozilla.org/manage/case/1326/
 
         # throbber is throbbing forever
         self.wait_for_element_displayed(*self._gallery_items_locator)
