@@ -2,8 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
 from gaiatest import GaiaTestCase
+
+from gaiatest.mocks.mock_contact import MockContact
 
 
 class TestContacts(GaiaTestCase):
@@ -34,6 +35,8 @@ class TestContacts(GaiaTestCase):
         # launch the Contacts app
         self.app = self.apps.launch('Contacts')
         self.wait_for_element_not_displayed(*self._loading_overlay)
+
+        self.contact = MockContact()
 
     def create_contact_locator(self, contact):
         return ('xpath', "//a[descendant::strong[text()='%s']]" % contact)
