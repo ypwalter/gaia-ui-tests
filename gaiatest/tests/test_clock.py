@@ -25,7 +25,7 @@ class TestClock(GaiaTestCase):
 
         self.wait_for_element_displayed(*self._alarm_create_new_locator)
 
-        # create a new alarm with the default values that are avaliable
+        # create a new alarm with the default values that are available
         self.marionette.find_element(*self._alarm_create_new_locator).click()
         self.marionette.find_element(*self._alarm_save_locator).click()
 
