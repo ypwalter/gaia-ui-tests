@@ -74,22 +74,23 @@ var GaiaDataLayer = {
             console.log('already connected to network');
             marionetteScriptFinished(true);
         }
+        else {
+            var req = manager.associate(aNetwork);
 
-        var req = manager.associate(aNetwork);
-
-        req.onsuccess = function () {
-            manager.onstatuschange = function(event) {
-                console.log('status: ' + manager.connection.status);
-                if (manager.connection.status === 'connected') {
-                    manager.onstatuschange = null;
-                    marionetteScriptFinished(true);
+            req.onsuccess = function () {
+                manager.onstatuschange = function(event) {
+                    console.log('status: ' + manager.connection.status);
+                    if (manager.connection.status === 'connected') {
+                        manager.onstatuschange = null;
+                        marionetteScriptFinished(true);
+                    }
                 }
-            }
-        };
+            };
 
-        req.onerror = function () {
-            console.log('error connecting to network', req.error.name);
-            marionetteScriptFinished(false);
+            req.onerror = function () {
+                console.log('error connecting to network', req.error.name);
+                marionetteScriptFinished(false);
+            }
         }
     },
 
@@ -130,13 +131,19 @@ var GaiaDataLayer = {
         var req = manager.forget(aNetwork);
 
         req.onsuccess = function () {
-            console.log('network forgotten');
-            marionetteScriptFinished(true);
+            console.log('success forgetting network');
+            manager.onstatuschange = function(event) {
+                console.log('status: ' + manager.connection.status);
+                if (manager.connection.status === 'disconnected') {
+                    manager.onstatuschange = null;
+                    marionetteScriptFinished(true);
+                }
+            };
         };
 
         req.onerror = function () {
             console.log('error forgetting network', req.error.name);
-            marionetteScriptFinished(true);
+            marionetteScriptFinished(false);
         }
     },
 
