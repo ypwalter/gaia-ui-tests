@@ -14,7 +14,7 @@ class TestDialer(GaiaTestCase):
     _call_bar_locator = ('id', 'keypad-callbar-call-action')
 
     # Call Screen app
-    _calling_number_locator = ('xpath', "//section[1]//div[@class='number']")
+    _calling_number_locator = ('css selector', "div.number")
     _outgoing_call_locator = ('css selector', 'div.direction.outgoing')
     _hangup_bar_locator = ('id', 'callbar-hang-up-action')
     _call_screen_locator = ('css selector', "iframe[name='call_screen']")
