@@ -63,6 +63,9 @@ class TestDialer(GaiaTestCase):
         # Wait for call screen to be dialing
         self.wait_for_element_displayed(*self._outgoing_call_locator)
 
+        # Assert via the API that the phone is dialing
+        self.assertEqual(self.data_layer.active_telephony_state, "dialing")
+
         # Check the number displayed is the one we dialed
         self.assertEqual(self._test_phone_number,
             self.marionette.find_element(*self._calling_number_locator).text)
