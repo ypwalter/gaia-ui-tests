@@ -40,6 +40,7 @@ Options:
         which you've manually launched yourself, a real device, or a b2g
         desktop build.  If you've used port forwarding as described below,
         you'd specify --address localhost:2828
+    --testvars= (see section below)
 
 If you use the --address localhost:2828 option, you must additionally setup
 port forwarding from the device to your local machine.  You can do this by
@@ -50,6 +51,24 @@ running the command:
 adb is the 'android debug bridge', and is available in emulator packages under
 out/host/linux_x86/bin.  Alternatively, it may be downloaded as part of the
 Android SDK, at http://developer.android.com/sdk/index.html.
+
+Testvars
+========
+We use the --testvars option to pass in local variables, particularly those that cannot be checked into the repository. For example in gaia-ui-tests these variables can be your private login credentials, phone number or details of your WiFi connection.
+
+To use it, copy testvars_template.json to a different filename but add it into .gitignore so you don't check it into your repository.
+
+When running your tests add the argument:
+    --testvars=(filename).json
+
+Variables:
+
+`this_phone_number (string)` The phone number of the SIM card in your device. Prefix the number with '+' and your international dialing code.
+
+`remote_phone_number (string)` A phone number that your device can call during the tests (try not to be a nuisance!). Prefix the number with '+' and your international dialing code.
+
+`wifi.ssid (string)` This is the SSID/name of your WiFi connection. Currently this does not support WPA/WEP/etc.
+
 
 Writing Tests
 =============

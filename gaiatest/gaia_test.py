@@ -47,6 +47,7 @@ class GaiaApps(object):
         self.marionette.import_script(js)
 
     def launch(self, name, switch_to_frame=True, url=None):
+        self.marionette.switch_to_frame()
         result = self.marionette.execute_async_script("GaiaApps.launchWithName('%s')" % name)
         app = GaiaApp(frame_id=result.get('frame'),
                       src=result.get('src'),
