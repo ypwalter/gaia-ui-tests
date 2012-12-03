@@ -11,33 +11,33 @@ class TestFtu(GaiaTestCase):
     _activation_section_locator = ('id', 'activation')
     _main_title_locator = ('id', 'main_title')
 
-
     _next_button_locator = ('id', 'forward')
 
-
-    # Step 1 Languages section
+    # Step Languages section
     _section_languages_locator = ('id', 'languages')
     _listed_languages_locator = ('css selector', "#languages ul li input[name='language.current']")
 
-    # Step 2 Cell data section
+    # Step Cell data section
     _section_cell_data_locator = ('id', 'data_3g')
     _enable_data_checkbox_locator = ('id', 'dataSwitch')
 
-    # Step 3 Wifi
+    # Step Wifi
     _section_wifi_locator = ('id', 'wifi')
     _found_wifi_networks_locator = ('css selector', 'ul#networks li')
+    _network_state_locator = ('xpath', 'p[2]')
 
-    # Step 4 Date & Time
+    # Step Date & Time
     _section_date_time_locator = ('id', 'date_and_time')
-    _timezone_configuration_locator = ('id', 'timezone-configuration')
+    _timezone_continent_locator = ('id', 'tz-continent')
+    _timezone_city_locator = ('id', 'tz-city')
     _time_zone_title_locator = ('id', 'time-zone-title')
 
-    # Section 5 Import contacts
+    # Section Import contacts
     _section_import_contacts_locator = ('id', 'import_contacts')
     _import_from_sim_locator = ('id', 'sim_import')
     _sim_import_feedback_locator = ('id', 'sim_import_feedback')
 
-    # Section 6 About Your rights
+    # Section About Your rights
     _section_ayr_locator = ('id', 'about-your-rights')
 
     # Section Welcome Browser
@@ -63,24 +63,24 @@ class TestFtu(GaiaTestCase):
         # unlock the lockscreen if it's locked
         self.lockscreen.unlock()
 
-        #if self.data_layer.is_wifi_connected(self.testvars['wifi']):
+        # We need WiFi enabled but not connected to a network
+        self.data_layer.enable_wifi()
+        if self.data_layer.is_wifi_connected(self.testvars['wifi']):
+            self.data_layer.forget_wifi(self.testvars['wifi'])
 
-        self.data_layer.forget_wifi(self.testvars['wifi'])
         self.data_layer.disable_cell_data()
-
-        time.sleep(30)
 
         # launch the Calculator app
         self.app = self.apps.launch('FTU')
 
 
-
     def test_ftu(self):
-        # https://
-
+        # https://moztrap.mozilla.org/manage/case/3876/
+        # 3876, 3879
 
         self.wait_for_element_displayed(*self._section_languages_locator)
 
+        # FTU is not properly localized yet so let's just check some are listed
         listed_languages = self.marionette.find_elements(*self._listed_languages_locator)
         self.assertGreater(len(listed_languages), 0, "No languages listed on screen")
 
@@ -102,21 +102,28 @@ class TestFtu(GaiaTestCase):
         wifi_network = self.marionette.find_element('id', self.testvars['wifi']['ssid'])
         wifi_network.click()
 
-        self.wait_for_condition(lambda m: wifi_network.find_element('xpath', 'p[2]').text == "connected")
+        self.wait_for_condition(lambda m:
+            wifi_network.find_element(*self._network_state_locator).text == "connected")
 
         # Click next
         self.marionette.find_element(*self._next_button_locator).click()
         self.wait_for_element_displayed(*self._section_date_time_locator)
 
         # Set timezone
-        timezone_select = self.marionette.find_element(*self._timezone_configuration_locator)
-        timezone_select.click()
+        continent_select = self.marionette.find_element(*self._timezone_continent_locator)
+        continent_select.click()
 
-        timezone_option = timezone_select.find_element('css selector', "option[value='-5']")
-        self._select(timezone_option)
+        continent_option = continent_select.find_element('xpath', "//option[text()='Europe']")
+        self._select(continent_option)
+
+        city_select = self.marionette.find_element(*self._timezone_city_locator)
+        city_select.click()
+
+        city_option = city_select.find_element('xpath', "//option[text()='London']")
+        self._select(city_option)
 
         self.assertEqual(self.marionette.find_element(*self._time_zone_title_locator).text,
-                        "GMT-05:00")
+                        "UTC+00:00 Europe/London")
 
         # Click next
         self.marionette.find_element(*self._next_button_locator).click()
@@ -135,14 +142,14 @@ class TestFtu(GaiaTestCase):
         self.wait_for_element_displayed(*self._section_welcome_browser_locator)
 
         # Don't think this is functional but we'll click it anyway
-        # TODO assert via settings API that this is set
+        # TODO assert via settings API that this is set. Currently it is not used
         self.marionette.find_element(*self._enable_statistic_checkbox_locator).click()
 
         # Click next
         self.marionette.find_element(*self._next_button_locator).click()
         self.wait_for_element_displayed(*self._section_browser_privacy_locator)
 
-        # TODO assert that this is preserved in the system somewhere by checking pref/etc
+        # TODO assert that this is preserved in the system somewhere. Currently it is not used
         self.marionette.find_element(*self._email_field_locator).send_keys("testuser@mozilla.com")
 
         # Click next
@@ -162,7 +169,7 @@ class TestFtu(GaiaTestCase):
         # TODO flush any settings set by the FTU app
 
         self.data_layer.disable_cell_data()
-        #self.data_layer.disable_wifi()
+        self.data_layer.disable_wifi()
 
         GaiaTestCase.tearDown(self)
 
@@ -177,6 +184,7 @@ class TestFtu(GaiaTestCase):
         options = self.marionette.find_elements('css selector', '#value-selector-container li')
         ok_button = self.marionette.find_element('css selector', 'button.value-option-confirm')
 
+        # Loop options until we find the match
         for li in options:
             if li.text == match_string:
                 li.click()
