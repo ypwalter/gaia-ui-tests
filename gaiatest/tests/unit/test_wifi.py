@@ -7,11 +7,12 @@ from gaiatest import GaiaTestCase
 
 class TestWiFi(GaiaTestCase):
 
-    def test_connect(self):
+    def test_connect_and_forget(self):
         network = self.testvars['wifi']
 
         self.data_layer.enable_wifi()
         self.data_layer.connect_to_wifi(network)
         self.assertTrue(self.data_layer.is_wifi_connected(network))
-        self.data_layer.disable_wifi()
+        self.data_layer.forget_wifi(network)
         self.assertFalse(self.data_layer.is_wifi_connected(network))
+        self.data_layer.disable_wifi()
