@@ -238,8 +238,6 @@ class GaiaTestCase(MarionetteTestCase):
             except NoSuchElementException:
                 pass
             time.sleep(0.5)
-            if(time.time() > end_time):
-                break
         else:
             raise TimeoutException(message)
 
