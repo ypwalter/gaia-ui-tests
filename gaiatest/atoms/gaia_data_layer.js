@@ -151,5 +151,9 @@ var GaiaDataLayer = {
         var manager = window.navigator.mozWifiManager;
         return manager.connection.status === 'connected' &&
                manager.connection.network.ssid === aNetwork.ssid;
+    },
+
+    getMozTelephonyState: function() {
+        return window.navigator.mozTelephony.active.state;
     }
 };

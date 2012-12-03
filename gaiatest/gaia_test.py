@@ -154,6 +154,10 @@ class GaiaData(object):
     def is_wifi_connected(self, network):
         return self.marionette.execute_script("return GaiaDataLayer.isWiFiConnected(%s)" % json.dumps(network))
 
+    @property
+    def active_telephony_state(self):
+        # Returns the state of only the currently active call or None if no active call
+        return self.marionette.execute_script("return GaiaDataLayer.getMozTelephonyState()")
 
 
 class GaiaTestCase(MarionetteTestCase):
