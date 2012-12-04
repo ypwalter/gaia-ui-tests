@@ -147,12 +147,15 @@ class GaiaData(object):
         result = self.marionette.execute_async_script("return GaiaDataLayer.connectToWiFi(%s)" % json.dumps(network))
         assert result, 'Unable to connect to WiFi network'
 
-    def forget_wifi(self, network):
-        result = self.marionette.execute_async_script("return GaiaDataLayer.forgetWiFi(%s)" % json.dumps(network))
-        assert result, 'Unable to forget WiFi network'
+    def forget_all_networks(self):
+        self.marionette.execute_async_script('return GaiaDataLayer.forgetAllNetworks()')
 
     def is_wifi_connected(self, network):
         return self.marionette.execute_script("return GaiaDataLayer.isWiFiConnected(%s)" % json.dumps(network))
+
+    @property
+    def known_networks(self):
+        return self.marionette.execute_async_script('return GaiaDataLayer.getKnownNetworks()')
 
     @property
     def active_telephony_state(self):
@@ -173,7 +176,16 @@ class GaiaTestCase(MarionetteTestCase):
         self.apps = GaiaApps(self.marionette)
         self.data_layer = GaiaData(self.marionette)
 
+        self.cleanUp()
+
+    def cleanUp(self):
+        # kill any open apps
         self.apps.kill_all()
+
+        # forget any known networks
+        self.data_layer.enable_wifi()
+        self.data_layer.forget_all_networks()
+        self.data_layer.disable_wifi()
 
     def wait_for_element_present(self, by, locator, timeout=10):
         timeout = float(timeout) + time.time()

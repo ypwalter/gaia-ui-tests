@@ -69,29 +69,34 @@
     }
   },
 
-  connectToWiFi: function(aNetwork) {
+  connectToWiFi: function(aNetwork, aCallback) {
+    var callback = aCallback || marionetteScriptFinished;
     var manager = window.navigator.mozWifiManager;
 
     if (this.isWiFiConnected(aNetwork)) {
-      console.log('already connected to network');
-      marionetteScriptFinished(true);
+      console.log("already connected to network with ssid '" + aNetwork.ssid + "'");
+      callback(true);
     }
     else {
       var req = manager.associate(aNetwork);
 
       req.onsuccess = function() {
-        manager.onstatuschange = function(event) {
-          console.log('status: ' + manager.connection.status);
-          if (manager.connection.status === 'connected') {
-            manager.onstatuschange = null;
-            marionetteScriptFinished(true);
+        console.log("waiting for connection status 'connected'");
+        waitFor(
+          function () {
+            console.log("success connecting to network with ssid '" + aNetwork.ssid + "'");
+            callback(true);
+          },
+          function () {
+            console.log('connection status: ' + manager.connection.status);
+            return manager.connection.status === 'connected';
           }
-        }
+        );
       };
 
       req.onerror = function() {
         console.log('error connecting to network', req.error.name);
-        marionetteScriptFinished(false);
+        callback(false);
       }
     }
   },
@@ -128,31 +133,78 @@
     }
   },
 
-  forgetWiFi: function(aNetwork) {
+  forgetAllNetworks: function (aCallback) {
+    var callback = aCallback || marionetteScriptFinished;
+    var self = this;
+    this.getKnownNetworks(function (aNetworks) {
+      if (aNetworks.length > 0) {
+        var networksLength = aNetworks.length;
+        for (i = 0; i < networksLength; i++) {
+          if (i !== networksLength-1) {
+            self.forgetWiFi(aNetworks[i], function(){}, false);
+          }
+          else {
+            self.forgetWiFi(aNetworks[networksLength-1], callback);
+          }
+        }
+      }
+      else {
+        console.log('no known networks to forget');
+        callback(true);
+      }
+    });
+  },
+
+  getKnownNetworks: function (aCallback) {
+    var callback = aCallback || marionetteScriptFinished;
+    var manager = window.navigator.mozWifiManager;
+    var req = manager.getKnownNetworks();
+
+    req.onsuccess = function() {
+      console.log('success getting known networks');
+      callback(req.result);
+    };
+
+    req.onerror = function() {
+      console.log('error getting known networks', req.error.name);
+      callback([]);
+    }
+  },
+
+  forgetWiFi: function (aNetwork, aCallback, aWaitForStatus) {
+    var callback = aCallback || marionetteScriptFinished;
+    var waitForStatus = aWaitForStatus || 'disconnected';
     var manager = window.navigator.mozWifiManager;
     var req = manager.forget(aNetwork);
 
     req.onsuccess = function() {
-      console.log('success forgetting network');
-      manager.onstatuschange = function(event) {
-        console.log('status: ' + manager.connection.status);
-        if (manager.connection.status === 'disconnected') {
-          manager.onstatuschange = null;
-          marionetteScriptFinished(true);
-        }
-      };
+      console.log("success forgetting network with ssid '" + aNetwork.ssid + "'");
+      if (waitForStatus !== false) {
+        console.log("waiting for connection status '" + waitForStatus + "'");
+        waitFor(
+          function () { callback(true); },
+          function () {
+            console.log('connection status: ' + manager.connection.status);
+            return manager.connection.status === waitForStatus;
+          }
+        );
+      }
+      else {
+        callback(true);
+      }
     };
 
     req.onerror = function() {
-      console.log('error forgetting network', req.error.name);
-      marionetteScriptFinished(false);
+      console.log("error forgetting network with ssid '" + aNetwork.ssid + "'",
+                  req.error.name);
+      callback(false);
     }
   },
 
   isWiFiConnected: function(aNetwork) {
     var manager = window.navigator.mozWifiManager;
     return manager.connection.status === 'connected' &&
-    manager.connection.network.ssid === aNetwork.ssid;
+           manager.connection.network.ssid === aNetwork.ssid;
   },
 
   getMozTelephonyState: function() {
