@@ -95,7 +95,6 @@ class TestMarketplaceLogin(GaiaTestCase):
 
 
     def tearDown(self):
-
         # In the event that the test fails, a 2nd attempt
         # switch to marketplace frame and if we are logged in attempt to log out again
         self.marionette.switch_to_frame()
@@ -110,11 +109,6 @@ class TestMarketplaceLogin(GaiaTestCase):
             self.wait_for_element_displayed(*self._settings_form_locator)
             self.marionette.find_element(*self._logout_button).click()
 
-        # Close the app
-        if self.app:
-            self.apps.kill(self.app)
-
         if self.wifi:
             self.data_layer.disable_wifi()
-
         GaiaTestCase.tearDown(self)

@@ -44,14 +44,8 @@ class TestBrowserLAN(GaiaTestCase):
         self.assertEqual(heading.text, 'We believe that the internet should be public, open and accessible.')
 
     def tearDown(self):
-
-        # close the app
-        if hasattr(self, 'app'):
-            self.apps.kill(self.app)
-
         if self.wifi:
             self.data_layer.disable_wifi()
-
         GaiaTestCase.tearDown(self)
 
     def is_throbber_visible(self):

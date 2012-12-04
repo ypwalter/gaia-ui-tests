@@ -44,12 +44,3 @@ class TestClockDeleteAlarm(GaiaTestCase):
         new_alarms_count = len(self.marionette.find_elements(*clock_object._all_alarms))
         
         self.assertEqual(initial_alarms_count, new_alarms_count+1, "delete alarm failed.")
-        
-        
-    def tearDown(self):
-
-        # close the app
-        if hasattr(self, 'app'):
-            self.apps.kill(self.app)
-
-        GaiaTestCase.tearDown(self)

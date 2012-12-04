@@ -57,12 +57,3 @@ class TestClockSwitchClockType(GaiaTestCase):
         self.wait_for_element_displayed(*clock_object._analog_clock_display)
         self.assertTrue(self.marionette.find_element(*clock_object._clock_day_date).is_displayed(), "The date should be displayed.")
         self.assertTrue(self.marionette.find_element(*clock_object._analog_clock_body).is_displayed(), "The date should be displayed.")
-        
-        
-    def tearDown(self):
-
-        # close the app
-        if hasattr(self, 'app'):
-            self.apps.kill(self.app)
-
-        GaiaTestCase.tearDown(self)

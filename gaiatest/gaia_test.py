@@ -2,8 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import base64
 import json
 import os
+import sys
 import time
 
 from marionette import MarionetteTestCase
@@ -303,6 +305,20 @@ class GaiaTestCase(MarionetteTestCase):
             return False
 
     def tearDown(self):
+        if any(sys.exc_info()):
+            # test has failed, gather debug
+            test_name = self.marionette.test_name.split()[-1]
+            debug_path = os.path.join('debug', *test_name.split('.'))
+            if not os.path.exists(debug_path):
+                os.makedirs(debug_path)
+
+            # screenshot
+            with open(os.path.join(debug_path, 'screenshot.png'), 'w') as f:
+                # TODO: Bug 818287 - Screenshots include data URL prefix
+                screenshot = self.marionette.screenshot()[22:]
+                f.write(base64.decodestring(screenshot))
+
+        self.cleanUp()
         self.lockscreen = None
         self.apps = None
         self.data_layer = None

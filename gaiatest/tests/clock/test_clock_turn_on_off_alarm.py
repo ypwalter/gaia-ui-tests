@@ -42,15 +42,10 @@ class TestClockTurnOnOffAlarm(GaiaTestCase):
         time.sleep(2)
         new_alarm_checked = self.marionette.find_element(*clock_object._alarm_checked_status).get_attribute('checked')
         self.assertTrue(origin_alarm_checked != new_alarm_checked, 'user should be able to turn off the alarm.')
-        
-        
+
+
     def tearDown(self):
-        
         # delete the new alarm
         clock_object.delete_alarm(self)
-        
-        # close the app
-        if hasattr(self, 'app'):
-            self.apps.kill(self.app)
 
         GaiaTestCase.tearDown(self)

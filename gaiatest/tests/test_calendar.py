@@ -127,12 +127,3 @@ class TestCalendar(GaiaTestCase):
             self.marionette.find_element(*self._delete_event_button_locator).click()
             self.wait_for_element_displayed(*self._day_view_locator)
             all_events = self.marionette.find_elements(*day_view_time_slot_individual_events_locator)
-
-    def tearDown(self):
-
-        # close the app
-        if hasattr(self, 'app'):
-            self.apps.kill(self.app)
-
-        GaiaTestCase.tearDown(self)
-

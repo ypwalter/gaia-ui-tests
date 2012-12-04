@@ -88,7 +88,3 @@ class TestLockScreen(GaiaTestCase):
         # Wait for the svg to animate and handle to disappear
         # TODO add assertion that unlock buttons are visible after bug 813561 is fixed
         self.wait_for_condition(lambda m: not unlock_handle.is_displayed())
-
-    def tearDown(self):
-
-        self.apps.kill_all()
