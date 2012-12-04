@@ -157,5 +157,43 @@
 
   getMozTelephonyState: function() {
     return window.navigator.mozTelephony.active.state;
+  },
+
+  enableCellData: function() {
+    var manager = window.navigator.mozMobileConnection;
+
+    if (!manager.data.connected) {
+      manager.ondatachange = function(event){
+        if (manager.data.connected) {
+          console.log('cell data enabled');
+          manager.ondatachange = null;
+          marionetteScriptFinished(true);
+        }
+      }
+      this.setSetting('ril.data.enabled', true, false);
+    }
+    else {
+      console.log('cell data already enabled');
+      marionetteScriptFinished(true);
+    }
+  },
+
+  disableCellData: function() {
+    var manager = window.navigator.mozMobileConnection;
+
+    if (manager.data.connected) {
+      manager.ondatachange = function(event){
+        if (!manager.data.connected) {
+          console.log('cell data disabled');
+          manager.ondatachange = null;
+          marionetteScriptFinished(true);
+        }
+      }
+      this.setSetting('ril.data.enabled', false, false);
+    }
+    else {
+      console.log('cell data already disabled');
+      marionetteScriptFinished(true);
+    }
   }
 };

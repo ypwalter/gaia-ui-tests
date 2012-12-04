@@ -124,10 +124,12 @@ class GaiaData(object):
         self.set_setting('audio.volume.master', value)
 
     def enable_cell_data(self):
-        self.set_setting('ril.data.enabled', True)
+        result = self.marionette.execute_async_script("return GaiaDataLayer.enableCellData()")
+        assert result, 'Unable to enable cell data'
 
     def disable_cell_data(self):
-        self.set_setting('ril.data.enabled', False)
+        result = self.marionette.execute_async_script("return GaiaDataLayer.disableCellData()")
+        assert result, 'Unable to disable cell data'
 
     def enable_cell_roaming(self):
         self.set_setting('ril.data.roaming_enabled', True)
