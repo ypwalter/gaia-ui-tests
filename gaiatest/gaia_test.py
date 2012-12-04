@@ -176,7 +176,16 @@ class GaiaTestCase(MarionetteTestCase):
         self.apps = GaiaApps(self.marionette)
         self.data_layer = GaiaData(self.marionette)
 
+        self.cleanUp()
+
+    def cleanUp(self):
+        # kill any open apps
         self.apps.kill_all()
+
+        # forget any known networks
+        self.data_layer.enable_wifi()
+        self.data_layer.forget_all_networks()
+        self.data_layer.disable_wifi()
 
     def wait_for_element_present(self, by, locator, timeout=10):
         timeout = float(timeout) + time.time()
