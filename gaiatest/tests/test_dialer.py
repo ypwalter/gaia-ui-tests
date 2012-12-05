@@ -27,9 +27,6 @@ class TestDialer(GaiaTestCase):
         # unlock the lockscreen if it's locked
         self.lockscreen.unlock()
 
-        # set audio volume to 0
-        self.data_layer.set_volume(0)
-
         # launch the app
         self.app = self.apps.launch('Phone')
 
