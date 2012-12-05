@@ -30,10 +30,15 @@ class TestDialer(GaiaTestCase):
         # launch the app
         self.app = self.apps.launch('Phone')
 
-        self._test_phone_number = self.testvars['remote_phone_number']
-
     def test_dialer_make_call(self):
         # https://moztrap.mozilla.org/manage/case/1298/
+
+        self.assertTrue(self.testvars, 'Test variables file not provided')
+        self.assertTrue('remote_phone_number' in self.testvars,
+                        'No remote phone number present in test variables file')
+        self._test_phone_number = self.testvars['remote_phone_number']
+        self.assertTrue(self._test_phone_number,
+                        'Remote phone number in test variables file is empty')
 
         self.wait_for_element_displayed(*self._keyboard_container_locator)
 
