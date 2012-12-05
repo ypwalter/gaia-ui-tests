@@ -187,10 +187,14 @@ class GaiaTestCase(MarionetteTestCase):
         # Disable sound completely
         self.data_layer.set_volume(0)
 
-        # forget any known networks
-        self.data_layer.enable_wifi()
-        self.data_layer.forget_all_networks()
-        self.data_layer.disable_wifi()
+        # Only work with WiFi below if the wifi manager is defined
+        # else tests run against B2G desktop will fail to run.
+        wifi_present = self.marionette.execute_script('return window.navigator.mozWifiManager !== undefined')
+        if wifi_present:
+            # forget any known networks
+            self.data_layer.enable_wifi()
+            self.data_layer.forget_all_networks()
+            self.data_layer.disable_wifi()
 
     def wait_for_element_present(self, by, locator, timeout=10):
         timeout = float(timeout) + time.time()
