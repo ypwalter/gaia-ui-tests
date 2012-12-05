@@ -81,6 +81,7 @@ class TestFtu(GaiaTestCase):
         self.wait_for_element_displayed(*self._section_languages_locator)
 
         # FTU is not properly localized yet so let's just check some are listed
+        # TODO enhance this to include lang selection when FTU is localized
         listed_languages = self.marionette.find_elements(*self._listed_languages_locator)
         self.assertGreater(len(listed_languages), 0, "No languages listed on screen")
 
@@ -111,16 +112,14 @@ class TestFtu(GaiaTestCase):
 
         # Set timezone
         continent_select = self.marionette.find_element(*self._timezone_continent_locator)
+        # Click to activate the b2g select element
         continent_select.click()
-
-        continent_option = continent_select.find_element('xpath', "//option[text()='Europe']")
-        self._select(continent_option)
+        self._select("Europe")
 
         city_select = self.marionette.find_element(*self._timezone_city_locator)
+        # Click to activate the b2g select element
         city_select.click()
-
-        city_option = city_select.find_element('xpath', "//option[text()='London']")
-        self._select(city_option)
+        self._select("London")
 
         self.assertEqual(self.marionette.find_element(*self._time_zone_title_locator).text,
                         "UTC+00:00 Europe/London")
@@ -141,7 +140,7 @@ class TestFtu(GaiaTestCase):
         self.marionette.find_element(*self._next_button_locator).click()
         self.wait_for_element_displayed(*self._section_welcome_browser_locator)
 
-        # Don't think this is functional but we'll click it anyway
+        # Click the statistics box and check that it sets a setting
         # TODO assert via settings API that this is set. Currently it is not used
         self.marionette.find_element(*self._enable_statistic_checkbox_locator).click()
 
@@ -149,6 +148,7 @@ class TestFtu(GaiaTestCase):
         self.marionette.find_element(*self._next_button_locator).click()
         self.wait_for_element_displayed(*self._section_browser_privacy_locator)
 
+        # Enter a dummy email address and check it set inside the os
         # TODO assert that this is preserved in the system somewhere. Currently it is not used
         self.marionette.find_element(*self._email_field_locator).send_keys("testuser@mozilla.com")
 
@@ -159,6 +159,7 @@ class TestFtu(GaiaTestCase):
        # The tour appears to be empty so let's skip it
         self.marionette.find_element(*self._skip_tour_button_locator).click()
 
+        # Switch back to top level now that FTU app is gone
         self.marionette.switch_to_frame()
 
         self.assertTrue(self.data_layer.get_setting("ril.data.enabled"), "Cell data was not enabled by FTU app")
@@ -167,16 +168,14 @@ class TestFtu(GaiaTestCase):
     def tearDown(self):
 
         # TODO flush any settings set by the FTU app
-
         self.data_layer.disable_cell_data()
         self.data_layer.disable_wifi()
 
         GaiaTestCase.tearDown(self)
 
-    def _select(self, option_element):
-        # Cheeky Select wrapper until Marionette has its own one
-        # Due to the way B2G wraps the select box it can only match on text
-        match_string = option_element.text
+    def _select(self, match_string):
+        # Cheeky Select wrapper until Marionette has its own
+        # Due to the way B2G wraps the app's select box we match on text
 
         # Have to go back to top level to get the B2G select box wrapper
         self.marionette.switch_to_frame()
