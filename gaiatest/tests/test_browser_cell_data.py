@@ -34,7 +34,8 @@ class TestBrowserCellData(GaiaTestCase):
 
         self.marionette.find_element(*self._url_button_locator).click()
 
-        self.wait_for_condition(lambda m: not self.is_throbber_visible())
+        # Bump up the timeout due to slower cell data speeds
+        self.wait_for_condition(lambda m: not self.is_throbber_visible(), timeout=20)
 
         browser_frame = self.marionette.find_element(
             *self._browser_frame_locator)
@@ -55,4 +56,4 @@ class TestBrowserCellData(GaiaTestCase):
         GaiaTestCase.tearDown(self)
 
     def is_throbber_visible(self):
-        return self.marionette.find_element(*self._throbber_locator).size['height'] == 4
+        return self.marionette.find_element(*self._throbber_locator).get_attribute('class') == 'loading'
