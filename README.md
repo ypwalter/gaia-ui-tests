@@ -67,8 +67,32 @@ Variables:
 
 `remote_phone_number (string)` A phone number that your device can call during the tests (try not to be a nuisance!). Prefix the number with '+' and your international dialing code.
 
-`wifi.ssid (string)` This is the SSID/name of your WiFi connection. Currently this does not support WPA/WEP/etc.
+`wifi.ssid (string)` This is the SSID/name of your WiFi connection. Currently this supports WPA/WEP/etc. You can add wifi networks by doing the following (remember to replace "KeyManagement" and "wep" with the value your network supports) :
 
+`
+"wifi": {
+    "ssid": "MyNetwork",
+    "keyManagement": "WEP",
+    "wep": "MyPassword"
+}
+`
+
+` WPA-PSK:
+"wifi": {
+    "ssid": "MyNetwork",
+    "keyManagement": "WPA-PSK",
+    "psk": "MyPassword"
+}
+`
+
+` WPA-EAP:
+"wifi": {
+    "ssid": "MyNetwork",
+    "keyManagement": "WPA-EAP",
+    "password": "MyPassword",
+    "identity": "MyIdentity"
+}
+`
 
 Writing Tests
 =============
