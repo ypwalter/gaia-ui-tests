@@ -55,4 +55,4 @@ class TestBrowserWifi(GaiaTestCase):
         GaiaTestCase.tearDown(self)
 
     def is_throbber_visible(self):
-        return self.marionette.find_element(*self._throbber_locator).size['height'] == 4
+        return self.marionette.find_element(*self._throbber_locator).get_attribute('class') == 'loading'
