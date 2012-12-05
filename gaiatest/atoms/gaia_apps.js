@@ -69,9 +69,7 @@ var GaiaApps = {
     }
   },
 
-  /**
-   * Returns the number of running apps.
-   */
+  // Returns the number of running apps.
   numRunningApps: function() {
     let count = 0;
     let runningApps = window.wrappedJSObject.WindowManager.getRunningApps();
@@ -81,9 +79,7 @@ var GaiaApps = {
     return count;
   },
 
-  /**
-   * Kills all running apps, except the homescreen.
-   */
+  // Kills all running apps, except the homescreen.
   killAll: function() {
     let originsToClose = [];
     let that = this;
@@ -122,11 +118,9 @@ var GaiaApps = {
     });
   },
 
-  /**
-   * Launches app with the specified name (e.g., 'Calculator'); returns the
-   * app frame's id if successful, false if the app can't be found, or times
-   * out if the app frame can't be found after launching the app.
-   */
+  // Launches app with the specified name (e.g., 'Calculator'); returns the
+  // app frame's id if successful, false if the app can't be found, or times
+  // out if the app frame can't be found after launching the app.
   launchWithName: function(name) {
     GaiaApps.locateWithName(name, function(app, appName, entryPoint) {
       if (app) {
@@ -154,8 +148,10 @@ var GaiaApps = {
               // wait until the new iframe sends the mozbrowserfirstpaint event
               let frame = runningApps[origin].frame;
               if (frame.dataset.unpainted) {
-                window.addEventListener('mozbrowserfirstpaint', function firstpaint() {
-                  window.removeEventListener('mozbrowserfirstpaint', firstpaint);
+                window.addEventListener('mozbrowserfirstpaint',
+                                        function firstpaint() {
+                  window.removeEventListener('mozbrowserfirstpaint',
+                                             firstpaint);
                   sendResponse(origin);
                 });
               }

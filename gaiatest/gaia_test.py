@@ -124,10 +124,12 @@ class GaiaData(object):
         self.set_setting('audio.volume.master', value)
 
     def enable_cell_data(self):
-        self.set_setting('ril.data.enabled', True)
+        result = self.marionette.execute_async_script("return GaiaDataLayer.enableCellData()")
+        assert result, 'Unable to enable cell data'
 
     def disable_cell_data(self):
-        self.set_setting('ril.data.enabled', False)
+        result = self.marionette.execute_async_script("return GaiaDataLayer.disableCellData()")
+        assert result, 'Unable to disable cell data'
 
     def enable_cell_roaming(self):
         self.set_setting('ril.data.roaming_enabled', True)
@@ -147,13 +149,20 @@ class GaiaData(object):
         result = self.marionette.execute_async_script("return GaiaDataLayer.connectToWiFi(%s)" % json.dumps(network))
         assert result, 'Unable to connect to WiFi network'
 
-    def forget_wifi(self, network):
-        result = self.marionette.execute_async_script("return GaiaDataLayer.forgetWiFi(%s)" % json.dumps(network))
-        assert result, 'Unable to forget WiFi network'
+    def forget_all_networks(self):
+        self.marionette.execute_async_script('return GaiaDataLayer.forgetAllNetworks()')
 
     def is_wifi_connected(self, network):
         return self.marionette.execute_script("return GaiaDataLayer.isWiFiConnected(%s)" % json.dumps(network))
 
+    @property
+    def known_networks(self):
+        return self.marionette.execute_async_script('return GaiaDataLayer.getKnownNetworks()')
+
+    @property
+    def active_telephony_state(self):
+        # Returns the state of only the currently active call or None if no active call
+        return self.marionette.execute_script("return GaiaDataLayer.getMozTelephonyState()")
 
 
 class GaiaTestCase(MarionetteTestCase):
@@ -169,7 +178,16 @@ class GaiaTestCase(MarionetteTestCase):
         self.apps = GaiaApps(self.marionette)
         self.data_layer = GaiaData(self.marionette)
 
+        self.cleanUp()
+
+    def cleanUp(self):
+        # kill any open apps
         self.apps.kill_all()
+
+        # forget any known networks
+        self.data_layer.enable_wifi()
+        self.data_layer.forget_all_networks()
+        self.data_layer.disable_wifi()
 
     def wait_for_element_present(self, by, locator, timeout=10):
         timeout = float(timeout) + time.time()
@@ -238,8 +256,6 @@ class GaiaTestCase(MarionetteTestCase):
             except NoSuchElementException:
                 pass
             time.sleep(0.5)
-            if(time.time() > end_time):
-                break
         else:
             raise TimeoutException(message)
 
