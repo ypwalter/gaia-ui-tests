@@ -178,6 +178,11 @@ class GaiaTestCase(MarionetteTestCase):
         self.apps = GaiaApps(self.marionette)
         self.data_layer = GaiaData(self.marionette)
 
+        # wifi is true if testvars includes wifi details and wifi manager is defined
+        self.wifi = self.testvars and \
+                    'wifi' in self.testvars and \
+                    self.marionette.execute_script('return window.navigator.mozWifiManager !== undefined')
+
         self.cleanUp()
 
     def cleanUp(self):
@@ -187,10 +192,7 @@ class GaiaTestCase(MarionetteTestCase):
         # Disable sound completely
         self.data_layer.set_volume(0)
 
-        # only clean up wifi if testvars includes wifi details and wifi manager is defined
-        if self.testvars and \
-           'wifi' in self.testvars and \
-           self.marionette.execute_script('return window.navigator.mozWifiManager !== undefined'):
+        if self.wifi:
             # forget any known networks
             self.data_layer.enable_wifi()
             self.data_layer.forget_all_networks()
