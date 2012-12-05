@@ -12,6 +12,7 @@ class TestCamera(GaiaTestCase):
     _switch_source_button_locator = ('id', 'switch-button')
     _film_strip_image_locator = (
         'css selector', 'div#film-strip div.image > img')
+    _video_capturing_locator = ('css selector', 'body.capturing')
     _video_timer_locator = ('id', 'video-timer')
 
     def setUp(self):
@@ -52,7 +53,8 @@ class TestCamera(GaiaTestCase):
         self.wait_for_capture_ready()
         self.marionette.find_element(*self._capture_button_locator).click()
 
-        self.wait_for_element_displayed(*self._video_timer_locator)
+        self.wait_for_element_present(*self._video_capturing_locator)
+
         # Wait for 3 seconds of recording
         self.wait_for_condition(lambda m: m.find_element(
             *self._video_timer_locator).text == '00:03')

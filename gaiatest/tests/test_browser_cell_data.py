@@ -5,7 +5,7 @@
 from gaiatest import GaiaTestCase
 
 
-class TestBrowserWifi(GaiaTestCase):
+class TestBrowserCellData(GaiaTestCase):
 
     # Firefox/chrome locators
     _awesome_bar_locator = ("id", "url-input")
@@ -19,14 +19,14 @@ class TestBrowserWifi(GaiaTestCase):
         # unlock the lockscreen if it's locked
         self.lockscreen.unlock()
 
-        self.data_layer.enable_wifi()
-        self.data_layer.connect_to_wifi(self.testvars['wifi'])
+        self.data_layer.disable_wifi()
+        self.data_layer.enable_cell_data()
 
         # launch the app
         self.app = self.apps.launch('Browser')
 
-    def test_browser_wifi(self):
-        # https://moztrap.mozilla.org/manage/case/1327/
+    def test_browser_cell_data(self):
+        # https://moztrap.mozilla.org/manage/case/1328/
 
         awesome_bar = self.marionette.find_element(*self._awesome_bar_locator)
         awesome_bar.click()
@@ -34,7 +34,8 @@ class TestBrowserWifi(GaiaTestCase):
 
         self.marionette.find_element(*self._url_button_locator).click()
 
-        self.wait_for_condition(lambda m: not self.is_throbber_visible())
+        # Bump up the timeout due to slower cell data speeds
+        self.wait_for_condition(lambda m: not self.is_throbber_visible(), timeout=20)
 
         browser_frame = self.marionette.find_element(
             *self._browser_frame_locator)
@@ -50,7 +51,7 @@ class TestBrowserWifi(GaiaTestCase):
         if hasattr(self, 'app'):
             self.apps.kill(self.app)
 
-        self.data_layer.disable_wifi()
+        self.data_layer.disable_cell_data()
 
         GaiaTestCase.tearDown(self)
 
