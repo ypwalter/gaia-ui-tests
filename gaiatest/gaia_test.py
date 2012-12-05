@@ -187,10 +187,10 @@ class GaiaTestCase(MarionetteTestCase):
         # Disable sound completely
         self.data_layer.set_volume(0)
 
-        # Only work with WiFi below if the wifi manager is defined
-        # else tests run against B2G desktop will fail to run.
-        wifi_present = self.marionette.execute_script('return window.navigator.mozWifiManager !== undefined')
-        if wifi_present:
+        # only clean up wifi if testvars includes wifi details and wifi manager is defined
+        if self.testvars and \
+           'wifi' in self.testvars and \
+           self.marionette.execute_script('return window.navigator.mozWifiManager !== undefined'):
             # forget any known networks
             self.data_layer.enable_wifi()
             self.data_layer.forget_all_networks()
