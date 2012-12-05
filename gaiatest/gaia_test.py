@@ -163,10 +163,11 @@ class GaiaData(object):
     def active_telephony_state(self):
         # Returns the state of only the currently active call or None if no active call
         return self.marionette.execute_script("return GaiaDataLayer.getMozTelephonyState()")
-
+    @property
     def get_fm_state(self):
         return self.marionette.execute_script("return GaiaDataLayer.getFMHardwareState()")
 
+    @property
     def get_fm_frequency(self):
         return self.marionette.execute_script("return GaiaDataLayer.getFMHardwareFrequency()")
 
