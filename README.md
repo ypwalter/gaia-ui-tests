@@ -77,6 +77,23 @@ Variables:
 }
 `
 
+` WPA-PSK:
+"wifi": {
+    "ssid": "MyNetwork",
+    "keyManagement": "WPA-PSK",
+    "psk": "MyPassword"
+}
+`
+
+` WPA-EAP:
+"wifi": {
+    "ssid": "MyNetwork",
+    "keyManagement": "WPA-EAP",
+    "password": "MyPassword",
+    "identity": "MyIdentity"
+}
+`
+
 Writing Tests
 =============
 
