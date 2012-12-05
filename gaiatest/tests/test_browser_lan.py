@@ -5,7 +5,7 @@
 from gaiatest import GaiaTestCase
 
 
-class TestBrowserWifi(GaiaTestCase):
+class TestBrowserLAN(GaiaTestCase):
 
     # Firefox/chrome locators
     _awesome_bar_locator = ("id", "url-input")
@@ -19,13 +19,14 @@ class TestBrowserWifi(GaiaTestCase):
         # unlock the lockscreen if it's locked
         self.lockscreen.unlock()
 
-        self.data_layer.enable_wifi()
-        self.data_layer.connect_to_wifi(self.testvars['wifi'])
+        if self.wifi:
+            self.data_layer.enable_wifi()
+            self.data_layer.connect_to_wifi(self.testvars['wifi'])
 
         # launch the app
         self.app = self.apps.launch('Browser')
 
-    def test_browser_wifi(self):
+    def test_browser_lan(self):
         # https://moztrap.mozilla.org/manage/case/1327/
 
         awesome_bar = self.marionette.find_element(*self._awesome_bar_locator)
@@ -50,7 +51,8 @@ class TestBrowserWifi(GaiaTestCase):
         if hasattr(self, 'app'):
             self.apps.kill(self.app)
 
-        self.data_layer.disable_wifi()
+        if self.wifi:
+            self.data_layer.disable_wifi()
 
         GaiaTestCase.tearDown(self)
 
