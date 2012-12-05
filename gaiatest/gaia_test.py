@@ -184,6 +184,9 @@ class GaiaTestCase(MarionetteTestCase):
         # kill any open apps
         self.apps.kill_all()
 
+        # Disable sound completely
+        self.data_layer.set_volume(0)
+
         # forget any known networks
         self.data_layer.enable_wifi()
         self.data_layer.forget_all_networks()
