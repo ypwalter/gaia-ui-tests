@@ -27,7 +27,7 @@ class TestRadio(GaiaTestCase):
         # headphones plugged into an actual device
 
         # Determine if the FM hardware radio is enabled; wait for hardware init
-        ## This will fail is headphones are not plugged in
+        ## This will fail if headphones are not plugged in
         self.wait_for_condition(lambda m: self.data_layer.get_fm_state() is True)
 
         frequency_indicator = self.marionette.find_element(*self._frequency_indicator_locator)
@@ -42,10 +42,10 @@ class TestRadio(GaiaTestCase):
         for station in range(0, 20):
 
             # Get new coordinates for realistic flinging
-            dialer_x_centre = int(dialer.size['width']/2)
-            dialer_y_centre = int(dialer.size['height']/2)
+            dialer_x_center = int(dialer.size['width']/2)
+            dialer_y_center = int(dialer.size['height']/2)
 
-            self.marionette.flick(dialer, dialer_x_centre, dialer_y_centre, 0, 300, 800)
+            self.marionette.flick(dialer, dialer_x_center, dialer_y_center, 0, 300, 800)
 
         # Check that the FM radio has tuned in to a higher default frequency (upper bound)
         self.assertNotEqual(channel, str(self.data_layer.get_fm_frequency()))
