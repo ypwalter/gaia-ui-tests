@@ -76,17 +76,15 @@ Variables:
     "wep": "MyPassword"
 }
 `
-
-` WPA-PSK:
-"wifi": {
+WPA-PSK:
+`"wifi": {
     "ssid": "MyNetwork",
     "keyManagement": "WPA-PSK",
     "psk": "MyPassword"
 }
 `
-
-` WPA-EAP:
-"wifi": {
+ WPA-EAP:
+`"wifi": {
     "ssid": "MyNetwork",
     "keyManagement": "WPA-EAP",
     "password": "MyPassword",
