@@ -56,7 +56,7 @@ class TestDialer(GaiaTestCase):
         self.marionette.switch_to_frame()
 
         # Wait for call screen then switch to it
-        self.wait_for_element_present(*self._call_screen_locator)
+        self.wait_for_element_present(*self._call_screen_locator, timeout=30)
         call_screen = self.marionette.find_element(*self._call_screen_locator)
         self.marionette.switch_to_frame(call_screen)
 
@@ -64,7 +64,7 @@ class TestDialer(GaiaTestCase):
         self.wait_for_element_displayed(*self._outgoing_call_locator)
 
         # Wait for the state to get to 'alerting' which means connection made
-        self.wait_for_condition(lambda m: self.data_layer.active_telephony_state == "alerting", timeout=20)
+        self.wait_for_condition(lambda m: self.data_layer.active_telephony_state == "alerting", timeout=30)
 
         # Check the number displayed is the one we dialed
         self.assertEqual(self._test_phone_number,
