@@ -8,7 +8,7 @@ class TestWallpaper(GaiaTestCase):
 
     _display_locator = ('id', 'menuItem-display')
     _wallpaper_preview_locator = ('id', 'wallpaper-preview')
-    _wallpaper_button_locator = ('xpath', "//*[text()='Wallpaper']")
+    _wallpaper_button_locator = ('css selector', "a[data-value='0']")
     _wallpaper_title_locator = ('css selector', "h1[data-l10n-id='select-wallpaper']")
     _wallpaper_frame_locator = ('css selector', "iframe[src='app://wallpaper.gaiamobile.org/pick.html']")
     _settings_frame_locator = ('css selector', "iframe[src='app://settings.gaiamobile.org/index.html#root']")
@@ -50,11 +50,9 @@ class TestWallpaper(GaiaTestCase):
         self.wait_for_element_displayed(*self._wallpaper_frame_locator)
         self.marionette.switch_to_frame(self.marionette.find_element(*self._wallpaper_frame_locator))
 
-        # check the title of pick wallpaper page
-        self.wait_for_element_displayed(*self._wallpaper_title_locator)
-        self.assertEqual(self.marionette.find_element(*self._wallpaper_title_locator).text, 'Select wallpaper')
-
+        # pick a wallpaper
         self.wait_for_element_displayed(*pick_wallpaper_locator)
+        self.wait_for_element_enabled(*pick_wallpaper_locator)
         self.marionette.find_element(*pick_wallpaper_locator).click()
 
         # switch to the system app
@@ -77,3 +75,4 @@ class TestWallpaper(GaiaTestCase):
             self.apps.kill(self.app)
 
         GaiaTestCase.tearDown(self)
+        
