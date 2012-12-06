@@ -27,15 +27,15 @@ class TestRadio(GaiaTestCase):
 
         # Determine if the FM hardware radio is enabled; wait for hardware init
         ## This will fail if headphones are not plugged in
-        self.wait_for_condition(lambda m: self.data_layer.get_fm_state is True)
+        self.wait_for_condition(lambda m: self.data_layer.fm_state is True)
 
         frequency_indicator = self.marionette.find_element(*self._frequency_indicator_locator)
         dialer = self.marionette.find_element(*self._frequency_dialer_locator)
 
         # Check that the FM radio has tuned in to the default channel frequency (lower bound)
-        channel = str(self.data_layer.get_fm_frequency)
+        channel = str(self.data_layer.fm_frequency)
 
-        self.assertEqual(frequency_indicator.get_attribute('innerHTML'), channel)
+        self.assertEqual(frequency_indicator.text, channel)
 
         # Flick down the frequency dialer a couple times
         for station in range(0, 20):
@@ -47,8 +47,8 @@ class TestRadio(GaiaTestCase):
             self.marionette.flick(dialer, dialer_x_center, dialer_y_center, 0, 300, 800)
 
         # Check that the FM radio has tuned in to a higher default frequency (upper bound)
-        self.assertNotEqual(channel, str(self.data_layer.get_fm_frequency))
-        self.assertNotEqual(frequency_indicator.get_attribute('innerHTML'), channel)
+        self.assertNotEqual(channel, str(self.data_layer.fm_frequency))
+        self.assertNotEqual(frequency_indicator.text, channel)
 
     def tearDown(self):
         if hasattr(self, 'app'):
