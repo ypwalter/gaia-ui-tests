@@ -34,8 +34,8 @@ class TestMarketplaceLogin(GaiaTestCase):
 
         self.marionette.find_element(*self._login_button).click()
 
-        self._login_to_persona(self.testvars['marketplace_user'],
-                                self.testvars['marketplace_password'])
+        self._login_to_persona(self.testvars['marketplace']['username'],
+                                self.testvars['marketplace']['password'])
 
         #Switch back to marketplace and verify that user is logged in
         self.marionette.switch_to_frame()
@@ -50,7 +50,7 @@ class TestMarketplaceLogin(GaiaTestCase):
 
         self.wait_for_element_displayed(*self._settings_form_locator)
 
-        self.assertEqual(self.testvars['marketplace_user'],
+        self.assertEqual(self.testvars['marketplace']['username'],
             self.marionette.find_element(*self._email_account_field_locator).get_attribute('value'))
 
         self.marionette.find_element(*self._logout_button).click()
