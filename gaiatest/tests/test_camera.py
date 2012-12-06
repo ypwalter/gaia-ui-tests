@@ -11,7 +11,7 @@ class TestCamera(GaiaTestCase):
     _focus_ring = ('id','focus-ring')
     _switch_source_button_locator = ('id', 'switch-button')
     _film_strip_locator = ('id', 'filmstrip')
-    _film_strip_image_locator = ('css selector', 'img.thumbnail')
+    _film_strip_image_locator = ('css selector', '#filmstrip > img.thumbnail')
     _video_capturing_locator = ('css selector', 'body.capturing')
     _video_timer_locator = ('id', 'video-timer')
 
@@ -37,7 +37,6 @@ class TestCamera(GaiaTestCase):
         # The focus state will be either 'focused' or 'fail'
         self.assertEqual(focus_state, 'focused', "Camera failed to focus with error: %s" % focus_state)
 
-        self.wait_for_element_displayed(*self._film_strip_locator) #wait for filmstrip to be visible
         self.wait_for_element_displayed(*self._film_strip_image_locator) #wait for image to be added in to filmstrip
 
         # Find the new picture in the film strip
