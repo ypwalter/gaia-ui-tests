@@ -3,13 +3,17 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from gaiatest import GaiaTestCase
-
+import time
 
 class TestMarketplaceLogin(GaiaTestCase):
 
+    # Marketplace locators
     _login_button = ('css selector', 'a.button.browserid')
-    _persona_frame = ('css selector', "iframe[name='__persona_dialog']")
-    _search_result = ('css selector', '#search-results li.item')
+    _logged_in_locator = ('css selector', 'div.account.authenticated')
+    _settings_cog_locator = ('css selector', 'a.header-button.settings')
+    _settings_form_locator = ('css selector', 'form.form-grid')
+    _email_account_field_locator = ('id', 'email')
+    _logout_button = ('css selector', 'a.logout')
 
     def setUp(self):
         GaiaTestCase.setUp(self)
@@ -27,23 +31,71 @@ class TestMarketplaceLogin(GaiaTestCase):
         # https://moztrap.mozilla.org/manage/case/4134/
 
         self.wait_for_element_displayed(*self._login_button)
+
         self.marionette.find_element(*self._login_button).click()
 
-        # switch to top level frame
+        self._login_to_persona(self.testvars['marketplace_user'],
+                                self.testvars['marketplace_password'])
+
+        #Switch back to marketplace and verify that user is logged in
         self.marionette.switch_to_frame()
+        self.marionette.switch_to_frame(self.app.frame_id)
 
-        #switch to persona frame
+        # If you go to fast here marionette seems to clash with marketplace
+        time.sleep(3)
+        self.wait_for_element_present(*self._logged_in_locator)
 
-        self.wait_for_element_present(*self._persona_frame)
-        #persona_frame = self.marionette.find_element(*self._persona_frame)
-        #self.marionette.switch_to_frame(persona_frame)
+        # click the cog
+        self.marionette.find_element(*self._settings_cog_locator).click()
 
-        #TODO switch to Persona frame and wait for throbber to clear
+        self.wait_for_element_displayed(*self._settings_form_locator)
 
-        #TODO complete Persona login
-        #self.testvars['marketplace_username']
-        #self.testvars['marketplace_password']
-        #TODO Switch back to marketplace and verify that user is logged in
+        self.assertEqual(self.testvars['marketplace_user'],
+            self.marionette.find_element(*self._email_account_field_locator).get_attribute('value'))
+
+        self.marionette.find_element(*self._logout_button).click()
+
+
+    def _login_to_persona(self, username, password):
+
+        _persona_frame = ('css selector', "iframe[name='__persona_dialog']")
+
+        # Persona dialog
+        _waiting_locator = ('css selector', 'body.waiting')
+        _email_input_locator = ('id', 'email')
+        _password_input_locator = ('id', 'password')
+        _next_button_locator = ('css selector', 'button.start')
+        _returning_button_locator = ('css selector', 'button.returning')
+        _sign_in_button_locator = ('id', 'signInButton')
+
+        # switch to top level frame then Persona frame
+        self.marionette.switch_to_frame()
+        persona_frame = self.wait_for_element_present(*_persona_frame)
+        self.marionette.switch_to_frame(persona_frame)
+
+        # Wait for the loading to complete
+        self.wait_for_element_not_present(*_waiting_locator)
+
+        sign_in_button = self.marionette.find_element(*_sign_in_button_locator)
+
+        if sign_in_button.is_displayed():
+            # Persona remembers your username and password
+            self.marionette.find_element(*_sign_in_button_locator).click()
+
+        else:
+            # Persona has no memory of your details ie after device flash
+            email_field = self.marionette.find_element(*_email_input_locator)
+            email_field.send_keys(username)
+
+            self.marionette.find_element(*_next_button_locator).click()
+
+            self.wait_for_element_displayed(*_password_input_locator)
+            password_field = self.marionette.find_element(*_password_input_locator)
+            password_field.send_keys(password)
+
+            self.wait_for_element_displayed(*_returning_button_locator)
+            self.marionette.find_element(*_returning_button_locator).click()
+
 
     def tearDown(self):
 
@@ -52,4 +104,5 @@ class TestMarketplaceLogin(GaiaTestCase):
             self.apps.kill(self.app)
 
         self.data_layer.disable_wifi()
+
         GaiaTestCase.tearDown(self)
