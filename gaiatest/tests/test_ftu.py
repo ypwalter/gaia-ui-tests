@@ -181,7 +181,7 @@ class TestFtu(GaiaTestCase):
         self.marionette.switch_to_frame()
 
         options = self.marionette.find_elements('css selector', '#value-selector-container li')
-        ok_button = self.marionette.find_element('css selector', 'button.value-option-confirm')
+        close_button = self.marionette.find_element('css selector', 'button.value-selector-cancel')
 
         # Loop options until we find the match
         for li in options:
@@ -189,7 +189,7 @@ class TestFtu(GaiaTestCase):
                 li.click()
                 break
 
-        ok_button.click()
+        close_button.click()
 
         # Now back to app
         self.marionette.switch_to_frame(self.app.frame_id)

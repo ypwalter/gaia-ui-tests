@@ -35,7 +35,7 @@ class TestBrowserCellData(GaiaTestCase):
         self.marionette.find_element(*self._url_button_locator).click()
 
         # Bump up the timeout due to slower cell data speeds
-        self.wait_for_condition(lambda m: not self.is_throbber_visible(), timeout=20)
+        self.wait_for_condition(lambda m: not self.is_throbber_visible(), timeout=40)
 
         browser_frame = self.marionette.find_element(
             *self._browser_frame_locator)
