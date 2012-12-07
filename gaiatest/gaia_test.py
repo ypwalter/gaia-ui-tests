@@ -318,7 +318,6 @@ class GaiaTestCase(MarionetteTestCase):
                 screenshot = self.marionette.screenshot()[22:]
                 f.write(base64.decodestring(screenshot))
 
-        self.cleanUp()
         self.lockscreen = None
         self.apps = None
         self.data_layer = None
