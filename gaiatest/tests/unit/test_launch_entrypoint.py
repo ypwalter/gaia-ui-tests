@@ -17,14 +17,14 @@ class TestLaunchEntrypoint(GaiaTestCase):
         self.lockscreen.unlock()
 
         # Launch contacts
-        app = self.apps.launch('Contacts')
+        app = self.apps.launch('Clock')
         self.assertTrue(app.frame_id)
 
         url = self.marionette.get_url()
 
         # sanity check we launched the right app.
         # (note we use /contacts to verify this is an entry point launch)
-        self.assertTrue('/contacts' in url, 'wrong url: %s' % url)
+        self.assertTrue('clock' in url, 'wrong url: %s' % url)
 
         # close the app
         self.apps.kill(app)
