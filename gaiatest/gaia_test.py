@@ -66,8 +66,8 @@ class GaiaApps(object):
         self.marionette.switch_to_frame()
         js = os.path.abspath(os.path.join(__file__, os.path.pardir, 'atoms', "gaia_apps.js"))
         self.marionette.import_script(js)
-        self.marionette.execute_script("window.wrappedJSObject.WindowManager.kill('%s');"
-                                       % app.origin)
+        result = self.marionette.execute_async_script("GaiaApps.kill('%s');" % app.origin)
+        assert result, "Failed to kill app with name '%s'" % app.name
 
     def kill_all(self):
         self.marionette.switch_to_frame()
