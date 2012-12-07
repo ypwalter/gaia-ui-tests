@@ -5,15 +5,7 @@
 from gaiatest import GaiaTestCase
 
 
-class TestSettings(GaiaTestCase):
-
-    def test_set_named_setting(self):
-        setting_name = 'my.setting'
-
-        self.lockscreen.unlock()
-
-        self.data_layer.set_setting(setting_name, 'my.value')
-        self.assertEquals(self.data_layer.get_setting(setting_name), 'my.value')
+class TestCarrierSettings(GaiaTestCase):
 
     def test_set_cell_data(self):
         setting_name = 'ril.data.enabled'
@@ -36,24 +28,3 @@ class TestSettings(GaiaTestCase):
 
         self.data_layer.disable_cell_roaming()
         self.assertFalse(self.data_layer.get_setting(setting_name))
-
-    def test_set_wifi(self):
-        setting_name = 'wifi.enabled'
-
-        self.lockscreen.unlock()
-
-        self.data_layer.enable_wifi()
-        self.assertTrue(self.data_layer.get_setting(setting_name))
-
-        self.data_layer.disable_wifi()
-        self.assertFalse(self.data_layer.get_setting(setting_name))
-
-    def test_set_volume(self):
-        setting_name = 'audio.volume.master'
-
-        self.lockscreen.unlock()
-
-        for i in range(1, 11):
-            value = i / 10.0
-            self.data_layer.set_volume(value)
-            self.assertEqual(self.data_layer.get_setting(setting_name), value)
