@@ -91,7 +91,10 @@ var GaiaApps = {
       window.addEventListener('appterminated', function gt_onAppTerminated() {
         window.removeEventListener('appterminated', gt_onAppTerminated);
         waitFor(
-          function () { callback(true); },
+          function () {
+            console.log("app with origin '" + aOrigin + "' has terminated");
+            callback(true);
+          },
           function () {
             let runningApps = window.wrappedJSObject.WindowManager.getRunningApps();
             return !runningApps.hasOwnProperty(aOrigin);
