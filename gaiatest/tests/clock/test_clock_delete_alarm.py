@@ -1,0 +1,58 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+from gaiatest import GaiaTestCase
+from gaiatest.tests.clock import clock_object
+import time
+
+class TestClockDeleteAlarm(GaiaTestCase):
+
+    def setUp(self):
+        GaiaTestCase.setUp(self)
+
+        # unlock the lockscreen if it's locked
+        self.lockscreen.unlock()
+
+        # launch the Clock app
+        self.app = self.apps.launch('Clock')
+        
+        # create a new alarm for test
+        clock_object.create_alarm(self)
+
+    
+    def test_clock_delete_alarm(self):
+        """ Delete alarm 
+        
+        https://moztrap.mozilla.org/manage/case/1783/
+        
+        """
+        self.wait_for_element_displayed(*clock_object._alarm_create_new_locator)
+
+        # find the origin alarms' number
+        origin_alarms_li_list = self.marionette.find_elements(*clock_object._alarms_list)
+        origin_alarms_number = len(origin_alarms_li_list)
+        
+        # edit alarm
+        self.marionette.find_element(*clock_object._alarm_item).click()
+        # delete alarm
+        self.marionette.find_element(*clock_object._alarm_delete_button).click()
+        
+        # wait alarm item not displayed
+        self.wait_for_element_displayed(*clock_object._alarm_create_new_locator)
+        time.sleep(2)
+        #self.wait_for_element_not_displayed('id', 'alarm-item') # if any alarm item display, this test will be failed.
+
+        # find the new alarms' number
+        new_alarms_li_list = self.marionette.find_elements(*clock_object._alarms_list)
+        new_alarms_number = len(new_alarms_li_list)
+        
+        self.assertEqual(origin_alarms_number, new_alarms_number+1, "delete alarm failed.")
+        
+        
+    def tearDown(self):
+
+        # close the app
+        if hasattr(self, 'app'):
+            self.apps.kill(self.app)
+
+        GaiaTestCase.tearDown(self)
