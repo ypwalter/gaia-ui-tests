@@ -23,9 +23,6 @@ class TestVideoPlayer(GaiaTestCase):
     def setUp(self):
         GaiaTestCase.setUp(self)
 
-        # unlock the lockscreen if it's locked
-        self.lockscreen.unlock()
-
         # launch the Video app
         self.app = self.apps.launch('Video')
         self.wait_for_element_displayed(*self._video_items_locator)

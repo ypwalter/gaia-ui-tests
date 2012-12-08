@@ -35,9 +35,6 @@ class TestSearchMarketplaceAndInstallApp(GaiaTestCase):
     def setUp(self):
         GaiaTestCase.setUp(self)
 
-        # unlock the lockscreen if it's locked
-        self.lockscreen.unlock()
-
         if self.wifi:
             self.data_layer.enable_wifi()
             self.data_layer.connect_to_wifi(self.testvars['wifi'])

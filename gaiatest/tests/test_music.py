@@ -23,8 +23,6 @@ class TestMusic(GaiaTestCase):
   def setUp(self):
       GaiaTestCase.setUp(self)
 
-      self.lockscreen.unlock()
-
       # launch the Music application
       self.app = self.apps.launch("music")
 
