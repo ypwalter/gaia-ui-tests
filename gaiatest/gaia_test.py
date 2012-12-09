@@ -49,6 +49,7 @@ class GaiaApps(object):
     def launch(self, name, switch_to_frame=True, url=None):
         self.marionette.switch_to_frame()
         result = self.marionette.execute_async_script("GaiaApps.launchWithName('%s')" % name)
+        assert result, "Failed to launch app with name '%s'" % name
         app = GaiaApp(frame_id=result.get('frame'),
                       src=result.get('src'),
                       name=result.get('name'),
