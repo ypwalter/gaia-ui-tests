@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
  var GaiaDataLayer = {
 
   insertContact: function(cdata) {
@@ -11,11 +13,11 @@
 
     request.onerror = function onerror() {
       console.log('Error saving contact', request.error.name);
-    }
+    };
 
     request.onsuccess = function onsuccess() {
       console.log('Success saving contact', request);
-    }
+    };
     return request;
   },
 
@@ -30,7 +32,7 @@
 
     contact.onerror = function onerror() {
       console.log('Could not find contact', contact.error.name);
-    }
+    };
 
     contact.onsuccess = function onsuccess() {
       console.log('Success finding contact', contact);
@@ -41,7 +43,7 @@
   },
 
   getSetting: function(aName) {
-    req = window.navigator.mozSettings.createLock().get(aName);
+    var req = window.navigator.mozSettings.createLock().get(aName);
     req.onsuccess = function() {
       console.log('setting retrieved');
       marionetteScriptFinished(req.result[aName]);
@@ -56,7 +58,7 @@
     var setting = {};
     setting[aName] = aValue;
     console.log('setting ' + aName + ' to ' + aValue);
-    req = window.navigator.mozSettings.createLock().set(setting);
+    var req = window.navigator.mozSettings.createLock().set(setting);
     req.onsuccess = function() {
       console.log('setting changed');
       if (returnOnSuccess) {
@@ -215,13 +217,13 @@
     var manager = window.navigator.mozMobileConnection;
 
     if (!manager.data.connected) {
-      manager.ondatachange = function(event){
+      manager.ondatachange = function () {
         if (manager.data.connected) {
           console.log('cell data enabled');
           manager.ondatachange = null;
           marionetteScriptFinished(true);
         }
-      }
+      };
       this.setSetting('ril.data.enabled', true, false);
     }
     else {
@@ -234,13 +236,13 @@
     var manager = window.navigator.mozMobileConnection;
 
     if (manager.data.connected) {
-      manager.ondatachange = function(event){
+      manager.ondatachange = function () {
         if (!manager.data.connected) {
           console.log('cell data disabled');
           manager.ondatachange = null;
           marionetteScriptFinished(true);
         }
-      }
+      };
       this.setSetting('ril.data.enabled', false, false);
     }
     else {
@@ -250,11 +252,11 @@
   },
   
   getFMHardwareState: function() {
-	  return window.navigator.mozFMRadio.enabled;
+    return window.navigator.mozFMRadio.enabled;
   },
   
   getFMHardwareFrequency: function() {
-	  return this.getFMHardwareState() &&
-	  window.navigator.mozFMRadio.frequency;
+    return this.getFMHardwareState() &&
+           window.navigator.mozFMRadio.frequency;
   }
 };
