@@ -6,7 +6,7 @@ from gaiatest import GaiaTestCase
 from gaiatest.tests.clock import clock_object
 import time
 
-class TestClockLaunch(GaiaTestCase):
+class TestClockTurnOnOffAlarm(GaiaTestCase):
     
     def setUp(self):
         GaiaTestCase.setUp(self)
@@ -21,7 +21,7 @@ class TestClockLaunch(GaiaTestCase):
         clock_object.create_alarm(self)
         
     
-    def test_clock_turn_off_alarm(self):
+    def test_clock_turn_on_off_alarm(self):
         """ Turn on/off the alarm
         
         https://moztrap.mozilla.org/manage/case/1779/ 

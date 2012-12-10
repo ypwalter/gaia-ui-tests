@@ -29,8 +29,7 @@ class TestClockDeleteAlarm(GaiaTestCase):
         self.wait_for_element_displayed(*clock_object._alarm_create_new_locator)
 
         # find the origin alarms' number
-        origin_alarms_li_list = self.marionette.find_elements(*clock_object._alarms_list)
-        origin_alarms_number = len(origin_alarms_li_list)
+        initial_alarms_count = len(self.marionette.find_elements(*clock_object._all_alarms))
         
         # edit alarm
         self.marionette.find_element(*clock_object._alarm_item).click()
@@ -43,10 +42,9 @@ class TestClockDeleteAlarm(GaiaTestCase):
         #self.wait_for_element_not_displayed('id', 'alarm-item') # if any alarm item display, this test will be failed.
 
         # find the new alarms' number
-        new_alarms_li_list = self.marionette.find_elements(*clock_object._alarms_list)
-        new_alarms_number = len(new_alarms_li_list)
+        new_alarms_count = len(self.marionette.find_elements(*clock_object._all_alarms))
         
-        self.assertEqual(origin_alarms_number, new_alarms_number+1, "delete alarm failed.")
+        self.assertEqual(initial_alarms_count, new_alarms_count+1, "delete alarm failed.")
         
         
     def tearDown(self):

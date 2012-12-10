@@ -9,21 +9,23 @@ import time
 _alarm_create_new_locator                       = ('id', 'alarm-new')
 
 _clock_day_date                                 = ('id', 'clock-day-date')
-
 _analog_clock_display                           = ('id', 'analog-clock-svg')
 _analog_clock_body                              = ('id', 'analog-clock-svg-body')
 _digital_clock_display                          = ('id', 'digital-clock-display')
 _digital_clock_body                             = ('id', 'clock-time')
     
+_all_alarms                                     = ('css selector', '#alarms li')
 _alarm_save_locator                             = ('id', 'alarm-done')
 _banner_countdown_notification_locator          = ('id', 'banner-countdown')
-
+_picker_container                               = ('id', 'picker-container')
+_alarm_name                                     = (('xpath', "//input[@placeholder='Alarm']"))
+_repeat_menu                                    = ('id', 'repeat-menu')
+_sound_menu                                     = ('id', 'sound-menu')
+_snooze_menu                                    = ('id', 'snooze-menu')
 _alarm_checked_status                           = ('css selector', 'li label.alarmList #input-enable')
 _alarm_checked_status_button                    = ('css selector', 'li label.alarmList')
-
 _alarm_item                                     = ('id', 'alarm-item')
 _alarm_delete_button                            = ('id', 'alarm-delete')
-_alarms_list                                    = ('css selector', 'ul#alarms li')
 
 def create_alarm(self):
     """ create a new alarm for test """
