@@ -27,6 +27,8 @@ class TestCalendar(GaiaTestCase):
     _week_display_button_locator = ('xpath', "//a[@href='/week/']")
     _day_display_button_locator = ('xpath', "//a[@href='/day/']")
     _week_view_locator = ('id', 'week-view')
+    _week_view_events_locator = ('css selector',
+                                            '#week-view section.weekday.active')
     _day_view_locator = ('id', 'day-view')
 
     def setUp(self):
@@ -77,8 +79,6 @@ class TestCalendar(GaiaTestCase):
                                          '#event-list section.hour-1 span.display-hour')
         _this_event_time_slot_events_locator = ('css selector',
                                                 '#event-list section.hour-1 div.events')
-        _this_event_week_view_events_locator = ('css selector',
-                                                '#week-view section.weekday.active ol.hour-1')
         _this_event_day_view_events_locator = ('css selector',
                                                 '#day-view section.active section.hour-1')
 
@@ -111,7 +111,7 @@ class TestCalendar(GaiaTestCase):
         # switch to the week display
         self.marionette.find_element(*self._week_display_button_locator).click()
         self.wait_for_element_displayed(*self._week_view_locator)
-        displayed_events = self.marionette.find_element(*_this_event_week_view_events_locator).text
+        displayed_events = self.marionette.find_element(*self._week_view_events_locator).text
         self.assertIn(_event_title, displayed_events)
 
         # switch to the day display
