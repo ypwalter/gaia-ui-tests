@@ -11,8 +11,8 @@ class TestMusic(GaiaTestCase):
 
   _album_tile_locator = ('css selector', '#views-tiles div.tile-container')
   _album_list_locator = ('css selector', '#views-list li > a')
-
   _album_title_locator = ('class name', "list-main-title")
+  _audio_locator = ('id', 'player-audio')
   _player_seek_elapsed_locator = ('id', 'player-seek-elapsed')
   _player_controls_play_locator = ('id', 'player-controls-play')
   _tab_albums_locator = ('id', 'tabs-albums')
@@ -54,11 +54,18 @@ class TestMusic(GaiaTestCase):
       self.wait_for_condition(lambda m: m.find_element(
           *self._player_seek_elapsed_locator).text == '00:05')
 
+      audioTag = self.marionette.find_element(*self._audio_locator)
+
+      self.assertNotEqual(audioTag.get_attribute("currentTime"), audioTag.get_attribute("duration"))
+
+      # validate playback
+      self.assertEqual(audioTag.get_attribute('paused'), 'false')
+
       # select stop
       self.marionette.find_element(*self._player_controls_play_locator).click()
 
-      # TODO
-      # Validate audio playback
+      # validate playback
+      self.assertEqual(audioTag.get_attribute('paused'), 'true')
 
   def tearDown(self):
       # close the app
