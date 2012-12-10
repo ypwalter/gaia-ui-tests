@@ -64,7 +64,7 @@ class TestMusic(GaiaTestCase):
       # select stop
       self.marionette.find_element(*self._player_controls_play_locator).click()
 
-      # validate playback
+      # validate stopped playback
       self.assertEqual(audioTag.get_attribute('paused'), 'true')
 
   def tearDown(self):
