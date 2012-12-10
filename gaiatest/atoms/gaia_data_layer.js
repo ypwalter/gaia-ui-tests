@@ -139,13 +139,13 @@
     this.getKnownNetworks(function (aNetworks) {
       if (aNetworks.length > 0) {
         var networksLength = aNetworks.length;
-        for (i = 0; i < networksLength; i++) {
-          if (i !== networksLength-1) {
-            self.forgetWiFi(aNetworks[i], function(){}, false);
-          }
-          else {
-            self.forgetWiFi(aNetworks[networksLength-1], callback);
-          }
+        var done = 0;
+        for (var i = 0; i < networksLength; i++) {
+          self.forgetWiFi(aNetworks[i], function() {
+            if (++done === networksLength) {
+              callback(true);
+            }
+          }, false);
         }
       }
       else {
