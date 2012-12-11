@@ -54,9 +54,9 @@ class TestMusic(GaiaTestCase):
       self.wait_for_condition(lambda m: m.find_element(
           *self._player_seek_elapsed_locator).text == '00:05')
 
-      audioTag = self.marionette.find_element(*self._audio_locator)
+      audiotag = self.marionette.find_element(*self._audio_locator)
 
-      self.assertNotEqual(audioTag.get_attribute("currentTime"), audioTag.get_attribute("duration"))
+      self.assertNotEqual(audioTag.get_attribute('currentTime'), audioTag.get_attribute('duration'))
 
       # validate playback
       self.assertEqual(audioTag.get_attribute('paused'), 'false')
