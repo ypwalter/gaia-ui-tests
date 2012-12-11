@@ -21,8 +21,9 @@ class TestMarketplaceLogin(GaiaTestCase):
         # unlock the lockscreen if it's locked
         self.lockscreen.unlock()
 
-        self.data_layer.enable_wifi()
-        self.data_layer.connect_to_wifi(self.testvars['wifi'])
+        if self.wifi:
+            self.data_layer.enable_wifi()
+            self.data_layer.connect_to_wifi(self.testvars['wifi'])
 
         # launch the app
         self.app = self.apps.launch('Marketplace')
@@ -103,6 +104,7 @@ class TestMarketplaceLogin(GaiaTestCase):
         if self.app:
             self.apps.kill(self.app)
 
-        self.data_layer.disable_wifi()
+        if self.wifi:
+            self.data_layer.disable_wifi()
 
         GaiaTestCase.tearDown(self)

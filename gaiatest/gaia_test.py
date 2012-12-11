@@ -66,8 +66,8 @@ class GaiaApps(object):
         self.marionette.switch_to_frame()
         js = os.path.abspath(os.path.join(__file__, os.path.pardir, 'atoms', "gaia_apps.js"))
         self.marionette.import_script(js)
-        self.marionette.execute_script("window.wrappedJSObject.WindowManager.kill('%s');"
-                                       % app.origin)
+        result = self.marionette.execute_async_script("GaiaApps.kill('%s');" % app.origin)
+        assert result, "Failed to kill app with name '%s'" % app.name
 
     def kill_all(self):
         self.marionette.switch_to_frame()
@@ -164,6 +164,13 @@ class GaiaData(object):
         # Returns the state of only the currently active call or None if no active call
         return self.marionette.execute_script("return GaiaDataLayer.getMozTelephonyState()")
 
+    @property
+    def fm_state(self):
+        return self.marionette.execute_script("return GaiaDataLayer.getFMHardwareState()")
+
+    @property
+    def fm_frequency(self):
+        return self.marionette.execute_script("return GaiaDataLayer.getFMHardwareFrequency()")
 
 class GaiaTestCase(MarionetteTestCase):
 
@@ -178,6 +185,11 @@ class GaiaTestCase(MarionetteTestCase):
         self.apps = GaiaApps(self.marionette)
         self.data_layer = GaiaData(self.marionette)
 
+        # wifi is true if testvars includes wifi details and wifi manager is defined
+        self.wifi = self.testvars and \
+                    'wifi' in self.testvars and \
+                    self.marionette.execute_script('return window.navigator.mozWifiManager !== undefined')
+
         self.cleanUp()
 
     def cleanUp(self):
@@ -187,10 +199,11 @@ class GaiaTestCase(MarionetteTestCase):
         # Disable sound completely
         self.data_layer.set_volume(0)
 
-        # forget any known networks
-        self.data_layer.enable_wifi()
-        self.data_layer.forget_all_networks()
-        self.data_layer.disable_wifi()
+        if self.wifi:
+            # forget any known networks
+            self.data_layer.enable_wifi()
+            self.data_layer.forget_all_networks()
+            self.data_layer.disable_wifi()
 
     def wait_for_element_present(self, by, locator, timeout=10):
         timeout = float(timeout) + time.time()
