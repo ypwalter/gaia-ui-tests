@@ -56,16 +56,16 @@ class TestMusic(GaiaTestCase):
 
       audiotag = self.marionette.find_element(*self._audio_locator)
 
-      self.assertNotEqual(audioTag.get_attribute('currentTime'), audioTag.get_attribute('duration'))
+      self.assertNotEqual(audiotag.get_attribute('currentTime'), audiotag.get_attribute('duration'))
 
       # validate playback
-      self.assertEqual(audioTag.get_attribute('paused'), 'false')
+      self.assertEqual(audiotag.get_attribute('paused'), 'false')
 
       # select stop
       self.marionette.find_element(*self._player_controls_play_locator).click()
 
       # validate stopped playback
-      self.assertEqual(audioTag.get_attribute('paused'), 'true')
+      self.assertEqual(audiotag.get_attribute('paused'), 'true')
 
   def tearDown(self):
       # close the app
