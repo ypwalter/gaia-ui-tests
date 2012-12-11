@@ -38,7 +38,7 @@ class TestClockDeleteAlarm(GaiaTestCase):
         
         # wait alarm item not displayed
         self.wait_for_element_displayed(*clock_object._alarm_create_new_locator)
-        self.wait_for_element_not_displayed('id', 'alarm-item') # if any alarm item display, this test will be failed.
+        self.wait_for_condition(lambda m: len(m.find_elements(*clock_object._all_alarms)) != initial_alarms_count)
 
         # find the new alarms' number
         new_alarms_count = len(self.marionette.find_elements(*clock_object._all_alarms))
