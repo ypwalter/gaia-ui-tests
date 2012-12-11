@@ -28,6 +28,7 @@ class TestCalendar(GaiaTestCase):
     _day_display_button_locator = ('xpath', "//a[@href='/day/']")
     _week_view_locator = ('id', 'week-view')
     _day_view_locator = ('id', 'day-view')
+    _delete_event_button_locator = ('css selector', '#modify-event-view button[data-l10n-id=event-delete]')
 
     def setUp(self):
 
@@ -76,12 +77,14 @@ class TestCalendar(GaiaTestCase):
         formatted_today = time.strftime("%b %d")
         this_event_time_slot_locator = ('css selector',
                                          '#event-list section.hour-1 span.display-hour')
-        this_event_time_slot_events_locator = ('css selector',
+        month_view_time_slot_all_events_locator = ('css selector',
                                                 '#event-list section.hour-1 div.events')
-        this_event_week_view_events_locator = ('css selector',
+        week_view_time_slot_all_events_locator = ('css selector',
                                                 "#week-view section.active[data-date*='%s'] ol.hour-1" % formatted_today)
-        this_event_day_view_events_locator = ('css selector',
-                                                '#day-view section.active section.hour-1')
+        day_view_time_slot_all_events_locator = ('css selector',
+                                                "#day-view section.active[data-date*='%s'] section.hour-1" % formatted_today)
+        day_view_time_slot_individual_events_locator = ('css selector',
+                                               "#day-view section.active[data-date*='%s'] section.hour-1 div.events div.container" % formatted_today)
 
         # wait for the add event button to appear
         self.wait_for_element_displayed(*self._add_event_button_locator)
@@ -105,22 +108,31 @@ class TestCalendar(GaiaTestCase):
         # assert that the event is displayed as expected
         self.assertTrue(self.marionette.find_element(*this_event_time_slot_locator).is_displayed(),
             "Expected the time slot for the event to be present.")
-        displayed_events = self.marionette.find_element(*this_event_time_slot_events_locator).text
+        displayed_events = self.marionette.find_element(*month_view_time_slot_all_events_locator).text
         self.assertIn(event_title, displayed_events)
         self.assertIn(event_location, displayed_events)
 
         # switch to the week display
         self.marionette.find_element(*self._week_display_button_locator).click()
         self.wait_for_element_displayed(*self._week_view_locator)
-        displayed_events = self.marionette.find_element(*this_event_week_view_events_locator).text
+        displayed_events = self.marionette.find_element(*week_view_time_slot_all_events_locator).text
         self.assertIn(event_title, displayed_events)
 
         # switch to the day display
         self.marionette.find_element(*self._day_display_button_locator).click()
         self.wait_for_element_displayed(*self._day_view_locator)
-        displayed_events = self.marionette.find_element(*this_event_day_view_events_locator).text
+        displayed_events = self.marionette.find_element(*day_view_time_slot_all_events_locator).text
         self.assertIn(event_title, displayed_events)
         self.assertIn(event_location, displayed_events)
+
+        # delete all events in the time slot
+        all_events = self.marionette.find_elements(*day_view_time_slot_individual_events_locator)
+        while len(all_events) > 0:
+            all_events[0].click()
+            self.wait_for_element_displayed(*self._event_title_input_locator)
+            self.marionette.find_element(*self._delete_event_button_locator).click()
+            self.wait_for_element_displayed(*self._day_view_locator)
+            all_events = self.marionette.find_elements(*day_view_time_slot_individual_events_locator)
 
     def tearDown(self):
 
