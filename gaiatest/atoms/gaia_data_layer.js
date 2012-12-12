@@ -46,7 +46,8 @@
     var req = window.navigator.mozSettings.createLock().get(aName);
     req.onsuccess = function() {
       console.log('setting retrieved');
-      marionetteScriptFinished(req.result[aName]);
+      result = aName === '*' ? req.result : req.result[aName];
+      marionetteScriptFinished(result);
     };
     req.onerror = function() {
       console.log('error getting setting', req.error.name);
