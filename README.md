@@ -99,6 +99,12 @@ Writing Tests
 
 Test writing for Marionette Python tests is described at
 https://developer.mozilla.org/en-US/docs/Marionette/Marionette_Python_Tests.
+
 Additionally, gaiatest exposes some API's for managing Gaia's lockscreen
 and application manager.  See https://github.com/mozilla-b2g/gaia/blob/master/tests/python/gaiatest/gaia_test.py.
 
+At the moment we don't have a specific style guide. Please follow the
+prevailing style of the existing tests. Use them as a template for writing
+your tests.
+We follow [PEP8](http://www.python.org/dev/peps/pep-0008/) for formatting, although we're pretty lenient on the
+80-character line length.
