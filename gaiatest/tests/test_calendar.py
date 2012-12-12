@@ -31,11 +31,7 @@ class TestCalendar(GaiaTestCase):
     _delete_event_button_locator = ('css selector', '#modify-event-view button[data-l10n-id=event-delete]')
 
     def setUp(self):
-
         GaiaTestCase.setUp(self)
-
-        # unlock the lockscreen if it's locked
-        self.lockscreen.unlock()
 
         # launch the Calendar app
         self.app = self.apps.launch('calendar')

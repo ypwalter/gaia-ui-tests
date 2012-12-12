@@ -14,8 +14,6 @@ class TestLaunchEntrypoint(GaiaTestCase):
     """
 
     def test_launch_entrypoint(self):
-        self.lockscreen.unlock()
-
         # Launch contacts
         app = self.apps.launch('Clock')
         self.assertTrue(app.frame_id)

@@ -21,6 +21,10 @@ class LockScreen(object):
         js = os.path.abspath(os.path.join(__file__, os.path.pardir, 'atoms', "gaia_lock_screen.js"))
         self.marionette.import_script(js)
 
+    @property
+    def is_locked(self):
+        return self.marionette.execute_script('window.wrappedJSObject.LockScreen.locked')
+
     def lock(self):
         result = self.marionette.execute_async_script('GaiaLockScreen.lock()')
         assert result, 'Unable to lock screen'
@@ -198,10 +202,13 @@ class GaiaTestCase(MarionetteTestCase):
         self.cleanUp()
 
     def cleanUp(self):
+        # unlock
+        self.lockscreen.unlock()
+
         # kill any open apps
         self.apps.kill_all()
 
-        # Disable sound completely
+        # disable sound completely
         self.data_layer.set_volume(0)
 
         if self.wifi:
@@ -209,6 +216,9 @@ class GaiaTestCase(MarionetteTestCase):
             self.data_layer.enable_wifi()
             self.data_layer.forget_all_networks()
             self.data_layer.disable_wifi()
+
+        # reset to home screen
+        self.marionette.execute_script("window.wrappedJSObject.dispatchEvent(new Event('home'));")
 
     def wait_for_element_present(self, by, locator, timeout=10):
         timeout = float(timeout) + time.time()

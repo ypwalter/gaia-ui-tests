@@ -16,9 +16,6 @@ class TestCardsView(GaiaTestCase):
     def setUp(self):
         GaiaTestCase.setUp(self)
 
-        # unlock the lockscreen if it's locked
-        self.lockscreen.unlock()
-
         # launch the Calculator app as a basic, reliable
         # app to test against in Cards View
         self.calculator = self.apps.launch('Calculator')

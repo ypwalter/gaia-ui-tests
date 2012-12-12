@@ -18,8 +18,6 @@ class TestCamera(GaiaTestCase):
     def setUp(self):
         GaiaTestCase.setUp(self)
 
-        self.lockscreen.unlock()
-
         # launch the Camera app
         self.app = self.apps.launch('camera')
 
