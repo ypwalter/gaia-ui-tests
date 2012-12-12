@@ -55,6 +55,7 @@ class TestMarketplaceLogin(GaiaTestCase):
             self.marionette.find_element(*self._email_account_field_locator).get_attribute('value'))
 
         self.marionette.find_element(*self._logout_button).click()
+        self.wait_for_element_not_present(*self._logged_in_locator)
 
 
     def _login_to_persona(self, username, password):
@@ -77,13 +78,7 @@ class TestMarketplaceLogin(GaiaTestCase):
         # Wait for the loading to complete
         self.wait_for_element_not_present(*_waiting_locator)
 
-        sign_in_button = self.marionette.find_element(*_sign_in_button_locator)
-
-        if sign_in_button.is_displayed():
-            # Persona remembers your username and password
-            self.marionette.find_element(*_sign_in_button_locator).click()
-
-        else:
+        if self.is_element_present(*self._email_account_field_locator):
             # Persona has no memory of your details ie after device flash
             email_field = self.marionette.find_element(*_email_input_locator)
             email_field.send_keys(username)
@@ -97,8 +92,26 @@ class TestMarketplaceLogin(GaiaTestCase):
             self.wait_for_element_displayed(*_returning_button_locator)
             self.marionette.find_element(*_returning_button_locator).click()
 
+        else:
+            # Persona remembers your username and password
+            self.marionette.find_element(*_sign_in_button_locator).click()
+
 
     def tearDown(self):
+
+        # in the event that the test fails, a 2nd attempt
+        # switch to marketplace frame and if we are logged in attempt to log out again
+        self.marionette.switch_to_frame()
+        self.marionette.switch_to_frame(self.app.frame_id)
+
+        if self.is_element_present(*self._logged_in_locator):
+            # Refresh to get back to the marketplace main page
+            self.marionette.refresh()
+
+            # click the cog
+            self.marionette.find_element(*self._settings_cog_locator).click()
+            self.wait_for_element_displayed(*self._settings_form_locator)
+            self.marionette.find_element(*self._logout_button).click()
 
         # close the app
         if self.app:

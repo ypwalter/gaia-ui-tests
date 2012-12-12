@@ -275,6 +275,13 @@ class GaiaTestCase(MarionetteTestCase):
         else:
             raise TimeoutException(message)
 
+    def is_element_present(self, by, locator):
+        try:
+            self.marionette.find_element(by, locator)
+            return True
+        except:
+            return False
+
     def tearDown(self):
         self.lockscreen = None
         self.apps = None
