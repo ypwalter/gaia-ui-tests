@@ -10,17 +10,18 @@ class TestSettings(GaiaTestCase):
     def test_set_named_setting(self):
         setting_name = 'my.setting'
 
-        self.lockscreen.unlock()
-
         self.data_layer.set_setting(setting_name, 'my.value')
         self.assertEquals(self.data_layer.get_setting(setting_name), 'my.value')
 
     def test_set_volume(self):
         setting_name = 'audio.volume.master'
 
-        self.lockscreen.unlock()
-
         for i in range(1, 11):
             value = i / 10.0
             self.data_layer.set_volume(value)
             self.assertEqual(self.data_layer.get_setting(setting_name), value)
+
+    def test_get_all_settings(self):
+        all_settings = self.data_layer.all_settings
+        self.assertTrue(all_settings)
+        self.assertGreater(len(all_settings.keys()), 0)

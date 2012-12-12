@@ -13,8 +13,6 @@ class TestRadio(GaiaTestCase):
     def setUp(self):
         GaiaTestCase.setUp(self)
 
-        self.lockscreen.unlock()
-
         # Launch the Radio application
         self.app = self.apps.launch('FM Radio')
 

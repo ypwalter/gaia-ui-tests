@@ -10,8 +10,6 @@ class TestWiFiSettings(GaiaTestCase):
     def test_set_wifi(self):
         setting_name = 'wifi.enabled'
 
-        self.lockscreen.unlock()
-
         self.data_layer.enable_wifi()
         self.assertTrue(self.data_layer.get_setting(setting_name))
 

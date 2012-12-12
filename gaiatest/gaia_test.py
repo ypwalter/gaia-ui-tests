@@ -21,6 +21,10 @@ class LockScreen(object):
         js = os.path.abspath(os.path.join(__file__, os.path.pardir, 'atoms', "gaia_lock_screen.js"))
         self.marionette.import_script(js)
 
+    @property
+    def is_locked(self):
+        return self.marionette.execute_script('window.wrappedJSObject.LockScreen.locked')
+
     def lock(self):
         result = self.marionette.execute_async_script('GaiaLockScreen.lock()')
         assert result, 'Unable to lock screen'
@@ -49,6 +53,7 @@ class GaiaApps(object):
     def launch(self, name, switch_to_frame=True, url=None):
         self.marionette.switch_to_frame()
         result = self.marionette.execute_async_script("GaiaApps.launchWithName('%s')" % name)
+        assert result, "Failed to launch app with name '%s'" % name
         app = GaiaApp(frame_id=result.get('frame'),
                       src=result.get('src'),
                       name=result.get('name'),
@@ -110,6 +115,10 @@ class GaiaData(object):
 
     def remove_contact(self, contact):
         self.marionette.execute_script("GaiaDataLayer.findAndRemoveContact(%s)" % contact.json())
+
+    @property
+    def all_settings(self):
+        return self.marionette.execute_async_script('return GaiaDataLayer.getSetting("*")')
 
     def get_setting(self, name):
         return self.marionette.execute_async_script('return GaiaDataLayer.getSetting("%s")' % name)
@@ -193,10 +202,13 @@ class GaiaTestCase(MarionetteTestCase):
         self.cleanUp()
 
     def cleanUp(self):
+        # unlock
+        self.lockscreen.unlock()
+
         # kill any open apps
         self.apps.kill_all()
 
-        # Disable sound completely
+        # disable sound completely
         self.data_layer.set_volume(0)
 
         if self.wifi:
@@ -204,6 +216,9 @@ class GaiaTestCase(MarionetteTestCase):
             self.data_layer.enable_wifi()
             self.data_layer.forget_all_networks()
             self.data_layer.disable_wifi()
+
+        # reset to home screen
+        self.marionette.execute_script("window.wrappedJSObject.dispatchEvent(new Event('home'));")
 
     def wait_for_element_present(self, by, locator, timeout=10):
         timeout = float(timeout) + time.time()

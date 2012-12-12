@@ -8,15 +8,11 @@ from gaiatest import GaiaTestCase
 class TestKill(GaiaTestCase):
 
     def test_kill(self):
-        self.lockscreen.unlock()
-
         app = self.apps.launch('Clock')
         self.apps.kill(app)
         self.check_no_apps_running()
 
     def test_kill_multiple(self):
-        self.lockscreen.unlock()
-
         running_apps = []
 
         for app in ['Calculator', 'Clock']:
