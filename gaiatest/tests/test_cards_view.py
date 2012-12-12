@@ -51,7 +51,7 @@ class TestCardsView(GaiaTestCase):
             "Card view not expected to be visible")
 
     def test_that_app_can_be_launched_from_cards_view(self):
-    # https://github.com/mozilla/gaia-ui-tests/issues/98
+        # https://github.com/mozilla/gaia-ui-tests/issues/98
 
         # go to the home screen
         self.marionette.switch_to_frame()
@@ -78,7 +78,7 @@ class TestCardsView(GaiaTestCase):
     def tearDown(self):
 
         # close the app
-        if hasattr(self, 'app'):
-            self.apps.kill(self.app)
+        if hasattr(self, 'calculator'):
+            self.apps.kill(self.calculator)
 
         GaiaTestCase.tearDown(self)
