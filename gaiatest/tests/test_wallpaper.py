@@ -71,7 +71,7 @@ class TestWallpaper(GaiaTestCase):
         self.assertNotEqual(new_wallpaper, self._default_wallpaper_src)
 
     def tearDown(self):
-    	# reset to the default wallpaper
+        # reset to the default wallpaper
         self.marionette.execute_script("navigator.mozSettings.createLock().set({'wallpaper.image' : arguments[0]});", [self._default_wallpaper_src])
 
         # close the app
