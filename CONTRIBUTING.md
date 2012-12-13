@@ -29,6 +29,8 @@ Style Guide
 At the moment we don't have a specific style guide. Please follow the
 prevailing style of the existing tests. Use them as a template for writing
 your tests.
+We follow [PEP8](http://www.python.org/dev/peps/pep-0008/) for formatting, although we're pretty lenient on the
+80-character line length.
 
 Device or Emulator?
 ===================
