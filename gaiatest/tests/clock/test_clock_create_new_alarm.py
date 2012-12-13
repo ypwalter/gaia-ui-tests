@@ -58,7 +58,7 @@ class TestClockCreateNewAlarm(GaiaTestCase):
         self.marionette.find_element(*clock_object._alarm_create_new_locator).click()
         
         # set label
-        alarm_label = self.marionette.find_element('name', 'alarm.label')
+        alarm_label = self.marionette.find_element(*clock_object._new_alarm_label)
         alarm_label.click()
         alarm_label.send_keys("\b\b\b\b\btest4321")
         
@@ -66,8 +66,8 @@ class TestClockCreateNewAlarm(GaiaTestCase):
         self.marionette.find_element(*clock_object._alarm_save_locator).click()
 
         # verify the label of alarm
-        self.wait_for_element_displayed('css selector', "div.alarmList-detail div.label")
-        alarm_label = self.marionette.find_element('css selector', "div.alarmList-detail div.label").text
+        self.wait_for_element_displayed(*clock_object._alarm_label)
+        alarm_label = self.marionette.find_element(*clock_object._alarm_label).text
         self.assertTrue("test4321" == alarm_label, 'Actual label was: "' + alarm_label + '", not "test4321".')
         
         
