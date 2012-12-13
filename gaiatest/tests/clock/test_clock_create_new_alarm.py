@@ -46,6 +46,31 @@ class TestClockCreateNewAlarm(GaiaTestCase):
             'Alarms count did not increment')
         
         
+    def test_clock_set_alarm_label(self):
+        """ Set label of the new alarm
+        
+        https://moztrap.mozilla.org/manage/case/1775/
+        
+        """
+        self.wait_for_element_displayed(*clock_object._alarm_create_new_locator)
+        
+        # create a new alarm
+        self.marionette.find_element(*clock_object._alarm_create_new_locator).click()
+        
+        # set label
+        alarm_label = self.marionette.find_element('name', 'alarm.label')
+        alarm_label.click()
+        alarm_label.send_keys("\b\b\b\b\btest4321")
+        
+        # save the alarm
+        self.marionette.find_element(*clock_object._alarm_save_locator).click()
+
+        # verify the label of alarm
+        self.wait_for_element_displayed('css selector', "div.alarmList-detail div.label")
+        alarm_label = self.marionette.find_element('css selector', "div.alarmList-detail div.label").text
+        self.assertTrue("test4321" == alarm_label, 'Actual label was: "' + alarm_label + '", not "test4321".')
+        
+        
     def tearDown(self):
         
         # delete the new alarm
