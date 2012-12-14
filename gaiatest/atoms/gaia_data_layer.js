@@ -4,7 +4,7 @@
 
 "use strict";
 
- var GaiaDataLayer = {
+var GaiaDataLayer = {
 
   insertContact: function(cdata) {
     contact = new mozContact();
@@ -46,7 +46,7 @@
     var req = window.navigator.mozSettings.createLock().get(aName);
     req.onsuccess = function() {
       console.log('setting retrieved');
-      result = aName === '*' ? req.result : req.result[aName];
+      let result = aName === '*' ? req.result : req.result[aName];
       marionetteScriptFinished(result);
     };
     req.onerror = function() {
