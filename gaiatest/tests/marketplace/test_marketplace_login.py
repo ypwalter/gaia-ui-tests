@@ -22,7 +22,7 @@ class TestMarketplaceLogin(GaiaTestCase):
             self.data_layer.enable_wifi()
             self.data_layer.connect_to_wifi(self.testvars['wifi'])
 
-        # launch the app
+        # Launch the app
         self.app = self.apps.launch('Marketplace')
 
     def test_login_marketplace(self):
@@ -35,15 +35,15 @@ class TestMarketplaceLogin(GaiaTestCase):
         self._login_to_persona(self.testvars['marketplace']['username'],
                                 self.testvars['marketplace']['password'])
 
-        #Switch back to marketplace and verify that user is logged in
+        # Switch back to marketplace and verify that user is logged in
         self.marionette.switch_to_frame()
         self.marionette.switch_to_frame(self.app.frame_id)
 
-        # If you go to fast here marionette seems to clash with marketplace
-        time.sleep(3)
+        # If you go too fast here marionette seems to crash the marketplace app
+        time.sleep(5)
         self.wait_for_element_present(*self._logged_in_locator)
 
-        # click the cog
+        # Click the cog
         self.marionette.find_element(*self._settings_cog_locator).click()
 
         self.wait_for_element_displayed(*self._settings_form_locator)
@@ -67,7 +67,7 @@ class TestMarketplaceLogin(GaiaTestCase):
         _returning_button_locator = ('css selector', 'button.returning')
         _sign_in_button_locator = ('id', 'signInButton')
 
-        # switch to top level frame then Persona frame
+        # Switch to top level frame then Persona frame
         self.marionette.switch_to_frame()
         persona_frame = self.wait_for_element_present(*_persona_frame)
         self.marionette.switch_to_frame(persona_frame)
@@ -96,7 +96,7 @@ class TestMarketplaceLogin(GaiaTestCase):
 
     def tearDown(self):
 
-        # in the event that the test fails, a 2nd attempt
+        # In the event that the test fails, a 2nd attempt
         # switch to marketplace frame and if we are logged in attempt to log out again
         self.marionette.switch_to_frame()
         self.marionette.switch_to_frame(self.app.frame_id)
@@ -110,7 +110,7 @@ class TestMarketplaceLogin(GaiaTestCase):
             self.wait_for_element_displayed(*self._settings_form_locator)
             self.marionette.find_element(*self._logout_button).click()
 
-        # close the app
+        # Close the app
         if self.app:
             self.apps.kill(self.app)
 
