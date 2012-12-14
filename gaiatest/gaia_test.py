@@ -21,6 +21,10 @@ class LockScreen(object):
         js = os.path.abspath(os.path.join(__file__, os.path.pardir, 'atoms', "gaia_lock_screen.js"))
         self.marionette.import_script(js)
 
+    @property
+    def is_locked(self):
+        return self.marionette.execute_script('window.wrappedJSObject.LockScreen.locked')
+
     def lock(self):
         result = self.marionette.execute_async_script('GaiaLockScreen.lock()')
         assert result, 'Unable to lock screen'
@@ -49,6 +53,7 @@ class GaiaApps(object):
     def launch(self, name, switch_to_frame=True, url=None):
         self.marionette.switch_to_frame()
         result = self.marionette.execute_async_script("GaiaApps.launchWithName('%s')" % name)
+        assert result, "Failed to launch app with name '%s'" % name
         app = GaiaApp(frame_id=result.get('frame'),
                       src=result.get('src'),
                       name=result.get('name'),
@@ -66,8 +71,8 @@ class GaiaApps(object):
         self.marionette.switch_to_frame()
         js = os.path.abspath(os.path.join(__file__, os.path.pardir, 'atoms', "gaia_apps.js"))
         self.marionette.import_script(js)
-        self.marionette.execute_script("window.wrappedJSObject.WindowManager.kill('%s');"
-                                       % app.origin)
+        result = self.marionette.execute_async_script("GaiaApps.kill('%s');" % app.origin)
+        assert result, "Failed to kill app with name '%s'" % app.name
 
     def kill_all(self):
         self.marionette.switch_to_frame()
@@ -110,6 +115,10 @@ class GaiaData(object):
 
     def remove_contact(self, contact):
         self.marionette.execute_script("GaiaDataLayer.findAndRemoveContact(%s)" % contact.json())
+
+    @property
+    def all_settings(self):
+        return self.marionette.execute_async_script('return GaiaDataLayer.getSetting("*")')
 
     def get_setting(self, name):
         return self.marionette.execute_async_script('return GaiaDataLayer.getSetting("%s")' % name)
@@ -164,6 +173,13 @@ class GaiaData(object):
         # Returns the state of only the currently active call or None if no active call
         return self.marionette.execute_script("return GaiaDataLayer.getMozTelephonyState()")
 
+    @property
+    def fm_state(self):
+        return self.marionette.execute_script("return GaiaDataLayer.getFMHardwareState()")
+
+    @property
+    def fm_frequency(self):
+        return self.marionette.execute_script("return GaiaDataLayer.getFMHardwareFrequency()")
 
 class GaiaTestCase(MarionetteTestCase):
 
@@ -178,19 +194,31 @@ class GaiaTestCase(MarionetteTestCase):
         self.apps = GaiaApps(self.marionette)
         self.data_layer = GaiaData(self.marionette)
 
+        # wifi is true if testvars includes wifi details and wifi manager is defined
+        self.wifi = self.testvars and \
+                    'wifi' in self.testvars and \
+                    self.marionette.execute_script('return window.navigator.mozWifiManager !== undefined')
+
         self.cleanUp()
 
     def cleanUp(self):
+        # unlock
+        self.lockscreen.unlock()
+
         # kill any open apps
         self.apps.kill_all()
 
-        # Disable sound completely
+        # disable sound completely
         self.data_layer.set_volume(0)
 
-        # forget any known networks
-        self.data_layer.enable_wifi()
-        self.data_layer.forget_all_networks()
-        self.data_layer.disable_wifi()
+        if self.wifi:
+            # forget any known networks
+            self.data_layer.enable_wifi()
+            self.data_layer.forget_all_networks()
+            self.data_layer.disable_wifi()
+
+        # reset to home screen
+        self.marionette.execute_script("window.wrappedJSObject.dispatchEvent(new Event('home'));")
 
     def wait_for_element_present(self, by, locator, timeout=10):
         timeout = float(timeout) + time.time()

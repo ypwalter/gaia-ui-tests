@@ -1,6 +1,4 @@
 from gaiatest import GaiaTestCase
-import time
-import unittest
 
 MANIFEST = 'http://mozqa.com/data/webapps/mozqa.com/manifest.webapp'
 APP_NAME = 'Mozilla QA WebRT Tester'
@@ -17,11 +15,9 @@ class TestLaunchApp(GaiaTestCase):
     def setUp(self):
         GaiaTestCase.setUp(self)
 
-        # unlock the lockscreen if it's locked
-        self.lockscreen.unlock()
-
-        self.data_layer.enable_wifi()
-        self.data_layer.connect_to_wifi(self.testvars['wifi'])
+        if self.wifi:
+            self.data_layer.enable_wifi()
+            self.data_layer.connect_to_wifi(self.testvars['wifi'])
 
         self.homescreen = self.apps.launch('Homescreen')
 
@@ -50,5 +46,6 @@ class TestLaunchApp(GaiaTestCase):
     def tearDown(self):
         self.apps.kill_all()
         self.apps.uninstall(APP_NAME)
-        self.data_layer.disable_wifi()
+        if self.wifi:
+            self.data_layer.disable_wifi()
         GaiaTestCase.tearDown(self)

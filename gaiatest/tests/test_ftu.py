@@ -60,17 +60,14 @@ class TestFtu(GaiaTestCase):
     def setUp(self):
         GaiaTestCase.setUp(self)
 
-        # unlock the lockscreen if it's locked
-        self.lockscreen.unlock()
-
         # We need WiFi enabled but not connected to a network
         self.data_layer.enable_wifi()
-        if self.data_layer.is_wifi_connected(self.testvars['wifi']):
-            self.data_layer.forget_wifi(self.testvars['wifi'])
+        self.data_layer.forget_all_networks()
 
+        # Cell data must be off so we can switch it on again
         self.data_layer.disable_cell_data()
 
-        # launch the Calculator app
+        # launch the First Time User app
         self.app = self.apps.launch('FTU')
 
 
@@ -100,6 +97,7 @@ class TestFtu(GaiaTestCase):
         self.wait_for_condition(lambda m: len(m.find_elements(*self._found_wifi_networks_locator)) > 0,
                 message="No networks listed on screen")
 
+        # TODO This will only work on Mozilla Guest or unsecure network
         wifi_network = self.marionette.find_element('id', self.testvars['wifi']['ssid'])
         wifi_network.click()
 
@@ -128,7 +126,7 @@ class TestFtu(GaiaTestCase):
         self.marionette.find_element(*self._next_button_locator).click()
         self.wait_for_element_displayed(*self._section_import_contacts_locator)
 
-        # click import from SIM
+        # Click import from SIM
         # You can do this as many times as you like without db conflict
         self.marionette.find_element(*self._import_from_sim_locator).click()
 
@@ -169,6 +167,7 @@ class TestFtu(GaiaTestCase):
 
         # TODO flush any settings set by the FTU app
         self.data_layer.disable_cell_data()
+
         self.data_layer.disable_wifi()
 
         GaiaTestCase.tearDown(self)
