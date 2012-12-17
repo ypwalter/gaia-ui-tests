@@ -8,11 +8,11 @@ MANIFEST = 'http://mozqa.com/data/webapps/mozqa.com/manifest.webapp'
 APP_NAME = 'Mozilla QA WebRT Tester'
 TITLE = 'Index of /data'
 
-class TestDeletApp(GaiaTestCase):
+class TestDeleteApp(GaiaTestCase):
     _yes_button_locator = ('id', 'app-install-install-button')
     # locator for li.icon, because click on label doesn't work.
     _icon_locator = ('css selector', 'li.icon[aria-label="%s"]' % APP_NAME)
-    _options_locator = ('css selector', 'span.options')
+    _delete_app_locator = ('css selector', 'span.options')
 
     _confirm_delete_locator = ('id', 'confirm-dialog-confirm-button')
 
@@ -36,22 +36,24 @@ class TestDeletApp(GaiaTestCase):
 
     def test_delete_app(self):
 
-        # home button is not working so we cant return to the home menu
-#        #go to home screen
-#        self._touch_home_button()
-#
-#        # go the first page
-#        self._go_to_next_page()
+        #go to home screen
+        self.marionette.switch_to_frame()
+        self._touch_home_button()
+
+        # go the first page
+        self.homescreen = self.apps.launch('Homescreen')
+        self._go_to_next_page()
 
         #check that the app is available
         app_icon = self.marionette.find_element(*self._icon_locator)
         self.assertTrue(app_icon.is_displayed())
 
-        # go to edit mode
-        self._activate_edit_mode() # TODO: activate edit mode using HOME button
+        # go to edit mode.
+        # TODO: activate edit mode using HOME button https://bugzilla.mozilla.org/show_bug.cgi?id=814425
+        self._activate_edit_mode()
 
         # delete the app
-        delete_button = app_icon.find_element(*self._options_locator)
+        delete_button = app_icon.find_element(*self._delete_app_locator)
         delete_button.click()
 
         self.wait_for_element_displayed(*self._confirm_delete_locator)
@@ -61,10 +63,12 @@ class TestDeletApp(GaiaTestCase):
         self.wait_for_element_not_present(*self._icon_locator)
 
         # return to normal mode
-        self._activate_normal_mode()
+        self.marionette.switch_to_frame()
+        self._touch_home_button()
 
         #check that the app is no longer available
-        self.asertFalse(self.apps.launch(APP_NAME))
+        with self.assertRaises(AssertionError):
+            self.apps.launch(APP_NAME)
 
     def _touch_home_button(self):
         self.marionette.execute_script("window.wrappedJSObject.dispatchEvent(new Event('home'));")
@@ -74,9 +78,6 @@ class TestDeletApp(GaiaTestCase):
 
     def _activate_edit_mode(self):
         self.marionette.execute_script("window.wrappedJSObject.Homescreen.setMode('edit')")
-
-    def _activate_normal_mode(self):
-        self.marionette.execute_script("window.wrappedJSObject.Homescreen.setMode('normal')")
 
     def tearDown(self):
         self.apps.kill_all()
