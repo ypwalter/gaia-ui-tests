@@ -12,6 +12,9 @@ class TestDeletApp(GaiaTestCase):
     _yes_button_locator = ('id', 'app-install-install-button')
     # locator for li.icon, because click on label doesn't work.
     _icon_locator = ('css selector', 'li.icon[aria-label="%s"]' % APP_NAME)
+    _options_locator = ('css selector', 'span.options')
+
+    _confirm_delete_locator = ('id', 'confirm-dialog-confirm-button')
 
 
     def setUp(self):
@@ -32,25 +35,49 @@ class TestDeletApp(GaiaTestCase):
         self.wait_for_element_displayed(*self._icon_locator)
 
     def test_delete_app(self):
-        #go to home screen
-        self._touch_home_button()
 
-        # go the first page
-        self._go_to_next_page()
-        self.marionette.switch_to_frame()
+        # home button is not working so we cant return to the home menu
+#        #go to home screen
+#        self._touch_home_button()
+#
+#        # go the first page
+#        self._go_to_next_page()
 
+        #check that the app is available
         app_icon = self.marionette.find_element(*self._icon_locator)
+        self.assertTrue(app_icon.is_displayed())
 
-        self.marionette.long_press(app_icon, 10000)
-        self.marionette.switch_to_frame()
+        # go to edit mode
+        self._activate_edit_mode() # TODO: activate edit mode using HOME button
+
+        # delete the app
+        delete_button = app_icon.find_element(*self._options_locator)
+        delete_button.click()
+
+        self.wait_for_element_displayed(*self._confirm_delete_locator)
+        delete = self.marionette.find_element(*self._confirm_delete_locator)
+        delete.click()
+
+        self.wait_for_element_not_present(*self._icon_locator)
+
+        # return to normal mode
+        self._activate_normal_mode()
+
+        #check that the app is no longer available
+        self.asertFalse(self.apps.launch(APP_NAME))
 
     def _touch_home_button(self):
-        self.marionette.execute_script("return window.wrappedJSObject.dispatchEvent(new Event('home'));")
+        self.marionette.execute_script("window.wrappedJSObject.dispatchEvent(new Event('home'));")
 
     def _go_to_next_page(self):
         self.marionette.execute_script('window.wrappedJSObject.GridManager.goToNextPage()')
 
+    def _activate_edit_mode(self):
+        self.marionette.execute_script("window.wrappedJSObject.Homescreen.setMode('edit')")
+
+    def _activate_normal_mode(self):
+        self.marionette.execute_script("window.wrappedJSObject.Homescreen.setMode('normal')")
+
     def tearDown(self):
         self.apps.kill_all()
-        self.apps.uninstall(APP_NAME)
         GaiaTestCase.tearDown(self)
