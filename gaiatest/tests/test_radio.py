@@ -4,6 +4,7 @@
 
 from gaiatest import GaiaTestCase
 
+
 class TestRadio(GaiaTestCase):
 
     # Radio
@@ -37,8 +38,8 @@ class TestRadio(GaiaTestCase):
         for station in range(0, 20):
 
             # Get new coordinates for realistic flinging
-            dialer_x_center = int(dialer.size['width']/2)
-            dialer_y_center = int(dialer.size['height']/2)
+            dialer_x_center = int(dialer.size['width'] / 2)
+            dialer_y_center = int(dialer.size['height'] / 2)
 
             self.marionette.flick(dialer, dialer_x_center, dialer_y_center, 0, 300, 800)
 

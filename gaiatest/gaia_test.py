@@ -185,6 +185,7 @@ class GaiaData(object):
     def fm_radio_frequency(self):
         return self.marionette.execute_script('return window.navigator.mozFMRadio.frequency')
 
+
 class GaiaTestCase(MarionetteTestCase):
 
     def setUp(self):
@@ -200,8 +201,8 @@ class GaiaTestCase(MarionetteTestCase):
 
         # wifi is true if testvars includes wifi details and wifi manager is defined
         self.wifi = self.testvars and \
-                    'wifi' in self.testvars and \
-                    self.marionette.execute_script('return window.navigator.mozWifiManager !== undefined')
+            'wifi' in self.testvars and \
+            self.marionette.execute_script('return window.navigator.mozWifiManager !== undefined')
 
         self.cleanUp()
 
