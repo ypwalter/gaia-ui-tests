@@ -36,7 +36,8 @@ class TestCamera(GaiaTestCase):
         self.assertEqual(focus_state, 'focused', "Camera failed to focus with error: %s" % focus_state)
 
         # Wait for image to be added in to filmstrip
-        self.wait_for_element_displayed(*self._film_strip_image_locator)
+        # TODO investigate lowering this timeout in the future
+        self.wait_for_element_displayed(*self._film_strip_image_locator, timeout=20)
 
         # Find the new picture in the film strip
         self.assertTrue(self.marionette.find_element(*self._film_strip_image_locator).is_displayed())
