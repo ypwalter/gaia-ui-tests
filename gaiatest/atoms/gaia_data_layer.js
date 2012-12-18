@@ -250,14 +250,5 @@ var GaiaDataLayer = {
       console.log('cell data already disabled');
       marionetteScriptFinished(true);
     }
-  },
-  
-  getFMHardwareState: function() {
-    return window.navigator.mozFMRadio.enabled;
-  },
-  
-  getFMHardwareFrequency: function() {
-    return this.getFMHardwareState() &&
-           window.navigator.mozFMRadio.frequency;
   }
 };
