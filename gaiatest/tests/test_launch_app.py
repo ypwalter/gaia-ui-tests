@@ -30,7 +30,11 @@ class TestLaunchApp(GaiaTestCase):
         self.wait_for_element_displayed(*self._yes_button_locator)
         yes = self.marionette.find_element(*self._yes_button_locator)
         yes.click()
+
         self.marionette.switch_to_frame(self.homescreen.frame_id)
+        # TODO: Should use swipe/flick once this works reliably
+        self._go_to_next_page()
+
         self.wait_for_element_displayed(*self._icon_locator)
 
     def test_launch_app(self):
@@ -42,6 +46,9 @@ class TestLaunchApp(GaiaTestCase):
         self.marionette.switch_to_frame(iframe)
         self.wait_for_element_displayed(*self._header_locator, timeout=20)
         self.assertEqual(self.marionette.find_element(*self._header_locator).text, TITLE)
+
+    def _go_to_next_page(self):
+        self.marionette.execute_script('window.wrappedJSObject.GridManager.goToNextPage()')
 
     def tearDown(self):
         self.apps.kill_all()
