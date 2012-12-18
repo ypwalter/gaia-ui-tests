@@ -174,12 +174,17 @@ class GaiaData(object):
         return self.marionette.execute_script("return GaiaDataLayer.getMozTelephonyState()")
 
     @property
-    def fm_state(self):
-        return self.marionette.execute_script("return GaiaDataLayer.getFMHardwareState()")
+    def is_antenna_available(self):
+        return self.marionette.execute_script('return window.navigator.mozFMRadio.antennaAvailable')
 
     @property
-    def fm_frequency(self):
-        return self.marionette.execute_script("return GaiaDataLayer.getFMHardwareFrequency()")
+    def is_fm_radio_enabled(self):
+        return self.marionette.execute_script('return window.navigator.mozFMRadio.enabled')
+
+    @property
+    def fm_radio_frequency(self):
+        return self.marionette.execute_script('return window.navigator.mozFMRadio.frequency')
+
 
 class GaiaTestCase(MarionetteTestCase):
 
@@ -196,8 +201,8 @@ class GaiaTestCase(MarionetteTestCase):
 
         # wifi is true if testvars includes wifi details and wifi manager is defined
         self.wifi = self.testvars and \
-                    'wifi' in self.testvars and \
-                    self.marionette.execute_script('return window.navigator.mozWifiManager !== undefined')
+            'wifi' in self.testvars and \
+            self.marionette.execute_script('return window.navigator.mozWifiManager !== undefined')
 
         self.cleanUp()
 
