@@ -8,12 +8,20 @@ MANIFEST = 'http://mozqa.com/data/webapps/mozqa.com/manifest.webapp'
 APP_NAME = 'Mozilla QA WebRT Tester'
 TITLE = 'Index of /data'
 
+
 class TestDeleteApp(GaiaTestCase):
-    _yes_button_locator = ('id', 'app-install-install-button')
+
+    # Homescreen locators
+    _homescreen_frame_locator = ('css selector', 'iframe.homescreen')
+
     # locator for li.icon, because click on label doesn't work.
     _icon_locator = ('css selector', 'li.icon[aria-label="%s"]' % APP_NAME)
     _delete_app_locator = ('css selector', 'span.options')
 
+    # App install popup
+    _yes_button_locator = ('id', 'app-install-install-button')
+
+    # Delete popup
     _confirm_delete_locator = ('id', 'confirm-dialog-confirm-button')
 
 
@@ -21,6 +29,11 @@ class TestDeleteApp(GaiaTestCase):
         GaiaTestCase.setUp(self)
 
         self.homescreen = self.apps.launch('Homescreen')
+
+        # Activate wifi
+        if self.wifi:
+            self.data_layer.enable_wifi()
+            self.data_layer.connect_to_wifi(self.testvars['wifi'])
 
         # install app
         self.marionette.switch_to_frame()
@@ -41,7 +54,10 @@ class TestDeleteApp(GaiaTestCase):
         self._touch_home_button()
 
         # go the first page
-        self.homescreen = self.apps.launch('Homescreen')
+        hs_frame = self.marionette.find_element(*self._homescreen_frame_locator)
+        # TODO I would prefer to check visibility of the the frame at this point but bug 813583
+        self.marionette.switch_to_frame(hs_frame)
+
         self._go_to_next_page()
 
         #check that the app is available
