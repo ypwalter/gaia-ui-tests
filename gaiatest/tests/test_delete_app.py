@@ -55,7 +55,6 @@ class TestDeleteApp(GaiaTestCase):
 
         # go the first page
         hs_frame = self.marionette.find_element(*self._homescreen_frame_locator)
-        # TODO I would prefer to check visibility of the the frame at this point but bug 813583
         self.marionette.switch_to_frame(hs_frame)
 
         self._go_to_next_page()
