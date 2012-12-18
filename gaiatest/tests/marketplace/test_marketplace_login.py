@@ -57,41 +57,41 @@ class TestMarketplaceLogin(GaiaTestCase):
 
     def _login_to_persona(self, username, password):
 
-        _persona_frame = ('css selector', "iframe[name='__persona_dialog']")
+        persona_frame_locator = ('css selector', "iframe[name='__persona_dialog']")
 
         # Persona dialog
-        _waiting_locator = ('css selector', 'body.waiting')
-        _email_input_locator = ('id', 'email')
-        _password_input_locator = ('id', 'password')
-        _next_button_locator = ('css selector', 'button.start')
-        _returning_button_locator = ('css selector', 'button.returning')
-        _sign_in_button_locator = ('id', 'signInButton')
+        waiting_locator = ('css selector', 'body.waiting')
+        email_input_locator = ('id', 'authentication_email')
+        password_input_locator = ('id', 'authentication_password')
+        next_button_locator = ('css selector', 'button.start')
+        returning_button_locator = ('css selector', 'button.returning')
+        sign_in_button_locator = ('id', 'signInButton')
 
         # Switch to top level frame then Persona frame
         self.marionette.switch_to_frame()
-        persona_frame = self.wait_for_element_present(*_persona_frame)
+        persona_frame = self.wait_for_element_present(*persona_frame_locator, timeout=20)
         self.marionette.switch_to_frame(persona_frame)
 
         # Wait for the loading to complete
-        self.wait_for_element_not_present(*_waiting_locator)
+        self.wait_for_element_not_present(*waiting_locator)
 
-        if self.is_element_present(*self._email_account_field_locator):
+        if self.marionette.find_element(*email_input_locator).is_displayed():
             # Persona has no memory of your details ie after device flash
-            email_field = self.marionette.find_element(*_email_input_locator)
+            email_field = self.marionette.find_element(*email_input_locator)
             email_field.send_keys(username)
 
-            self.marionette.find_element(*_next_button_locator).click()
+            self.marionette.find_element(*next_button_locator).click()
 
-            self.wait_for_element_displayed(*_password_input_locator)
-            password_field = self.marionette.find_element(*_password_input_locator)
+            self.wait_for_element_displayed(*password_input_locator)
+            password_field = self.marionette.find_element(*password_input_locator)
             password_field.send_keys(password)
 
-            self.wait_for_element_displayed(*_returning_button_locator)
-            self.marionette.find_element(*_returning_button_locator).click()
+            self.wait_for_element_displayed(*returning_button_locator)
+            self.marionette.find_element(*returning_button_locator).click()
 
         else:
             # Persona remembers your username and password
-            self.marionette.find_element(*_sign_in_button_locator).click()
+            self.marionette.find_element(*sign_in_button_locator).click()
 
 
     def tearDown(self):
