@@ -118,16 +118,18 @@ class GaiaData(object):
     def remove_contact(self, contact):
         self.marionette.execute_script("GaiaDataLayer.findAndRemoveContact(%s)" % contact.json())
 
+    def get_setting(self, name):
+        self.marionette.switch_to_frame()
+        return self.marionette.execute_async_script('return GaiaDataLayer.getSetting("%s")' % name)
+
     @property
     def all_settings(self):
-        return self.marionette.execute_async_script('return GaiaDataLayer.getSetting("*")')
-
-    def get_setting(self, name):
-        return self.marionette.execute_async_script('return GaiaDataLayer.getSetting("%s")' % name)
+        return self.get_setting('*')
 
     def set_setting(self, name, value):
         import json
         value = json.dumps(value)
+        self.marionette.switch_to_frame()
         result = self.marionette.execute_async_script('return GaiaDataLayer.setSetting("%s", %s)' % (name, value))
         assert result, "Unable to change setting with name '%s' to '%s'" % (name, value)
 
@@ -135,10 +137,12 @@ class GaiaData(object):
         self.set_setting('audio.volume.master', value)
 
     def enable_cell_data(self):
+        self.marionette.switch_to_frame()
         result = self.marionette.execute_async_script("return GaiaDataLayer.enableCellData()")
         assert result, 'Unable to enable cell data'
 
     def disable_cell_data(self):
+        self.marionette.switch_to_frame()
         result = self.marionette.execute_async_script("return GaiaDataLayer.disableCellData()")
         assert result, 'Unable to disable cell data'
 
@@ -149,10 +153,12 @@ class GaiaData(object):
         self.set_setting('ril.data.roaming_enabled', False)
 
     def enable_wifi(self):
+        self.marionette.switch_to_frame()
         result = self.marionette.execute_async_script("return GaiaDataLayer.enableWiFi()")
         assert result, 'Unable to enable WiFi'
 
     def disable_wifi(self):
+        self.marionette.switch_to_frame()
         result = self.marionette.execute_async_script("return GaiaDataLayer.disableWiFi()")
         assert result, 'Unable to disable WiFi'
 
