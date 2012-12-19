@@ -20,6 +20,7 @@ class TestDeleteApp(GaiaTestCase):
 
     # App install popup
     _yes_button_locator = ('id', 'app-install-install-button')
+    _notification_baner_locator = ('id', 'system-banner')
 
     # Delete popup
     _confirm_delete_locator = ('id', 'confirm-dialog-confirm-button')
@@ -40,23 +41,26 @@ class TestDeleteApp(GaiaTestCase):
         self.marionette.execute_script(
             'navigator.mozApps.install("%s")' % MANIFEST)
 
+
         # click yes on the installation dialog and wait for icon displayed
         self.wait_for_element_displayed(*self._yes_button_locator)
         yes = self.marionette.find_element(*self._yes_button_locator)
         yes.click()
+
+        # wait for the app to be installed and the notification baner to be available
+        self.wait_for_element_displayed(*self._notification_baner_locator)
+        notification = self.marionette.find_element(*self._notification_baner_locator).text
+        self.assertEqual('%s installed' %APP_NAME, notification)
+        self.wait_for_element_not_displayed(*self._notification_baner_locator)
+
         self.marionette.switch_to_frame(self.homescreen.frame_id)
-        self.wait_for_element_displayed(*self._icon_locator)
+        self.assertTrue(self.is_element_present(*self._icon_locator), "The installed app can't be found")
 
     def test_delete_app(self):
 
-        #go to home screen
-        self.marionette.switch_to_frame()
-        self._touch_home_button()
-
-        # go the first page
-        self.marionette.switch_to_frame(self.homescreen.frame_id)
-
-        self._go_to_next_page()
+        # switch pages until the app is found
+        while not self.marionette.find_element(*self._icon_locator).is_displayed():
+            self._go_to_next_page()
 
         #check that the app is available
         app_icon = self.marionette.find_element(*self._icon_locator)
