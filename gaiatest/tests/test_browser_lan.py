@@ -32,7 +32,8 @@ class TestBrowserLAN(GaiaTestCase):
 
         self.marionette.find_element(*self._url_button_locator).click()
 
-        self.wait_for_condition(lambda m: not self.is_throbber_visible())
+        # TODO see if we can reduce this timeout in the future. >10 seconds is poor UX
+        self.wait_for_condition(lambda m: not self.is_throbber_visible(), timeout=20)
 
         browser_frame = self.marionette.find_element(
             *self._browser_frame_locator)
