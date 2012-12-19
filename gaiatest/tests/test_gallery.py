@@ -16,14 +16,16 @@ class TestGallery(GaiaTestCase):
     def setUp(self):
         GaiaTestCase.setUp(self)
 
+        # add photo to storage
+        self.push_resource('IMG_0001.jpg', 'DCIM/100MZLLA')
+
         # launch the Gallery app
         self.app = self.apps.launch('Gallery')
 
     def test_gallery_view(self):
         # https://moztrap.mozilla.org/manage/case/1326/
 
-        # throbber is throbbing forever
-        self.wait_for_element_displayed(*self._gallery_items_locator)
+        self.wait_for_element_not_displayed(*self._throbber_locator)
 
         first_gallery_item = self.marionette.find_elements(*self._gallery_items_locator)[0]
         self.marionette.tap(first_gallery_item)
