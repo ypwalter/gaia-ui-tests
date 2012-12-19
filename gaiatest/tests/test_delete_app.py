@@ -28,12 +28,12 @@ class TestDeleteApp(GaiaTestCase):
     def setUp(self):
         GaiaTestCase.setUp(self)
 
-        self.homescreen = self.apps.launch('Homescreen')
-
         # Activate wifi
         if self.wifi:
             self.data_layer.enable_wifi()
             self.data_layer.connect_to_wifi(self.testvars['wifi'])
+
+        self.homescreen = self.apps.launch('Homescreen')
 
         # install app
         self.marionette.switch_to_frame()
@@ -54,8 +54,7 @@ class TestDeleteApp(GaiaTestCase):
         self._touch_home_button()
 
         # go the first page
-        hs_frame = self.marionette.find_element(*self._homescreen_frame_locator)
-        self.marionette.switch_to_frame(hs_frame)
+        self.marionette.switch_to_frame(self.homescreen.frame_id)
 
         self._go_to_next_page()
 
@@ -96,4 +95,8 @@ class TestDeleteApp(GaiaTestCase):
 
     def tearDown(self):
         self.apps.kill_all()
+
+        if self.wifi:
+            self.data_layer.disable_wifi()
+
         GaiaTestCase.tearDown(self)
