@@ -1,3 +1,4 @@
+# -*- coding: iso-8859-15 -*-
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -13,10 +14,9 @@ class TestKeyboard(GaiaTestCase):
     _test_keyboard_link_locator = ('link text', 'Keyboard test')
     _text_input_locator = ('css selector', "input[type='text']")
 
-    # Keyboard app
-    _keyboard_frame_locator = ('css selector','#keyboard-frame iframe')
+    _number_input_locator = ('css selector', "input[type='number']")
 
-    _test_string = "myhovercraftisfullofeels"
+    _test_string = "a"#G1D2s3~!=@.#$^"
 
     def setUp(self):
         GaiaTestCase.setUp(self)
@@ -38,22 +38,24 @@ class TestKeyboard(GaiaTestCase):
         test_page_frame = self.marionette.find_element('id','test-iframe')
         self.marionette.switch_to_frame(test_page_frame)
 
-        time.sleep(2)
-
         self.wait_for_element_displayed(*self._text_input_locator)
         self.marionette.find_element(*self._text_input_locator).click()
 
-        self.marionette.switch_to_frame()
-        self.wait_for_element_displayed(*self._keyboard_frame_locator)
-        page = self.marionette.page_source
-        self.marionette.switch_to_frame('keyboard')
+        page1 = self.marionette.page_source
 
-        for char in self._test_string:
-            key = self.marionette.find_element('xpath', "//button[span/span[text()='%s']]" % char)
-            print key.text
-            key.click()
+        self.keybord.send(self._test_string)
 
-        time.sleep(10)
+        self.marionette.switch_to_frame(self.app.frame_id)
+
+        self.wait_for_element_present('id','test-iframe')
+        test_page_frame = self.marionette.find_element('id','test-iframe')
+        self.marionette.switch_to_frame(test_page_frame)
+
+        self.wait_for_element_displayed(*self._text_input_locator)
+        output_text = self.marionette.find_element(*self._text_input_locator).text
+
+        self.assertEqual(self._test_string, output_text)
+
 
     def tearDown(self):
 
