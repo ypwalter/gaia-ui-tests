@@ -68,7 +68,7 @@ class TestWallpaper(GaiaTestCase):
         new_wallpaper = self.marionette.find_element(*self._wallpaper_preview_locator).get_attribute('src')
 
         # verify the change of wallpaper
-        self.assertNotEqual(new_wallpaper, self._default_wallpaper_src)
+        self.assertFalse(new_wallpaper == self._default_wallpaper_src, 'Wallpaper has not changed from default.')
 
     def tearDown(self):
         # reset to the default wallpaper
