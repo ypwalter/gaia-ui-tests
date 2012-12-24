@@ -46,9 +46,3 @@ class TestRadio(GaiaTestCase):
         # Check that the FM radio has tuned in to a higher default frequency (upper bound)
         self.assertNotEqual(channel, str(self.data_layer.fm_radio_frequency))
         self.assertNotEqual(frequency_indicator.text, channel)
-
-    def tearDown(self):
-        if hasattr(self, 'app'):
-            self.apps.kill(self.app)
-
-        GaiaTestCase.tearDown(self)

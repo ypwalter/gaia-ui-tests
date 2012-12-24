@@ -74,8 +74,4 @@ class TestWallpaper(GaiaTestCase):
         # reset to the default wallpaper
         self.marionette.execute_script("navigator.mozSettings.createLock().set({'wallpaper.image' : arguments[0]});", [self._default_wallpaper_src])
 
-        # close the app
-        if self.app:
-            self.apps.kill(self.app)
-
         GaiaTestCase.tearDown(self)

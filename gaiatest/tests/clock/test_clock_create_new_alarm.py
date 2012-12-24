@@ -72,12 +72,7 @@ class TestClockCreateNewAlarm(GaiaTestCase):
         
         
     def tearDown(self):
-        
         # delete the new alarm
         clock_object.delete_alarm(self)
-        
-        # close the app
-        if hasattr(self, 'app'):
-            self.apps.kill(self.app)
 
         GaiaTestCase.tearDown(self)

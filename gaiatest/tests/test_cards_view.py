@@ -71,11 +71,3 @@ class TestCardsView(GaiaTestCase):
 
     def _touch_home_button(self):
         self.marionette.execute_script("window.wrappedJSObject.dispatchEvent(new Event('home'));")
-
-    def tearDown(self):
-
-        # close the app
-        if hasattr(self, 'calculator'):
-            self.apps.kill(self.calculator)
-
-        GaiaTestCase.tearDown(self)

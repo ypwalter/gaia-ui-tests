@@ -37,11 +37,3 @@ class TestClockTestAllItemsPresentNewAlarm(GaiaTestCase):
         # Ensure snooze has the default value
         snooze = self.marionette.find_element(*clock_object._snooze_menu)
         self.assertEquals(snooze.text, '5 minutes')
-
-    def tearDown(self):
-
-        # close the app
-        if hasattr(self, 'app'):
-            self.apps.kill(self.app)
-
-        GaiaTestCase.tearDown(self)

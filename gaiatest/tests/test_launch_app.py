@@ -51,7 +51,6 @@ class TestLaunchApp(GaiaTestCase):
         self.marionette.execute_script('window.wrappedJSObject.GridManager.goToNextPage()')
 
     def tearDown(self):
-        self.apps.kill_all()
         self.apps.uninstall(APP_NAME)
         if self.wifi:
             self.data_layer.disable_wifi()
