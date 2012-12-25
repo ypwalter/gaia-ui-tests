@@ -1,0 +1,54 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+from gaiatest import GaiaTestCase
+
+
+class TestFMRadioTurnOnOff(GaiaTestCase):
+
+    _warning_page_locator = ('id', 'antenna-warning')
+    _power_button_locator = ('id', 'power-switch')
+
+    def setUp(self):
+        GaiaTestCase.setUp(self)
+
+        self.lockscreen.unlock()
+
+        # launch the FM Radio app
+        self.app = self.apps.launch('FM Radio')
+
+    def test_turn_radio_on_off(self):
+        """ Turn off and Turn on the radio
+
+        https://moztrap.mozilla.org/manage/case/1930/
+        https://moztrap.mozilla.org/manage/case/1931/
+
+        """
+        # check the headphone is plugged-in or not
+        self.wait_for_element_not_displayed(*self._warning_page_locator)
+
+        # turn the radio off
+        self.wait_for_condition(lambda m: m.find_element(*self._power_button_locator).get_attribute('data-enabled') == 'true')
+        power_button = self.marionette.find_element(*self._power_button_locator)
+        power_button.click()
+
+        # check the radio is off
+        self.assertEqual(power_button.get_attribute('data-enabled'), 'false')
+
+        # turn the radio on
+        power_button.click()
+        self.wait_for_condition(lambda m: m.find_element(*self._power_button_locator).get_attribute('data-enabled') == 'true')
+
+        # check the radio is on
+        self.assertEqual(power_button.get_attribute('data-enabled'), 'true')
+
+    def tearDown(self):
+        # turn off the radio
+        self.marionette.find_element(*self._power_button_locator).click()
+
+        # close the app
+        if self.app:
+            self.apps.kill(self.app)
+
+        GaiaTestCase.tearDown(self)
