@@ -19,7 +19,7 @@ class TestFtu(GaiaTestCase):
 
     # Step Cell data section
     _section_cell_data_locator = ('id', 'data_3g')
-    _enable_data_checkbox_locator = ('id', 'dataSwitch')
+    _enable_data_checkbox_locator = ('id', 'data-connection-switch')
 
     # Step Wifi
     _section_wifi_locator = ('id', 'wifi')
@@ -42,15 +42,15 @@ class TestFtu(GaiaTestCase):
 
     # Section Welcome Browser
     _section_welcome_browser_locator = ('id', 'welcome_browser')
-    _enable_statistic_checkbox_locator = ('css selector', 'input[name="enable_statistic"]')
+    _enable_statistic_checkbox_locator = ('id', 'share-performance')
 
     # Section Privacy Choices
     _section_browser_privacy_locator = ('id', 'browser_privacy')
     _email_field_locator = ('css selector', 'input[type="email"]')
 
     # Section Finish
-    _section_finish_locator = ('id', 'finish')
-    _skip_tour_button_locator = ('id', 'skip')
+    _section_finish_locator = ('id', 'finish-screen')
+    _skip_tour_button_locator = ('id', 'button-skip')
 
     # Section Tutorial Finish
     _section_tutorial_finish_locator = ('id', 'tutorialFinish')
@@ -126,13 +126,15 @@ class TestFtu(GaiaTestCase):
         self.marionette.find_element(*self._next_button_locator).click()
         self.wait_for_element_displayed(*self._section_import_contacts_locator)
 
-        # Click import from SIM
-        # You can do this as many times as you like without db conflict
-        self.marionette.find_element(*self._import_from_sim_locator).click()
+        # Commenting out SIM import for now
 
-        # TODO What if Sim has two contacts?
-        self.wait_for_condition(lambda m: m.find_element(*self._sim_import_feedback_locator).text ==
-                        "Imported one contact", message="Contact did not import from sim before timeout")
+#        # Click import from SIM
+#        # You can do this as many times as you like without db conflict
+#        self.marionette.find_element(*self._import_from_sim_locator).click()
+#
+#        # TODO What if Sim has two contacts?
+#        self.wait_for_condition(lambda m: m.find_element(*self._sim_import_feedback_locator).text ==
+#                        "Imported one contact", message="Contact did not import from sim before timeout")
 
         # Click next
         self.marionette.find_element(*self._next_button_locator).click()
