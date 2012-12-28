@@ -25,7 +25,7 @@ class TestFMRadioFindStations(GaiaTestCase):
 
         """
         # check the headphone is plugged-in or not
-        self.wait_for_element_not_displayed(*self._warning_page_locator)
+        self.assertTrue(self.data_layer.is_antenna_available, 'Antenna (headphones) not plugged in')
 
         # wait for the radio start-up
         self.wait_for_condition(lambda m: self.data_layer.is_fm_radio_enabled)
@@ -84,4 +84,3 @@ class TestFMRadioFindStations(GaiaTestCase):
             self.apps.kill(self.app)
 
         GaiaTestCase.tearDown(self)
-
