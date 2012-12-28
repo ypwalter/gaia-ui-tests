@@ -10,14 +10,11 @@ class TestFMRadioAddToFavorite(GaiaTestCase):
     _warning_page_locator = ('id', 'antenna-warining')
     _frequency_display_locator = ('id', 'frequency')
     _favorite_button_locator = ('id', 'bookmark-button')
-    _power_button_locator = ('id', 'power-switch')
     _favorite_list_locator = ('css selector', "div[class='fav-list-frequency']")
     _favorite_remove_locator = ('css selector', "div[class='fav-list-remove-button']")
 
     def setUp(self):
         GaiaTestCase.setUp(self)
-
-        self.lockscreen.unlock()
 
         # launch the FM Radio app
         self.app = self.apps.launch('FM Radio')
@@ -32,13 +29,16 @@ class TestFMRadioAddToFavorite(GaiaTestCase):
         self.wait_for_element_not_displayed(*self._warning_page_locator)
 
         # wait for the radio start-up
-        self.wait_for_condition(lambda m: m.find_element(*self._power_button_locator).get_attribute('data-enabled') == 'true')
+        self.wait_for_condition(lambda m: self.data_layer.is_fm_radio_enabled)
 
         # save the initial count of favorite stations
         initial_favorite_count = len(self.marionette.find_elements(*self._favorite_list_locator))
 
         # save the current frequency
         current_frequency = self.marionette.find_element(*self._frequency_display_locator).text
+
+        # check the ui value and the system value
+        self.assertEqual(current_frequency, str(self.data_layer.fm_radio_frequency))
 
         # add the current frequency to favorite list
         self.wait_for_element_displayed(*self._favorite_button_locator)

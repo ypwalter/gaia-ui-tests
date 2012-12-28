@@ -19,7 +19,7 @@ class TestFMRadioTurnOnOff(GaiaTestCase):
         self.app = self.apps.launch('FM Radio')
 
     def test_turn_radio_on_off(self):
-        """ Turn off and Turn on the radio
+        """ Turn off and then Turn on the radio
 
         https://moztrap.mozilla.org/manage/case/1930/
         https://moztrap.mozilla.org/manage/case/1931/
@@ -28,20 +28,24 @@ class TestFMRadioTurnOnOff(GaiaTestCase):
         # check the headphone is plugged-in or not
         self.wait_for_element_not_displayed(*self._warning_page_locator)
 
+        # wait for the radio start-up
+        self.wait_for_condition(lambda m: self.data_layer.is_fm_radio_enabled)
+
         # turn the radio off
-        self.wait_for_condition(lambda m: m.find_element(*self._power_button_locator).get_attribute('data-enabled') == 'true')
         power_button = self.marionette.find_element(*self._power_button_locator)
         power_button.click()
 
         # check the radio is off
         self.assertEqual(power_button.get_attribute('data-enabled'), 'false')
+        self.assertFalse(self.data_layer.is_fm_radio_enabled)
 
         # turn the radio on
         power_button.click()
-        self.wait_for_condition(lambda m: m.find_element(*self._power_button_locator).get_attribute('data-enabled') == 'true')
+        self.wait_for_condition(lambda m: self.data_layer.is_fm_radio_enabled)
 
         # check the radio is on
         self.assertEqual(power_button.get_attribute('data-enabled'), 'true')
+        self.assertTrue(self.data_layer.is_fm_radio_enabled)
 
     def tearDown(self):
         # turn off the radio
