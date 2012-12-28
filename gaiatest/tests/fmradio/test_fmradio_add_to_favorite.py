@@ -7,7 +7,6 @@ from gaiatest import GaiaTestCase
 
 class TestFMRadioAddToFavorite(GaiaTestCase):
 
-    _warning_page_locator = ('id', 'antenna-warining')
     _frequency_display_locator = ('id', 'frequency')
     _favorite_button_locator = ('id', 'bookmark-button')
     _favorite_list_locator = ('css selector', "div[class='fav-list-frequency']")

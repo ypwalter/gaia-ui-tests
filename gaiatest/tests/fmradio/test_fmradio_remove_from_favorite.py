@@ -7,7 +7,6 @@ from gaiatest import GaiaTestCase
 
 class TestFMRadioRemoveFromFavorite(GaiaTestCase):
 
-    _warning_page_locator = ('id', 'antenna-warining')
     _favorite_button_locator = ('id', 'bookmark-button')
     _favorite_list_locator = ('css selector', "div[class='fav-list-frequency']")
     _favorite_remove_locator = ('css selector', "div[class='fav-list-remove-button']")

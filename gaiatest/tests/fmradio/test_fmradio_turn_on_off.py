@@ -7,7 +7,6 @@ from gaiatest import GaiaTestCase
 
 class TestFMRadioTurnOnOff(GaiaTestCase):
 
-    _warning_page_locator = ('id', 'antenna-warning')
     _power_button_locator = ('id', 'power-switch')
 
     def setUp(self):

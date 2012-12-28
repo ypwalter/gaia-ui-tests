@@ -7,7 +7,6 @@ from gaiatest import GaiaTestCase
 
 class TestFMRadioFindStations(GaiaTestCase):
 
-    _warning_page_locator = ('id', 'antenna-warning')
     _frequency_display_locator = ('id', 'frequency')
     _next_button_locator = ('id', 'frequency-op-seekup')
     _prev_button_locator = ('id', 'frequency-op-seekdown')
@@ -55,7 +54,7 @@ class TestFMRadioFindStations(GaiaTestCase):
 
         """
         # check the headphone is plugged-in or not
-        self.wait_for_element_not_displayed(*self._warning_page_locator)
+        self.assertTrue(self.data_layer.is_antenna_available, 'Antenna (headphones) not plugged in')
 
         # wait for the radio start-up
         self.wait_for_condition(lambda m: self.data_layer.is_fm_radio_enabled)
