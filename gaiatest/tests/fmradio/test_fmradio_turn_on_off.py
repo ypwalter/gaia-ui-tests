@@ -13,8 +13,6 @@ class TestFMRadioTurnOnOff(GaiaTestCase):
     def setUp(self):
         GaiaTestCase.setUp(self)
 
-        self.lockscreen.unlock()
-
         # launch the FM Radio app
         self.app = self.apps.launch('FM Radio')
 
@@ -56,3 +54,4 @@ class TestFMRadioTurnOnOff(GaiaTestCase):
             self.apps.kill(self.app)
 
         GaiaTestCase.tearDown(self)
+

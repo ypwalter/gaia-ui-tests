@@ -56,3 +56,4 @@ class TestFMRadioRemoveFromFavorite(GaiaTestCase):
             self.apps.kill(self.app)
 
         GaiaTestCase.tearDown(self)
+
