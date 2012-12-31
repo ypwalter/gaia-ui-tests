@@ -1,4 +1,3 @@
-
 Introduction
 ============
 
@@ -85,14 +84,7 @@ Variables:
 }
 `
 
-` WPA-EAP:
-"wifi": {
-    "ssid": "MyNetwork",
-    "keyManagement": "WPA-EAP",
-    "password": "MyPassword",
-    "identity": "MyIdentity"
-}
-`
+__Note__: Due to [Bug 775499](http://bugzil.la/775499), WiFi connections via WPA-EAP are not capable at this time.
 
 Test data Prerequisites
 =======================
