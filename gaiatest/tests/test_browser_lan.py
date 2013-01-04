@@ -12,6 +12,7 @@ class TestBrowserLAN(GaiaTestCase):
     _url_button_locator = ("id", "url-button")
     _throbber_locator = ("id", "throbber")
     _browser_frame_locator = ('css selector', 'iframe[mozbrowser]')
+    _page_title_locator = ("id", "page-title")
 
     def setUp(self):
         GaiaTestCase.setUp(self)
@@ -40,7 +41,8 @@ class TestBrowserLAN(GaiaTestCase):
 
         self.marionette.switch_to_frame(browser_frame)
 
-        heading = self.marionette.find_element('id', 'page-title')
+        self.wait_for_element_present(*self._page_title_locator)
+        heading = self.marionette.find_element(*self._page_title_locator)
         self.assertEqual(heading.text, 'We believe that the internet should be public, open and accessible.')
 
     def tearDown(self):
