@@ -51,17 +51,9 @@ class TestCalendar(GaiaTestCase):
         month_title = self.marionette.find_element(
             *self._current_month_year_locator)
 
-        # Get today's date - month, year, weekday
-        day = self.marionette.execute_script('return new Date().getDate();')
-
-        month = self.marionette.execute_script('return new Date().getMonth();')
-        month = month +1
-
-        year = self.marionette.execute_script('return new Date().getYear();')
-        if year < 1000:
-            year = year + 1900
-
-        date = datetime.date(year, month, day)
+        # Get today's date from the phone
+        today = self.marionette.execute_script('return new Date().toUTCString();')
+        date = datetime.datetime.strptime(today, "%a, %d %b %Y %H:%M:%S %Z")
 
         # validate month title and selected day aligns with today's date
         self.assertEquals(month_title.text, date.strftime('%B %Y'))
