@@ -51,15 +51,13 @@ class TestCalendar(GaiaTestCase):
         month_title = self.marionette.find_element(
             *self._current_month_year_locator)
 
-        # Get today's date - month, year, weekday
-        today = datetime.datetime.today()
-        month = calendar.month_name[today.month]
-        year = today.year
-        weekday = DAYS_OF_WEEK[today.weekday()]
+        # Get today's date from the phone
+        today = self.marionette.execute_script('return new Date().toUTCString();')
+        date = datetime.datetime.strptime(today, "%a, %d %b %Y %H:%M:%S %Z")
 
         # validate month title and selected day aligns with today's date
-        self.assertEquals(month_title.text, '%s %s' % (month, year));
-        self.assertEquals(selected_day.text, '%s %s %s' % (weekday, month.upper(), year))
+        self.assertEquals(month_title.text, date.strftime('%B %Y'))
+        self.assertEquals(selected_day.text, date.strftime('%A %B %Y').upper())
 
     def test_that_new_event_appears_on_all_calendar_views(self):
         # https://github.com/mozilla/gaia-ui-tests/issues/102
