@@ -17,6 +17,10 @@ class TestFtu(GaiaTestCase):
     _section_languages_locator = ('id', 'languages')
     _listed_languages_locator = ('css selector', "#languages ul li input[name='language.current']")
 
+    # Step Cell data section
+    _section_cell_data_locator = ('id', 'data_3g')
+    _enable_data_checkbox_locator = ('id', 'data-connection-switch')
+
     # Step Wifi
     _section_wifi_locator = ('id', 'wifi')
     _found_wifi_networks_locator = ('css selector', 'ul#networks li')
@@ -60,6 +64,9 @@ class TestFtu(GaiaTestCase):
         self.data_layer.enable_wifi()
         self.data_layer.forget_all_networks()
 
+        # Cell data must be off so we can switch it on again
+        self.data_layer.disable_cell_data()
+
         # launch the First Time User app
         self.app = self.apps.launch('FTU')
 
@@ -74,6 +81,13 @@ class TestFtu(GaiaTestCase):
         # TODO enhance this to include lang selection when FTU is localized
         listed_languages = self.marionette.find_elements(*self._listed_languages_locator)
         self.assertGreater(len(listed_languages), 0, "No languages listed on screen")
+
+        # Click next
+        self.marionette.find_element(*self._next_button_locator).click()
+        self.wait_for_element_displayed(*self._section_cell_data_locator)
+
+        # Click enable data
+        self.marionette.find_element(*self._enable_data_checkbox_locator).click()
 
         # Click next
         self.marionette.find_element(*self._next_button_locator).click()
@@ -148,11 +162,14 @@ class TestFtu(GaiaTestCase):
         # Switch back to top level now that FTU app is gone
         self.marionette.switch_to_frame()
 
+        self.assertTrue(self.data_layer.get_setting("ril.data.enabled"), "Cell data was not enabled by FTU app")
         self.assertTrue(self.data_layer.is_wifi_connected(self.testvars['wifi']), "WiFi was not connected via FTU app")
 
     def tearDown(self):
 
         # TODO flush any settings set by the FTU app
+        self.data_layer.disable_cell_data()
+
         self.data_layer.disable_wifi()
 
         GaiaTestCase.tearDown(self)
