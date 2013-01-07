@@ -16,7 +16,7 @@ class TestKeyboard(GaiaTestCase):
 
     _number_input_locator = ('css selector', "input[type='number']")
 
-    _test_string = "a"#G1D2s3~!=@.#$^"
+    _test_string = "aG1D2s3~!=@.#$^"
 
     def setUp(self):
         GaiaTestCase.setUp(self)
@@ -52,7 +52,7 @@ class TestKeyboard(GaiaTestCase):
         self.marionette.switch_to_frame(test_page_frame)
 
         self.wait_for_element_displayed(*self._text_input_locator)
-        output_text = self.marionette.find_element(*self._text_input_locator).text
+        output_text = self.marionette.find_element(*self._text_input_locator).get_attribute("value")
 
         self.assertEqual(self._test_string, output_text)
 
