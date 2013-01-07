@@ -29,12 +29,12 @@ class TestClockSwitchClockType(GaiaTestCase):
         # switch to digital clock
         self.marionette.find_element(*clock_object._analog_clock_display).click()
         self.wait_for_element_displayed(*clock_object._digital_clock_display)
-        self.assertTrue(self.marionette.find_element(*clock_object._digital_clock_body).is_displayed(), "The digital clock should be displayed.")
+        self.assertTrue(self.marionette.find_element(*clock_object._digital_clock_display).is_displayed(), "The digital clock should be displayed.")
         
         # switch to analog clock
         self.marionette.find_element(*clock_object._digital_clock_display).click()
         self.wait_for_element_displayed(*clock_object._analog_clock_display)
-        self.assertTrue(self.marionette.find_element(*clock_object._analog_clock_body).is_displayed(), "The analog clock should be displayed.")
+        self.assertTrue(self.marionette.find_element(*clock_object._analog_clock_display).is_displayed(), "The analog clock should be displayed.")
         
         
     def test_clock_show_time_date(self):
@@ -49,20 +49,11 @@ class TestClockSwitchClockType(GaiaTestCase):
         self.marionette.find_element(*clock_object._analog_clock_display).click()
         self.wait_for_element_displayed(*clock_object._digital_clock_display)
         self.assertTrue(self.marionette.find_element(*clock_object._clock_day_date).is_displayed(), "The date of digital clock should be displayed.")
-        self.assertTrue(self.marionette.find_element(*clock_object._digital_clock_body).is_displayed(), "The time of digital clock should be displayed.")
+        self.assertTrue(self.marionette.find_element(*clock_object._digital_clock_display).is_displayed(), "The time of digital clock should be displayed.")
         self.assertTrue(self.marionette.find_element(*clock_object._digital_clock_hour24_state).is_displayed(), "The hour24-state of digital clock should be displayed.")
         
         # check the date, time for analog clock
         self.marionette.find_element(*clock_object._digital_clock_display).click()
         self.wait_for_element_displayed(*clock_object._analog_clock_display)
         self.assertTrue(self.marionette.find_element(*clock_object._clock_day_date).is_displayed(), "The date should be displayed.")
-        self.assertTrue(self.marionette.find_element(*clock_object._analog_clock_body).is_displayed(), "The date should be displayed.")
-        
-        
-    def tearDown(self):
-
-        # close the app
-        if hasattr(self, 'app'):
-            self.apps.kill(self.app)
-
-        GaiaTestCase.tearDown(self)
+        self.assertTrue(self.marionette.find_element(*clock_object._analog_clock_display).is_displayed(), "The date should be displayed.")

@@ -87,11 +87,3 @@ class TestSms(GaiaTestCase):
         # Check that most recent message is also the most recent received message
         self.assertEqual(received_message.get_attribute('id'),
             last_message.get_attribute('id'))
-
-    def tearDown(self):
-
-        # close the app
-        if self.app:
-            self.apps.kill(self.app)
-
-        GaiaTestCase.tearDown(self)

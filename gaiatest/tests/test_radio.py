@@ -10,6 +10,7 @@ class TestRadio(GaiaTestCase):
     # Radio
     _frequency_dialer_locator = ('id', 'frequency-dialer')
     _frequency_indicator_locator = ('id', 'frequency')
+    _power_button_locator = ('id', 'power-switch')
 
     def setUp(self):
         GaiaTestCase.setUp(self)
@@ -25,6 +26,11 @@ class TestRadio(GaiaTestCase):
 
         # Determine if the FM hardware radio is enabled; wait for hardware init
         self.wait_for_condition(lambda m: self.data_layer.is_fm_radio_enabled)
+
+        # Check if the radio is on
+        power_button = self.marionette.find_element(*self._power_button_locator)
+        self.assertEqual(power_button.get_attribute('data-enabled'), 'true')
+        self.assertTrue(self.data_layer.is_fm_radio_enabled)
 
         frequency_indicator = self.marionette.find_element(*self._frequency_indicator_locator)
         dialer = self.marionette.find_element(*self._frequency_dialer_locator)
@@ -48,7 +54,10 @@ class TestRadio(GaiaTestCase):
         self.assertNotEqual(frequency_indicator.text, channel)
 
     def tearDown(self):
-        if hasattr(self, 'app'):
+        # Turn off the radio
+        self.marionette.find_element(*self._power_button_locator).click()
+
+        if self.app:
             self.apps.kill(self.app)
 
         GaiaTestCase.tearDown(self)

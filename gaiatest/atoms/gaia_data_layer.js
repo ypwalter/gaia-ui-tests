@@ -218,13 +218,13 @@ var GaiaDataLayer = {
     var manager = window.navigator.mozMobileConnection;
 
     if (!manager.data.connected) {
-      manager.ondatachange = function () {
-        if (manager.data.connected) {
+      waitFor(
+        function () {
           console.log('cell data enabled');
-          manager.ondatachange = null;
           marionetteScriptFinished(true);
-        }
-      };
+        },
+        function () { return manager.data.connected; }
+      );
       this.setSetting('ril.data.enabled', true, false);
     }
     else {
@@ -237,13 +237,13 @@ var GaiaDataLayer = {
     var manager = window.navigator.mozMobileConnection;
 
     if (manager.data.connected) {
-      manager.ondatachange = function () {
-        if (!manager.data.connected) {
+      waitFor(
+        function () {
           console.log('cell data disabled');
-          manager.ondatachange = null;
           marionetteScriptFinished(true);
-        }
-      };
+        },
+        function () { return !manager.data.connected; }
+      );
       this.setSetting('ril.data.enabled', false, false);
     }
     else {

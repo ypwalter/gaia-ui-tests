@@ -9,10 +9,10 @@ class TestLockScreen(GaiaTestCase):
 
     # Lockscreen area locators
     _lockscreen_locator = ('id', 'lockscreen')
+    _lockscreen_area_locator = ('id', 'lockscreen-area')
     _lockscreen_handle_locator = ('id', 'lockscreen-area-handle')
     _unlock_button_locator = ('id', 'lockscreen-area-unlock')
     _camera_button_locator = ('id', 'lockscreen-area-camera')
-    _lockscreen_animation_locator = ('css selector', 'animate.lockscreen-start-animation[attributeName="y"]')
 
     # Homescreen locators
     _homescreen_frame_locator = ('css selector', 'iframe.homescreen')
@@ -37,6 +37,8 @@ class TestLockScreen(GaiaTestCase):
         unlock_button.click()
 
         lockscreen_element = self.marionette.find_element(*self._lockscreen_locator)
+        self.wait_for_condition(lambda m: not lockscreen_element.is_displayed())
+
         self.assertFalse(lockscreen_element.is_displayed(), "Lockscreen still visible after unlock")
 
         hs_frame = self.marionette.find_element(*self._homescreen_frame_locator)
@@ -57,6 +59,8 @@ class TestLockScreen(GaiaTestCase):
         camera_button.click()
 
         lockscreen_element = self.marionette.find_element(*self._lockscreen_locator)
+        self.wait_for_condition(lambda m: not lockscreen_element.is_displayed())
+
         self.assertFalse(lockscreen_element.is_displayed(), "Lockscreen still visible after unlock")
 
         camera_frame = self.marionette.find_element(*self._camera_frame_locator)
@@ -75,7 +79,8 @@ class TestLockScreen(GaiaTestCase):
         unlock_handle_y_centre = int(unlock_handle.size['height']/2)
 
         # Get the end position from the demo animation
-        end_animation_position = int(self.marionette.find_element(*self._lockscreen_animation_locator).get_attribute('to'))
+        lockscreen_area = self.marionette.find_element(*self._lockscreen_area_locator)
+        end_animation_position = lockscreen_area.size['height'] - unlock_handle.size['height']
 
         # Flick from unlock handle to (0, -end_animation_position) over 800ms duration
         self.marionette.flick(unlock_handle, unlock_handle_x_centre, unlock_handle_y_centre, 0, 0 - end_animation_position, 800)
@@ -83,7 +88,3 @@ class TestLockScreen(GaiaTestCase):
         # Wait for the svg to animate and handle to disappear
         # TODO add assertion that unlock buttons are visible after bug 813561 is fixed
         self.wait_for_condition(lambda m: not unlock_handle.is_displayed())
-
-    def tearDown(self):
-
-        self.apps.kill_all()

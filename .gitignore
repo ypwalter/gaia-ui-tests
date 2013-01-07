@@ -1,4 +1,5 @@
 build/
+debug/
 dist/
 gaiatest/debug/
 *.pyc
