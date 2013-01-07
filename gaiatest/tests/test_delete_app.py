@@ -14,13 +14,12 @@ class TestDeleteApp(GaiaTestCase):
     # Homescreen locators
     _homescreen_frame_locator = ('css selector', 'iframe.homescreen')
 
-    # locator for li.icon, because click on label doesn't work.
     _icon_locator = ('css selector', 'li.icon[aria-label="%s"]' % APP_NAME)
     _delete_app_locator = ('css selector', 'span.options')
 
     # App install popup
     _yes_button_locator = ('id', 'app-install-install-button')
-    _notification_baner_locator = ('id', 'system-banner')
+    _notification_banner_locator = ('id', 'system-banner')
 
     # Delete popup
     _confirm_delete_locator = ('id', 'confirm-dialog-confirm-button')
@@ -36,33 +35,33 @@ class TestDeleteApp(GaiaTestCase):
 
         self.homescreen = self.apps.launch('Homescreen')
 
+
+    def test_delete_app(self):
+
         # install app
         self.marionette.switch_to_frame()
         self.marionette.execute_script(
             'navigator.mozApps.install("%s")' % MANIFEST)
 
-
-        # click yes on the installation dialog and wait for icon displayed
+        # click YES on the installation dialog and wait for icon displayed
         self.wait_for_element_displayed(*self._yes_button_locator)
         yes = self.marionette.find_element(*self._yes_button_locator)
         yes.click()
 
-        # wait for the app to be installed and the notification baner to be available
-        self.wait_for_element_displayed(*self._notification_baner_locator)
-        notification = self.marionette.find_element(*self._notification_baner_locator).text
+        # wait for the app to be installed and the notification banner to be available
+        self.wait_for_element_displayed(*self._notification_banner_locator)
+        notification = self.marionette.find_element(*self._notification_banner_locator).text
         self.assertEqual('%s installed' %APP_NAME, notification)
-        self.wait_for_element_not_displayed(*self._notification_baner_locator)
+        self.wait_for_element_not_displayed(*self._notification_banner_locator)
 
         self.marionette.switch_to_frame(self.homescreen.frame_id)
         self.assertTrue(self.is_element_present(*self._icon_locator), "The installed app can't be found")
-
-    def test_delete_app(self):
 
         # switch pages until the app is found
         while not self.marionette.find_element(*self._icon_locator).is_displayed():
             self._go_to_next_page()
 
-        #check that the app is available
+        # check that the app is available
         app_icon = self.marionette.find_element(*self._icon_locator)
         self.assertTrue(app_icon.is_displayed())
 
@@ -84,7 +83,7 @@ class TestDeleteApp(GaiaTestCase):
         self.marionette.switch_to_frame()
         self._touch_home_button()
 
-        #check that the app is no longer available
+        # check that the app is no longer available
         with self.assertRaises(AssertionError):
             self.apps.launch(APP_NAME)
 
@@ -98,7 +97,6 @@ class TestDeleteApp(GaiaTestCase):
         self.marionette.execute_script("window.wrappedJSObject.Homescreen.setMode('edit')")
 
     def tearDown(self):
-        self.apps.kill_all()
 
         if self.wifi:
             self.data_layer.disable_wifi()
