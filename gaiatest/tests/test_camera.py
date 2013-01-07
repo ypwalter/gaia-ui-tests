@@ -78,11 +78,3 @@ class TestCamera(GaiaTestCase):
                 function () { return document.getElementById('viewfinder').readyState > 1; }
             );
         """)
-
-    def tearDown(self):
-
-        # close the app
-        if hasattr(self, 'app'):
-            self.apps.kill(self.app)
-
-        GaiaTestCase.tearDown(self)

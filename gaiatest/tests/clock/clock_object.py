@@ -10,9 +10,7 @@ _alarm_create_new_locator = ('id', 'alarm-new')
 
 _clock_day_date = ('id', 'clock-day-date')
 _analog_clock_display = ('id', 'analog-clock-svg')
-_analog_clock_body = ('id', 'analog-clock-svg-body')
 _digital_clock_display = ('id', 'digital-clock-display')
-_digital_clock_body = ('id', 'clock-time')
 _digital_clock_hour24_state = ('id', 'clock-hour24-state')
     
 _all_alarms = ('css selector', '#alarms li')
