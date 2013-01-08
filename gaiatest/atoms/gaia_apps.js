@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-"use strict";
+'use strict';
 
 var GaiaApps = {
 
@@ -94,12 +94,13 @@ var GaiaApps = {
       window.addEventListener('appterminated', function gt_onAppTerminated() {
         window.removeEventListener('appterminated', gt_onAppTerminated);
         waitFor(
-          function () {
+          function() {
             console.log("app with origin '" + aOrigin + "' has terminated");
             callback(true);
           },
-          function () {
-            let runningApps = window.wrappedJSObject.WindowManager.getRunningApps();
+          function() {
+            let runningApps =
+              window.wrappedJSObject.WindowManager.getRunningApps();
             return !runningApps.hasOwnProperty(aOrigin);
           }
         );
@@ -127,7 +128,7 @@ var GaiaApps = {
     }
 
     originsToClose.slice(0).forEach(function(origin) {
-      GaiaApps.kill(origin, function () {});
+      GaiaApps.kill(origin, function() {});
     });
 
     // Even after the 'appterminated' event has been fired for an app,
@@ -167,9 +168,11 @@ var GaiaApps = {
               // wait until the new iframe sends the mozbrowserfirstpaint event
               let frame = runningApps[origin].frame;
               if (frame.dataset.unpainted) {
-                window.addEventListener('mozbrowserfirstpaint', function firstpaint() {
-                  window.removeEventListener('mozbrowserfirstpaint', firstpaint);
-                  marionetteScriptFinished(result);
+                window.addEventListener('mozbrowserfirstpaint',
+                    function firstpaint() {
+                      window.removeEventListener('mozbrowserfirstpaint',
+                                                 firstpaint);
+                      marionetteScriptFinished(result);
                 });
               }
               else {

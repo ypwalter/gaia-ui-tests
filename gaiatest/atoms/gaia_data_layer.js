@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-"use strict";
+'use strict';
 
 var GaiaDataLayer = {
 
@@ -77,7 +77,8 @@ var GaiaDataLayer = {
     var manager = window.navigator.mozWifiManager;
 
     if (this.isWiFiConnected(aNetwork)) {
-      console.log("already connected to network with ssid '" + aNetwork.ssid + "'");
+      console.log("already connected to network with ssid '" +
+                  aNetwork.ssid + "'");
       callback(true);
     }
     else {
@@ -86,11 +87,12 @@ var GaiaDataLayer = {
       req.onsuccess = function() {
         console.log("waiting for connection status 'connected'");
         waitFor(
-          function () {
-            console.log("success connecting to network with ssid '" + aNetwork.ssid + "'");
+          function() {
+            console.log("success connecting to network with ssid '" +
+                        aNetwork.ssid + "'");
             callback(true);
           },
-          function () {
+          function() {
             console.log('connection status: ' + manager.connection.status);
             return manager.connection.status === 'connected';
           }
@@ -136,10 +138,10 @@ var GaiaDataLayer = {
     }
   },
 
-  forgetAllNetworks: function (aCallback) {
+  forgetAllNetworks: function(aCallback) {
     var callback = aCallback || marionetteScriptFinished;
     var self = this;
-    this.getKnownNetworks(function (aNetworks) {
+    this.getKnownNetworks(function(aNetworks) {
       if (aNetworks.length > 0) {
         var networksLength = aNetworks.length;
         var done = 0;
@@ -158,7 +160,7 @@ var GaiaDataLayer = {
     });
   },
 
-  getKnownNetworks: function (aCallback) {
+  getKnownNetworks: function(aCallback) {
     var callback = aCallback || marionetteScriptFinished;
     var manager = window.navigator.mozWifiManager;
     var req = manager.getKnownNetworks();
@@ -174,19 +176,21 @@ var GaiaDataLayer = {
     }
   },
 
-  forgetWiFi: function (aNetwork, aCallback, aWaitForStatus) {
+  forgetWiFi: function(aNetwork, aCallback, aWaitForStatus) {
     var callback = aCallback || marionetteScriptFinished;
     var waitForStatus = aWaitForStatus || 'disconnected';
     var manager = window.navigator.mozWifiManager;
     var req = manager.forget(aNetwork);
 
     req.onsuccess = function() {
-      console.log("success forgetting network with ssid '" + aNetwork.ssid + "'");
+      console.log("success forgetting network with ssid '" +
+                  aNetwork.ssid + "'");
       if (waitForStatus !== false) {
-        console.log("waiting for connection status '" + waitForStatus + "'");
+        console.log("waiting for connection status '" +
+                    waitForStatus + "'");
         waitFor(
-          function () { callback(true); },
-          function () {
+          function() { callback(true); },
+          function() {
             console.log('connection status: ' + manager.connection.status);
             return manager.connection.status === waitForStatus;
           }
@@ -219,11 +223,11 @@ var GaiaDataLayer = {
 
     if (!manager.data.connected) {
       waitFor(
-        function () {
+        function() {
           console.log('cell data enabled');
           marionetteScriptFinished(true);
         },
-        function () { return manager.data.connected; }
+        function() { return manager.data.connected; }
       );
       this.setSetting('ril.data.enabled', true, false);
     }
@@ -238,11 +242,11 @@ var GaiaDataLayer = {
 
     if (manager.data.connected) {
       waitFor(
-        function () {
+        function() {
           console.log('cell data disabled');
           marionetteScriptFinished(true);
         },
-        function () { return !manager.data.connected; }
+        function() { return !manager.data.connected; }
       );
       this.setSetting('ril.data.enabled', false, false);
     }
