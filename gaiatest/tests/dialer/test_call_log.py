@@ -53,12 +53,12 @@ class TestCallLog(GaiaTestCase):
         self.wait_for_element_displayed(
             *self._recent_calls_toolbar_button_locator)
 
-        self.marionette.find_element(
-            *self._recent_calls_toolbar_button_locator).click()
+        self.marionette.tap(self.marionette.find_element(
+            *self._recent_calls_toolbar_button_locator))
 
         self.wait_for_element_displayed(*self._all_calls_log_tab_locator)
         all_calls_tab = self.marionette.find_element(*self._all_calls_log_tab_locator)
-        self.marionette.find_element(*self._all_calls_log_button_locator).click()
+        self.marionette.tap(self.marionette.find_element(*self._all_calls_log_button_locator))
         self.wait_for_condition(lambda m: all_calls_tab.get_attribute('class') == 'selected')
 
         # Check that 'All calls' tab is selected
@@ -78,15 +78,15 @@ class TestCallLog(GaiaTestCase):
         self.wait_for_element_displayed(
             *self._recent_calls_toolbar_button_locator)
 
-        self.marionette.find_element(
-            *self._recent_calls_toolbar_button_locator).click()
+        self.marionette.tap(self.marionette.find_element(
+            *self._recent_calls_toolbar_button_locator))
 
         self.wait_for_element_displayed(*self._missed_calls_log_tab_locator)
         missed_calls_tab = self.marionette.find_element(*self._missed_calls_log_tab_locator)
-        self.marionette.find_element(*self._missed_calls_log_button_locator).click()
+        self.marionette.tap(self.marionette.find_element(*self._missed_calls_log_button_locator))
         self.wait_for_condition(lambda m: missed_calls_tab.get_attribute('class') == 'selected')
 
-        # Check that 'All calls' tab is selected
+        # Check that 'Missed calls' tab is selected
         self.assertEqual(missed_calls_tab.get_attribute('class'), 'selected')
 
         # Now check that at least one call is listed.

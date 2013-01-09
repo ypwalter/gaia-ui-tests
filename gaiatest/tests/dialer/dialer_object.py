@@ -24,6 +24,7 @@ def dial_number(self, phone_number):
     Dial a number using the keypad
     '''
 
+    print self.marionette.page_source
     for i in phone_number:
         if i == "+":
             zero_button = self.marionette.find_element('css selector', 'div.keypad-key[data-value="0"]')
@@ -33,12 +34,12 @@ def dial_number(self, phone_number):
             time.sleep(2)
 
         else:
-            self.marionette.find_element('css selector', 'div.keypad-key[data-value="%s"]' % i).click()
+            self.marionette.tap(self.marionette.find_element('css selector', 'div.keypad-key[data-value="%s"]' % i))
             time.sleep(0.25)
 
 def place_call(self):
     # Click the call button
-    self.marionette.find_element(*_call_bar_locator).click()
+    self.marionette.tap(self.marionette.find_element(*_call_bar_locator))
 
     # Switch to top level frame
     self.marionette.switch_to_frame()
@@ -56,24 +57,4 @@ def place_call(self):
 
 def hang_up(self):
     # hang up before the person answers ;)
-    self.marionette.find_element(*_hangup_bar_locator).click()
-
-def create_alarm(self):
-    """ create a new alarm for test """
-    self.wait_for_element_displayed(*_alarm_create_new_locator)
-    # find the origin alarms' number
-    initial_alarms_count = len(self.marionette.find_elements(*_all_alarms))
-    self.marionette.find_element(*_alarm_create_new_locator).click()
-    self.marionette.find_element(*_alarm_save_locator).click()
-    self.wait_for_element_displayed(*_alarm_create_new_locator)
-    self.wait_for_condition(lambda m: len(m.find_elements(*_all_alarms)) > initial_alarms_count)
-
-def delete_alarm(self):
-    """ delete the new alarm """
-    self.wait_for_element_displayed(*_alarm_create_new_locator)
-    # find the origin alarms' number
-    initial_alarms_count = len(self.marionette.find_elements(*_all_alarms))
-    self.marionette.find_element(*_alarm_item).click()
-    self.marionette.find_element(*_alarm_delete_button).click()
-    self.wait_for_element_displayed(*_alarm_create_new_locator)
-    self.wait_for_condition(lambda m: len(m.find_elements(*_all_alarms)) < initial_alarms_count)
+    self.marionette.tap(self.marionette.find_element(*_hangup_bar_locator))
