@@ -188,7 +188,7 @@ class TestFtu(GaiaTestCase):
         self._select("London")
 
         self.assertEqual(self.marionette.find_element(*self._time_zone_title_locator).text,
-                        "UTC+00:00 Europe/London")
+                        "UTC +00:00 Greenwich Mean Time")
 
         # Click next
         self.marionette.find_element(*self._next_button_locator).click()
