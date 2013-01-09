@@ -28,7 +28,7 @@ class TestFtu(GaiaTestCase):
 
     # Step Date & Time
     _section_date_time_locator = ('id', 'date_and_time')
-    _timezone_continent_locator = ('id', 'tz-continent')
+    _timezone_continent_locator = ('id', 'tz-region')
     _timezone_city_locator = ('id', 'tz-city')
     _time_zone_title_locator = ('id', 'time-zone-title')
 
