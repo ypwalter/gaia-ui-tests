@@ -82,8 +82,89 @@ class TestFtu(GaiaTestCase):
 
 
     def test_ftu_skip_tour(self):
-        # Run through the first part of the FTU
-        self.complete_ftu_up_to_finish()
+        # https://moztrap.mozilla.org/manage/case/3876/
+        # 3876, 3879
+
+        self.wait_for_element_displayed(*self._section_languages_locator)
+
+        # FTU is not properly localized yet so let's just check some are listed
+        # TODO enhance this to include lang selection when FTU is localized
+        listed_languages = self.marionette.find_elements(*self._listed_languages_locator)
+        self.assertGreater(len(listed_languages), 0, "No languages listed on screen")
+
+        # Click next
+        self.marionette.find_element(*self._next_button_locator).click()
+        self.wait_for_element_displayed(*self._section_cell_data_locator)
+
+        # Click enable data
+        self.marionette.find_element(*self._enable_data_checkbox_locator).click()
+
+        # Click next
+        self.marionette.find_element(*self._next_button_locator).click()
+        self.wait_for_element_displayed(*self._section_wifi_locator)
+
+        # Wait for some networks to be found
+        self.wait_for_condition(lambda m: len(m.find_elements(*self._found_wifi_networks_locator)) > 0,
+            message="No networks listed on screen")
+
+        # TODO This will only work on Mozilla Guest or unsecure network
+        wifi_network = self.marionette.find_element('id', self.testvars['wifi']['ssid'])
+        wifi_network.click()
+
+        self.wait_for_condition(lambda m:
+        wifi_network.find_element(*self._network_state_locator).text == "Connected")
+
+        # Click next
+        self.marionette.find_element(*self._next_button_locator).click()
+        self.wait_for_element_displayed(*self._section_date_time_locator)
+
+        # Set timezone
+        continent_select = self.marionette.find_element(*self._timezone_continent_locator)
+        # Click to activate the b2g select element
+        continent_select.click()
+        self._select("Asia")
+
+        city_select = self.marionette.find_element(*self._timezone_city_locator)
+        # Click to activate the b2g select element
+        city_select.click()
+        self._select("Almaty")
+
+        self.assertEqual(self.marionette.find_element(*self._time_zone_title_locator).text,
+            "UTC+06:00 Asia/Almaty")
+
+        # Click next
+        self.marionette.find_element(*self._next_button_locator).click()
+        self.wait_for_element_displayed(*self._section_import_contacts_locator)
+
+        # Commenting out SIM import for now
+
+        #        # Click import from SIM
+        #        # You can do this as many times as you like without db conflict
+        #        self.marionette.find_element(*self._import_from_sim_locator).click()
+        #
+        #        # TODO What if Sim has two contacts?
+        #        self.wait_for_condition(lambda m: m.find_element(*self._sim_import_feedback_locator).text ==
+        #                        "Imported one contact", message="Contact did not import from sim before timeout")
+
+        # Click next
+        self.marionette.find_element(*self._next_button_locator).click()
+        self.wait_for_element_displayed(*self._section_welcome_browser_locator)
+
+        # Click the statistics box and check that it sets a setting
+        # TODO assert via settings API that this is set. Currently it is not used
+        self.marionette.find_element(*self._enable_statistic_checkbox_locator).click()
+
+        # Click next
+        self.marionette.find_element(*self._next_button_locator).click()
+        self.wait_for_element_displayed(*self._section_browser_privacy_locator)
+
+        # Enter a dummy email address and check it set inside the os
+        # TODO assert that this is preserved in the system somewhere. Currently it is not used
+        self.marionette.find_element(*self._email_field_locator).send_keys("testuser@mozilla.com")
+
+        # Click next
+        self.marionette.find_element(*self._next_button_locator).click()
+        self.wait_for_element_displayed(*self._section_finish_locator)
 
         # Skip the tour
         self.marionette.find_element(*self._skip_tour_button_locator).click()
@@ -96,8 +177,29 @@ class TestFtu(GaiaTestCase):
 
 
     def test_ftu_with_tour(self):
-        # Run through the first part of the FTU
-        self.complete_ftu_up_to_finish()
+
+        self.wait_for_element_displayed(*self._section_languages_locator)
+        # Click next
+        self.marionette.find_element(*self._next_button_locator).click()
+        self.wait_for_element_displayed(*self._section_cell_data_locator)
+        # Click next
+        self.marionette.find_element(*self._next_button_locator).click()
+        self.wait_for_element_displayed(*self._section_wifi_locator)
+        # Click next
+        self.marionette.find_element(*self._next_button_locator).click()
+        self.wait_for_element_displayed(*self._section_date_time_locator)
+        # Click next
+        self.marionette.find_element(*self._next_button_locator).click()
+        self.wait_for_element_displayed(*self._section_import_contacts_locator)
+        # Click next
+        self.marionette.find_element(*self._next_button_locator).click()
+        self.wait_for_element_displayed(*self._section_welcome_browser_locator)
+        # Click next
+        self.marionette.find_element(*self._next_button_locator).click()
+        self.wait_for_element_displayed(*self._section_browser_privacy_locator)
+        # Click next
+        self.marionette.find_element(*self._next_button_locator).click()
+        self.wait_for_element_displayed(*self._section_finish_locator)
 
         # Take the tour
         self.marionette.find_element(*self._take_tour_button_locator).click()
@@ -134,95 +236,6 @@ class TestFtu(GaiaTestCase):
 
         # Switch back to top level now that FTU app is gone
         self.marionette.switch_to_frame()
-
-        self.assertTrue(self.data_layer.get_setting("ril.data.enabled"), "Cell data was not enabled by FTU app")
-        self.assertTrue(self.data_layer.is_wifi_connected(self.testvars['wifi']), "WiFi was not connected via FTU app")
-
-
-    def complete_ftu_up_to_finish(self):
-        # https://moztrap.mozilla.org/manage/case/3876/
-        # 3876, 3879
-
-        self.wait_for_element_displayed(*self._section_languages_locator)
-
-        # FTU is not properly localized yet so let's just check some are listed
-        # TODO enhance this to include lang selection when FTU is localized
-        listed_languages = self.marionette.find_elements(*self._listed_languages_locator)
-        self.assertGreater(len(listed_languages), 0, "No languages listed on screen")
-
-        # Click next
-        self.marionette.find_element(*self._next_button_locator).click()
-        self.wait_for_element_displayed(*self._section_cell_data_locator)
-
-        # Click enable data
-        self.marionette.find_element(*self._enable_data_checkbox_locator).click()
-
-        # Click next
-        self.marionette.find_element(*self._next_button_locator).click()
-        self.wait_for_element_displayed(*self._section_wifi_locator)
-
-        # Wait for some networks to be found
-        self.wait_for_condition(lambda m: len(m.find_elements(*self._found_wifi_networks_locator)) > 0,
-                message="No networks listed on screen")
-
-        # TODO This will only work on Mozilla Guest or unsecure network
-        wifi_network = self.marionette.find_element('id', self.testvars['wifi']['ssid'])
-        wifi_network.click()
-
-        self.wait_for_condition(lambda m:
-            wifi_network.find_element(*self._network_state_locator).text == "Connected")
-
-        # Click next
-        self.marionette.find_element(*self._next_button_locator).click()
-        self.wait_for_element_displayed(*self._section_date_time_locator)
-
-        # Set timezone
-        continent_select = self.marionette.find_element(*self._timezone_continent_locator)
-        # Click to activate the b2g select element
-        continent_select.click()
-        self._select("Europe")
-
-        city_select = self.marionette.find_element(*self._timezone_city_locator)
-        # Click to activate the b2g select element
-        city_select.click()
-        self._select("London")
-
-        self.assertEqual(self.marionette.find_element(*self._time_zone_title_locator).text,
-                        "UTC +00:00 Greenwich Mean Time")
-
-        # Click next
-        self.marionette.find_element(*self._next_button_locator).click()
-        self.wait_for_element_displayed(*self._section_import_contacts_locator)
-
-        # Commenting out SIM import for now
-
-#        # Click import from SIM
-#        # You can do this as many times as you like without db conflict
-#        self.marionette.find_element(*self._import_from_sim_locator).click()
-#
-#        # TODO What if Sim has two contacts?
-#        self.wait_for_condition(lambda m: m.find_element(*self._sim_import_feedback_locator).text ==
-#                        "Imported one contact", message="Contact did not import from sim before timeout")
-
-        # Click next
-        self.marionette.find_element(*self._next_button_locator).click()
-        self.wait_for_element_displayed(*self._section_welcome_browser_locator)
-
-        # Click the statistics box and check that it sets a setting
-        # TODO assert via settings API that this is set. Currently it is not used
-        self.marionette.find_element(*self._enable_statistic_checkbox_locator).click()
-
-        # Click next
-        self.marionette.find_element(*self._next_button_locator).click()
-        self.wait_for_element_displayed(*self._section_browser_privacy_locator)
-
-        # Enter a dummy email address and check it set inside the os
-        # TODO assert that this is preserved in the system somewhere. Currently it is not used
-        self.marionette.find_element(*self._email_field_locator).send_keys("testuser@mozilla.com")
-
-        # Click next
-        self.marionette.find_element(*self._next_button_locator).click()
-        self.wait_for_element_displayed(*self._section_finish_locator)
 
     def tearDown(self):
 
