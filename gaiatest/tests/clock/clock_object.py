@@ -4,7 +4,6 @@
 from gaiatest import GaiaTestCase
 from marionette import MarionetteTestCase
 from marionette import Marionette
-import time
 
 _alarm_create_new_locator = ('id', 'alarm-new')
 
@@ -33,8 +32,10 @@ def create_alarm(self):
     self.wait_for_element_displayed(*_alarm_create_new_locator)
     # find the origin alarms' number
     initial_alarms_count = len(self.marionette.find_elements(*_all_alarms))
-    self.marionette.find_element(*_alarm_create_new_locator).click()
-    self.marionette.find_element(*_alarm_save_locator).click()
+    alarm_create_new = self.marionette.find_element(*_alarm_create_new_locator)
+    self.marionette.tap(alarm_create_new)
+    alarm_save = self.marionette.find_element(*_alarm_save_locator)
+    self.marionette.tap(alarm_save)
     self.wait_for_element_displayed(*_alarm_create_new_locator)
     self.wait_for_condition(lambda m: len(m.find_elements(*_all_alarms)) > initial_alarms_count)
 
@@ -43,8 +44,10 @@ def delete_alarm(self):
     self.wait_for_element_displayed(*_alarm_create_new_locator)
     # find the origin alarms' number
     initial_alarms_count = len(self.marionette.find_elements(*_all_alarms))
-    self.marionette.find_element(*_alarm_item).click()
-    self.marionette.find_element(*_alarm_delete_button).click()
+    alarm_item = self.marionette.find_element(*_alarm_item)
+    self.marionette.tap(alarm_item)
+    alarm_delete = self.marionette.find_element(*_alarm_delete_button)
+    self.marionette.tap(alarm_delete)
     self.wait_for_element_displayed(*_alarm_create_new_locator)
     self.wait_for_condition(lambda m: len(m.find_elements(*_all_alarms)) < initial_alarms_count)
     
