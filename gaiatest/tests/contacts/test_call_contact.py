@@ -48,10 +48,12 @@ class TestContacts(GaiaTestCase):
         contact_locator = self.create_contact_locator(self.contact['givenName'])
         self.wait_for_element_displayed(*contact_locator)
 
-        self.marionette.find_element(*contact_locator).click()
+        contact_listing = self.marionette.find_element(*contact_locator)
+        self.marionette.tap(contact_listing)
 
         self.wait_for_element_displayed(*self._call_phone_number_button_locator)
-        self.marionette.find_element(*self._call_phone_number_button_locator).click()
+        call_phone_number_button = self.marionette.find_element(*self._call_phone_number_button_locator)
+        self.marionette.tap(call_phone_number_button)
 
         # Switch to top level frame
         self.marionette.switch_to_frame()
@@ -70,7 +72,8 @@ class TestContacts(GaiaTestCase):
             self.marionette.find_element(*self._calling_number_locator).text)
 
         # hang up before the person answers ;)
-        self.marionette.find_element(*self._hangup_bar_locator).click()
+        hangup_bar = self.marionette.find_element(*self._hangup_bar_locator)
+        self.marionette.tap(hangup_bar)
 
 
     def tearDown(self):
