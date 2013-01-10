@@ -204,10 +204,11 @@ class GaiaTestCase(MarionetteTestCase):
 
         # the emulator can be really slow!
         self.marionette.set_script_timeout(60000)
+        self.marionette.set_search_timeout(10000)
         self.lockscreen = LockScreen(self.marionette)
         self.apps = GaiaApps(self.marionette)
         self.data_layer = GaiaData(self.marionette)
-        self.keybord = Keyboard(self.marionette)
+        self.keyboard = Keyboard(self.marionette)
 
         # wifi is true if testvars includes wifi details and wifi manager is defined
         self.wifi = self.testvars and \
@@ -345,7 +346,7 @@ class Keyboard(object):
     def __init__(self, marionette):
         self.marionette = marionette
 
-    def _switch_to_keybord(self):
+    def _switch_to_keyboard(self):
         self.marionette.switch_to_frame()
 
         keybframe = self.marionette.find_element(*self._keyboard_frame_locator)
@@ -361,13 +362,17 @@ class Keyboard(object):
 
     def is_element_present(self, by, locator):
         try:
+            self.marionette.set_search_timeout(500)
             self.marionette.find_element(by, locator)
             return True
         except:
             return False
+        finally:
+            # set te search timeout to the default value
+            self.marionette.set_search_timeout(10000)
 
     def send(self, string):
-        self._switch_to_keybord()
+        self._switch_to_keyboard()
 
         for val in string:
             if val.isalnum():
@@ -389,7 +394,7 @@ class Keyboard(object):
                     if self.is_element_present(*self._key_locator(val)):
                         self._press(val)
                     else:
-                        assert False , 'Key %s not found on the keybord' %val
+                        assert False , 'Key %s not found on the keyboard' %val
                 self._press(self._alpha_key)
 
         self.marionette.switch_to_frame()

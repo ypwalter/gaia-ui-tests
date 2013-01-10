@@ -41,9 +41,7 @@ class TestKeyboard(GaiaTestCase):
         self.wait_for_element_displayed(*self._text_input_locator)
         self.marionette.find_element(*self._text_input_locator).click()
 
-        page1 = self.marionette.page_source
-
-        self.keybord.send(self._test_string)
+        self.keyboard.send(self._test_string)
 
         self.marionette.switch_to_frame(self.app.frame_id)
 
