@@ -22,6 +22,8 @@ class TestBrowserCellData(GaiaTestCase):
         # launch the app
         self.app = self.apps.launch('Browser')
 
+        self.wait_for_condition(lambda m: m.execute_script("return window.wrappedJSObject.Browser.hasLoaded;") == True)
+
     def test_browser_cell_data(self):
         # https://moztrap.mozilla.org/manage/case/1328/
 

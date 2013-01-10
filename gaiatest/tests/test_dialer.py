@@ -78,12 +78,12 @@ class TestDialer(GaiaTestCase):
 
         for i in phone_number:
             if i == "+":
-                zero_button = self.marionette.find_element('css selector', 'div.keypad-key div[data-value="0"]')
+                zero_button = self.marionette.find_element('css selector', 'div.keypad-key[data-value="0"]')
                 self.marionette.long_press(zero_button, 1200)
                 # Wait same time as the long_press to bust the asynchronous
                 # TODO https://bugzilla.mozilla.org/show_bug.cgi?id=815115
                 time.sleep(2)
 
             else:
-                self.marionette.find_element('css selector', 'div.keypad-key div[data-value="%s"]' % i).click()
+                self.marionette.find_element('css selector', 'div.keypad-key[data-value="%s"]' % i).click()
                 time.sleep(0.25)

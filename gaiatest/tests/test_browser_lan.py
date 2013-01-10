@@ -24,6 +24,8 @@ class TestBrowserLAN(GaiaTestCase):
         # launch the app
         self.app = self.apps.launch('Browser')
 
+        self.wait_for_condition(lambda m: m.execute_script("return window.wrappedJSObject.Browser.hasLoaded;") == True)
+
     def test_browser_lan(self):
         # https://moztrap.mozilla.org/manage/case/1327/
 
