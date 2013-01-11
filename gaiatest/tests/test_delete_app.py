@@ -95,10 +95,3 @@ class TestDeleteApp(GaiaTestCase):
 
     def _activate_edit_mode(self):
         self.marionette.execute_script("window.wrappedJSObject.Homescreen.setMode('edit')")
-
-    def tearDown(self):
-
-        if self.wifi:
-            self.data_layer.disable_wifi()
-
-        GaiaTestCase.tearDown(self)
