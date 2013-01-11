@@ -71,11 +71,11 @@ class TestDeleteApp(GaiaTestCase):
 
         # delete the app
         delete_button = app_icon.find_element(*self._delete_app_locator)
-        delete_button.click()
+        self.marionette.tap(delete_button)
 
         self.wait_for_element_displayed(*self._confirm_delete_locator)
         delete = self.marionette.find_element(*self._confirm_delete_locator)
-        delete.click()
+        self.marionette.tap(delete)
 
         self.wait_for_element_not_present(*self._icon_locator)
 
