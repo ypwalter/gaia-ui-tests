@@ -39,7 +39,7 @@ class TestVideoPlayer(GaiaTestCase):
         first_video_name = first_video.find_element(*self._video_name_locator).text
 
         # click on the first video
-        first_video.click()
+        self.marionette.tap(first_video)
 
         # Video will play automatically
         self.wait_for_element_displayed(*self._video_frame_locator)
