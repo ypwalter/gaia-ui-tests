@@ -368,7 +368,7 @@ class Keyboard(object):
         except:
             return False
         finally:
-            # set te search timeout to the default value
+            # set the search timeout to the default value
             self.marionette.set_search_timeout(10000)
 
     def send(self, string):
