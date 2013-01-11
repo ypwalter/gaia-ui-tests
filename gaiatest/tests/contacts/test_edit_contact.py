@@ -62,6 +62,7 @@ class TestContacts(GaiaTestCase):
         self.contact['familyName'] = "testedit"
         self.contact['tel']['value'] = "02011111111"
 
+        self.wait_for_element_displayed(*self._given_name_field_locator)
         given_name_field = self.marionette.find_element(*self._given_name_field_locator)
         given_name_field.clear()
         given_name_field.send_keys(self.contact['givenName'])
