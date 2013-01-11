@@ -19,7 +19,7 @@ class TestClockCreateNewAlarm(GaiaTestCase):
 
     
     def test_clock_create_new_alarm(self):
-        """ Add a alarm
+        """ Add an alarm
         
         https://moztrap.mozilla.org/manage/case/1772/ 
         
@@ -32,6 +32,8 @@ class TestClockCreateNewAlarm(GaiaTestCase):
         # create a new alarm with the default values that are available
         alarm_create_new = self.marionette.find_element(*clock_object._alarm_create_new_locator)
         self.marionette.tap(alarm_create_new)
+
+        self.wait_for_element_displayed(*clock_object._alarm_save_locator)
         alarm_save = self.marionette.find_element(*clock_object._alarm_save_locator)
         self.marionette.tap(alarm_save)
 
