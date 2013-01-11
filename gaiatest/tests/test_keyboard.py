@@ -53,12 +53,3 @@ class TestKeyboard(GaiaTestCase):
         output_text = self.marionette.find_element(*self._text_input_locator).get_attribute("value")
 
         self.assertEqual(self._test_string, output_text)
-
-
-    def tearDown(self):
-
-        # close the app
-        if hasattr(self, 'app'):
-            self.apps.kill(self.app)
-
-        GaiaTestCase.tearDown(self)
