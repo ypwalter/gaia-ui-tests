@@ -40,7 +40,7 @@ class TestLaunchApp(GaiaTestCase):
     def test_launch_app(self):
         # click icon and wait for h1 element displayed
         icon = self.marionette.find_element(*self._icon_locator)
-        icon.click()
+        self.marionette.tap(icon)
         self.marionette.switch_to_frame()
         iframe = self.marionette.find_element(*self._app_locator)
         self.marionette.switch_to_frame(iframe)
