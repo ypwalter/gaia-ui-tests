@@ -57,7 +57,7 @@ class TestCalendar(GaiaTestCase):
 
         # validate month title and selected day aligns with today's date
         self.assertEquals(month_title.text, date.strftime('%B %Y'))
-        self.assertEquals(selected_day.text, date.strftime('%A %B %Y').upper())
+        self.assertEquals(selected_day.text, date.strftime('%A %d %B %Y').upper())
 
     def test_that_new_event_appears_on_all_calendar_views(self):
         # https://github.com/mozilla/gaia-ui-tests/issues/102
