@@ -33,7 +33,8 @@ class TestMusic(GaiaTestCase):
       self.wait_for_element_displayed(*self._album_tile_locator, timeout=60)
 
       # switch to albums view
-      self.marionette.find_element(*self._tab_albums_locator).click()
+      tab_albums = self.marionette.find_element(*self._tab_albums_locator)
+      self.marionette.tap(tab_albums)
 
       # wait for it to switch into list mode
       self.wait_for_element_present(*self._body_list_mode_locator)
@@ -43,10 +44,12 @@ class TestMusic(GaiaTestCase):
       self.assertGreater(len(albums), 0, 'no albums found')
 
       # select an album
-      self.marionette.find_element(*self._album_list_locator).click()
+      album_list = self.marionette.find_element(*self._album_list_locator)
+      self.marionette.tap(album_list)
 
       # select play
-      self.marionette.find_element(*self._views_sublist_controls_play_locator).click()
+      views_sublist_controls_play = self.marionette.find_element(*self._views_sublist_controls_play_locator)
+      self.marionette.tap(views_sublist_controls_play)
 
       # play for a short duration
       self.wait_for_condition(lambda m: m.find_element(
@@ -60,7 +63,8 @@ class TestMusic(GaiaTestCase):
       self.assertEqual(audiotag.get_attribute('paused'), 'false')
 
       # select stop
-      self.marionette.find_element(*self._player_controls_play_locator).click()
+      player_controls_play = self.marionette.find_element(*self._player_controls_play_locator)
+      self.marionette.tap(player_controls_play)
 
       # validate stopped playback
       self.assertEqual(audiotag.get_attribute('paused'), 'true')
