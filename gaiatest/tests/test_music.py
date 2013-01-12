@@ -5,6 +5,7 @@
 from gaiatest import GaiaTestCase
 import time
 
+
 class TestMusic(GaiaTestCase):
 
   _body_list_mode_locator = ('css selector', 'body.list-mode')
@@ -47,6 +48,9 @@ class TestMusic(GaiaTestCase):
       album_list = self.marionette.find_element(*self._album_list_locator)
       self.marionette.tap(album_list)
 
+      # need a wait but cannot due to an is_displayed bug
+      time.sleep(2)
+
       # select play
       views_sublist_controls_play = self.marionette.find_element(*self._views_sublist_controls_play_locator)
       self.marionette.tap(views_sublist_controls_play)
@@ -65,6 +69,9 @@ class TestMusic(GaiaTestCase):
       # select stop
       player_controls_play = self.marionette.find_element(*self._player_controls_play_locator)
       self.marionette.tap(player_controls_play)
+
+      # wait to be sure the pause settles in
+      time.sleep(2)
 
       # validate stopped playback
       self.assertEqual(audiotag.get_attribute('paused'), 'true')
