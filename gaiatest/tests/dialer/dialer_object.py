@@ -24,7 +24,6 @@ def dial_number(self, phone_number):
     Dial a number using the keypad
     '''
 
-    print self.marionette.page_source
     for i in phone_number:
         if i == "+":
             zero_button = self.marionette.find_element('css selector', 'div.keypad-key[data-value="0"]')
