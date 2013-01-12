@@ -43,10 +43,12 @@ class TestContacts(GaiaTestCase):
         contact_locator = self.create_contact_locator(self.contact['givenName'])
         self.wait_for_element_displayed(*contact_locator)
 
-        self.marionette.find_element(*contact_locator).click()
+        contact_listing = self.marionette.find_element(*contact_locator)
+        self.marionette.tap(contact_listing)
 
         self.wait_for_element_present(*self._send_sms_button_locator)
-        self.marionette.find_element(*self._send_sms_button_locator).click()
+        send_sms_button = self.marionette.find_element(*self._send_sms_button_locator)
+        self.marionette.tap(send_sms_button)
 
         self.marionette.switch_to_frame()
 
