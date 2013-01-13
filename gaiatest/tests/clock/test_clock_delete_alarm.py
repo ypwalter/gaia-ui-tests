@@ -34,7 +34,9 @@ class TestClockDeleteAlarm(GaiaTestCase):
         # edit alarm
         alarm_item = self.marionette.find_element(*clock_object._alarm_item)
         self.marionette.tap(alarm_item)
+
         # delete alarm
+        self.wait_for_element_displayed(*clock_object._alarm_delete_button)
         alarm_delete = self.marionette.find_element(*clock_object._alarm_delete_button)
         self.marionette.tap(alarm_delete)
         
