@@ -64,7 +64,6 @@ class TestClockCreateNewAlarm(GaiaTestCase):
 
         # set label
         alarm_label = self.marionette.find_element(*clock_object._new_alarm_label)
-        self.marionette.tap(alarm_label)
         alarm_label.send_keys("\b\b\b\b\btest4321")
         
         # save the alarm
