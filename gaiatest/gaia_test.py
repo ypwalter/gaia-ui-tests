@@ -316,13 +316,14 @@ class GaiaTestCase(MarionetteTestCase):
     def tearDown(self):
         if any(sys.exc_info()):
             # test has failed, gather debug
-            test_name = self.marionette.test_name.split()[-1]
-            debug_path = os.path.join('debug', *test_name.split('.'))
+            test_class, test_name = self.marionette.test_name.split()[-1].split('.')
+            xml_output = self.testvars.get('xml_output', None)
+            debug_path = os.path.join(xml_output and os.path.dirname(xml_output) or 'debug', test_class)
             if not os.path.exists(debug_path):
                 os.makedirs(debug_path)
 
             # screenshot
-            with open(os.path.join(debug_path, 'screenshot.png'), 'w') as f:
+            with open(os.path.join(debug_path, '%s_screenshot.png' % test_name), 'w') as f:
                 # TODO: Bug 818287 - Screenshots include data URL prefix
                 screenshot = self.marionette.screenshot()[22:]
                 f.write(base64.decodestring(screenshot))
