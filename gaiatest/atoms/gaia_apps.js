@@ -10,6 +10,23 @@ var GaiaApps = {
     return name.replace(/[- ]+/g, '').toLowerCase();
   },
 
+  getRunningApps: function() {
+    let runningApps = window.wrappedJSObject.WindowManager.getRunningApps();
+    // Return a simplified version of the runningApps object which can be
+    // JSON-serialized.
+    let apps = {};
+    for (let app in runningApps) {
+        let anApp = {};
+        for (let key in runningApps[app]) {
+            if (["name", "origin", "manifest"].indexOf(key) > -1) {
+                anApp[key] = runningApps[app][key];
+            }
+        }
+        apps[app] = anApp;
+    }
+    return apps;
+  },
+
   getRunningAppOrigin: function(name) {
     let runningApps = window.wrappedJSObject.WindowManager.getRunningApps();
     let origin;
@@ -155,8 +172,8 @@ var GaiaApps = {
         waitFor(
           function() {
             let app = runningApps[origin];
-            let result = {frame: app.frame.id,
-                          src: app.frame.src,
+            let result = {frame: app.frame.firstChild,
+                          src: app.iframe.src,
                           name: app.name,
                           origin: origin};
 

@@ -111,7 +111,7 @@ class TestContacts(GaiaTestCase):
         if hasattr(self, 'contact'):
             # Have to switch back to Contacts frame to remove the contact
             self.marionette.switch_to_frame()
-            self.marionette.switch_to_frame(self.app.frame_id)
+            self.marionette.switch_to_frame(self.app.frame)
             self.data_layer.remove_contact(self.contact)
 
         GaiaTestCase.tearDown(self)

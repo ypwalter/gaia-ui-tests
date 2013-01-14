@@ -54,7 +54,7 @@ class TestDeleteApp(GaiaTestCase):
         self.assertEqual('%s installed' %APP_NAME, notification)
         self.wait_for_element_not_displayed(*self._notification_banner_locator)
 
-        self.marionette.switch_to_frame(self.homescreen.frame_id)
+        self.marionette.switch_to_frame(self.homescreen.frame)
         self.assertTrue(self.is_element_present(*self._icon_locator), "The installed app can't be found")
 
         # switch pages until the app is found

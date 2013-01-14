@@ -31,7 +31,7 @@ class TestLaunchApp(GaiaTestCase):
         yes = self.marionette.find_element(*self._yes_button_locator)
         yes.click()
 
-        self.marionette.switch_to_frame(self.homescreen.frame_id)
+        self.marionette.switch_to_frame(self.homescreen.frame)
         # TODO: Should use swipe/flick once this works reliably
         self._go_to_next_page()
 
