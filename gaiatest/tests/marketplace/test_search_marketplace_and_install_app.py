@@ -45,7 +45,8 @@ class TestSearchMarketplaceAndInstallApp(GaiaTestCase):
     def test_search_and_install_app(self):
         # select to search for an app
         self.wait_for_element_displayed(*self._search_button)
-        self.marionette.find_element(*self._search_button).click()
+        search_button = self.marionette.find_element(*self._search_button)
+        self.marionette.tap(search_button)
 
         # search for the lanyrd mobile app
         self.wait_for_element_displayed(*self._search)
@@ -66,12 +67,15 @@ class TestSearchMarketplaceAndInstallApp(GaiaTestCase):
         # Find and click the install button to the install the web app
         install_button = results[0].find_element(*self._install_button)
         self.assertEquals(install_button.text, 'Free', 'incorrect button label')
-        install_button.click()
+        self.marionette.tap(install_button)
 
         # Confirm the installation of the web app
         self.marionette.switch_to_frame()
+
         self.wait_for_element_displayed(*self._yes_button_locator)
-        self.marionette.find_element(*self._yes_button_locator).click()
+        yes_button = self.marionette.find_element(*self._yes_button_locator)
+        self.marionette.tap(yes_button)
+        self.wait_for_element_not_displayed(*self._yes_button_locator)
 
         homescreen_frame = self.marionette.find_element(*self._homescreen_iframe_locator)
         self.marionette.switch_to_frame(homescreen_frame)
@@ -80,7 +84,7 @@ class TestSearchMarketplaceAndInstallApp(GaiaTestCase):
         self.wait_for_element_present(*self._app_icon_locator)
 
     def tearDown(self):
-        if self.wifi:
-            self.data_layer.disable_wifi()
+
         self.apps.uninstall(APP_NAME)
+
         GaiaTestCase.tearDown(self)
