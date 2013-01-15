@@ -14,6 +14,9 @@ class TestGallery(GaiaTestCase):
     def setUp(self):
         GaiaTestCase.setUp(self)
 
+        # add photo to storage
+        self.push_resource('IMG_0001.jpg', 'DCIM/100MZLLA')
+
         # launch the Gallery app
         self.app = self.apps.launch('Gallery')
 
