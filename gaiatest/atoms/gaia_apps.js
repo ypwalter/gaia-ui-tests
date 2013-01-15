@@ -72,8 +72,7 @@ var GaiaApps = {
             name: app.manifest.name,
             origin: app.origin,
             entryPoint: entryPoint || null,
-            normalizedName: appName,
-            manifestUrl: app.manifestURL
+            normalizedName: appName
           };
           callback(result);
         } else {
