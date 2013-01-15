@@ -118,6 +118,11 @@ class GaiaData(object):
         self.marionette.import_script(js)
         self.marionette.set_search_timeout(10000)
 
+    def set_time(self, date_number):
+        self.marionette.set_context(self.marionette.CONTEXT_CHROME)
+        self.marionette.execute_script("window.navigator.mozTime.set(%s);" % date_number)
+        self.marionette.set_context(self.marionette.CONTEXT_CONTENT)
+
     def insert_contact(self, contact):
         self.marionette.execute_script("GaiaDataLayer.insertContact(%s)" % contact.json())
 
