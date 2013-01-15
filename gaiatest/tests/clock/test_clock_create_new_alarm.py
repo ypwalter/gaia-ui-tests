@@ -19,7 +19,7 @@ class TestClockCreateNewAlarm(GaiaTestCase):
 
     
     def test_clock_create_new_alarm(self):
-        """ Add a alarm
+        """ Add an alarm
         
         https://moztrap.mozilla.org/manage/case/1772/ 
         
@@ -30,8 +30,12 @@ class TestClockCreateNewAlarm(GaiaTestCase):
         initial_alarms_count = len(self.marionette.find_elements(*clock_object._all_alarms))
 
         # create a new alarm with the default values that are available
-        self.marionette.find_element(*clock_object._alarm_create_new_locator).click()
-        self.marionette.find_element(*clock_object._alarm_save_locator).click()
+        alarm_create_new = self.marionette.find_element(*clock_object._alarm_create_new_locator)
+        self.marionette.tap(alarm_create_new)
+
+        self.wait_for_element_displayed(*clock_object._alarm_save_locator)
+        alarm_save = self.marionette.find_element(*clock_object._alarm_save_locator)
+        self.marionette.tap(alarm_save)
 
         # verify the banner-countdown message appears
         self.wait_for_element_displayed(*clock_object._banner_countdown_notification_locator)
@@ -55,15 +59,16 @@ class TestClockCreateNewAlarm(GaiaTestCase):
         self.wait_for_element_displayed(*clock_object._alarm_create_new_locator)
         
         # create a new alarm
-        self.marionette.find_element(*clock_object._alarm_create_new_locator).click()
-        
+        alarm_create_new = self.marionette.find_element(*clock_object._alarm_create_new_locator)
+        self.marionette.tap(alarm_create_new)
+
         # set label
         alarm_label = self.marionette.find_element(*clock_object._new_alarm_label)
-        alarm_label.click()
         alarm_label.send_keys("\b\b\b\b\btest4321")
         
         # save the alarm
-        self.marionette.find_element(*clock_object._alarm_save_locator).click()
+        alarm_save = self.marionette.find_element(*clock_object._alarm_save_locator)
+        self.marionette.tap(alarm_save)
 
         # verify the label of alarm
         self.wait_for_element_displayed(*clock_object._alarm_label)

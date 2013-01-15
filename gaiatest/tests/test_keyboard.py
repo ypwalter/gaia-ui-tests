@@ -43,7 +43,7 @@ class TestKeyboard(GaiaTestCase):
 
         self.keyboard.send(self._test_string)
 
-        self.marionette.switch_to_frame(self.app.frame_id)
+        self.marionette.switch_to_frame(self.app.frame)
 
         self.wait_for_element_present('id','test-iframe')
         test_page_frame = self.marionette.find_element('id','test-iframe')

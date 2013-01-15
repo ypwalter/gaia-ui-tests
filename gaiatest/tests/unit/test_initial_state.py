@@ -7,7 +7,7 @@ from gaiatest import GaiaTestCase
 
 class TestInitialState(GaiaTestCase):
 
-    homescreen_frame_locator = ('css selector', 'iframe.homescreen')
+    homescreen_frame_locator = ('css selector', 'div.homescreen iframe')
 
     def test_initial_state(self):
         self.check_initial_state()

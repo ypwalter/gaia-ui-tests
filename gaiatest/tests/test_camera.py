@@ -18,6 +18,9 @@ class TestCamera(GaiaTestCase):
     def setUp(self):
         GaiaTestCase.setUp(self)
 
+        # Turn off geolocation prompt
+        self.apps.set_permission('Camera', 'geolocation', 'deny')
+
         # launch the Camera app
         self.app = self.apps.launch('camera')
 

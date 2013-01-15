@@ -38,8 +38,9 @@ class LockScreen(object):
 
 class GaiaApp(object):
 
-    def __init__(self, origin=None, name=None, frame_id=None, src=None):
-        self.frame_id = frame_id
+    def __init__(self, origin=None, name=None, frame=None, src=None):
+        self.frame = frame
+        self.frame_id = frame
         self.src = src
         self.name = name
         self.origin = origin
@@ -52,11 +53,18 @@ class GaiaApps(object):
         js = os.path.abspath(os.path.join(__file__, os.path.pardir, 'atoms', "gaia_apps.js"))
         self.marionette.import_script(js)
 
+    def get_permission(self, app_name, permission_name):
+        return self.marionette.execute_async_script("return GaiaApps.getPermission('%s', '%s')" % (app_name, permission_name))
+
+    def set_permission(self, app_name, permission_name, value):
+        return self.marionette.execute_async_script("return GaiaApps.setPermission('%s', '%s', '%s')" %
+                                                    (app_name, permission_name, value))
+
     def launch(self, name, switch_to_frame=True, url=None):
         self.marionette.switch_to_frame()
         result = self.marionette.execute_async_script("GaiaApps.launchWithName('%s')" % name)
         assert result, "Failed to launch app with name '%s'" % name
-        app = GaiaApp(frame_id=result.get('frame'),
+        app = GaiaApp(frame=result.get('frame'),
                       src=result.get('src'),
                       name=result.get('name'),
                       origin=result.get('origin'))
@@ -84,10 +92,7 @@ class GaiaApps(object):
         self.marionette.execute_async_script("GaiaApps.killAll()")
 
     def runningApps(self):
-        apps = self.marionette.execute_script("""
-return window.wrappedJSObject.WindowManager.getRunningApps();
-            """)
-        return apps
+        return self.marionette.execute_script("return GaiaApps.getRunningApps()")
 
     def switch_to_frame(self, app_frame, url=None, timeout=30):
         self.marionette.switch_to_frame(app_frame)
@@ -316,13 +321,14 @@ class GaiaTestCase(MarionetteTestCase):
     def tearDown(self):
         if any(sys.exc_info()):
             # test has failed, gather debug
-            test_name = self.marionette.test_name.split()[-1]
-            debug_path = os.path.join('debug', *test_name.split('.'))
+            test_class, test_name = self.marionette.test_name.split()[-1].split('.')
+            xml_output = self.testvars.get('xml_output', None)
+            debug_path = os.path.join(xml_output and os.path.dirname(xml_output) or 'debug', test_class)
             if not os.path.exists(debug_path):
                 os.makedirs(debug_path)
 
             # screenshot
-            with open(os.path.join(debug_path, 'screenshot.png'), 'w') as f:
+            with open(os.path.join(debug_path, '%s_screenshot.png' % test_name), 'w') as f:
                 # TODO: Bug 818287 - Screenshots include data URL prefix
                 screenshot = self.marionette.screenshot()[22:]
                 f.write(base64.decodestring(screenshot))
