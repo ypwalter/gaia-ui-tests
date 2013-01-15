@@ -265,4 +265,4 @@ class TestFtu(GaiaTestCase):
         close_button.click()
 
         # Now back to app
-        self.marionette.switch_to_frame(self.app.frame_id)
+        self.marionette.switch_to_frame(self.app.frame)

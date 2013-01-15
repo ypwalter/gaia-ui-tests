@@ -14,6 +14,7 @@ from marionette import MarionetteTouchMixin
 from marionette.errors import NoSuchElementException
 from marionette.errors import ElementNotVisibleException
 from marionette.errors import TimeoutException
+import mozdevice
 
 
 class LockScreen(object):
@@ -38,8 +39,9 @@ class LockScreen(object):
 
 class GaiaApp(object):
 
-    def __init__(self, origin=None, name=None, frame_id=None, src=None):
-        self.frame_id = frame_id
+    def __init__(self, origin=None, name=None, frame=None, src=None):
+        self.frame = frame
+        self.frame_id = frame
         self.src = src
         self.name = name
         self.origin = origin
@@ -56,7 +58,7 @@ class GaiaApps(object):
         self.marionette.switch_to_frame()
         result = self.marionette.execute_async_script("GaiaApps.launchWithName('%s')" % name)
         assert result, "Failed to launch app with name '%s'" % name
-        app = GaiaApp(frame_id=result.get('frame'),
+        app = GaiaApp(frame=result.get('frame'),
                       src=result.get('src'),
                       name=result.get('name'),
                       origin=result.get('origin'))
@@ -84,10 +86,7 @@ class GaiaApps(object):
         self.marionette.execute_async_script("GaiaApps.killAll()")
 
     def runningApps(self):
-        apps = self.marionette.execute_script("""
-return window.wrappedJSObject.WindowManager.getRunningApps();
-            """)
-        return apps
+        return self.marionette.execute_script("return GaiaApps.getRunningApps()")
 
     def switch_to_frame(self, app_frame, url=None, timeout=30):
         self.marionette.switch_to_frame(app_frame)
@@ -199,6 +198,10 @@ class GaiaData(object):
     def fm_radio_frequency(self):
         return self.marionette.execute_script('return window.navigator.mozFMRadio.frequency')
 
+    @property
+    def media_files(self):
+        return self.marionette.execute_async_script('return GaiaDataLayer.getAllMediaFiles();')
+
 
 class GaiaTestCase(MarionetteTestCase):
 
@@ -220,9 +223,25 @@ class GaiaTestCase(MarionetteTestCase):
             'wifi' in self.testvars and \
             self.marionette.execute_script('return window.navigator.mozWifiManager !== undefined')
 
+        # device manager
+        dm_type = os.environ.get('DM_TRANS', 'adb')
+        if dm_type == 'adb':
+            self.device_manager = mozdevice.DeviceManagerADB()
+        elif dm_type == 'sut':
+            host = os.environ.get('TEST_DEVICE')
+            if not host:
+                raise Exception('Must specify host with SUT!')
+            self.device_manager = mozdevice.DeviceManagerSUT(host=host)
+        else:
+            raise Exception('Unknown device manager type: %s' % dm_type)
+
         self.cleanUp()
 
     def cleanUp(self):
+        # remove media
+        for filename in self.data_layer.media_files:
+            self.device_manager.removeFile('/'.join(['sdcard', filename]))
+
         # unlock
         self.lockscreen.unlock()
 
@@ -240,6 +259,12 @@ class GaiaTestCase(MarionetteTestCase):
 
         # reset to home screen
         self.marionette.execute_script("window.wrappedJSObject.dispatchEvent(new Event('home'));")
+
+    def push_resource(self, filename, destination=''):
+        local = os.path.abspath(os.path.join(os.path.dirname(__file__), 'resources', filename))
+        remote = '/'.join(['sdcard', destination, filename])
+        self.device_manager.mkDirs(remote)
+        self.device_manager.pushFile(local, remote)
 
     def wait_for_element_present(self, by, locator, timeout=10):
         timeout = float(timeout) + time.time()
