@@ -30,10 +30,10 @@ class TestBrowserLAN(GaiaTestCase):
         # https://moztrap.mozilla.org/manage/case/1327/
 
         awesome_bar = self.marionette.find_element(*self._awesome_bar_locator)
-        awesome_bar.click()
         awesome_bar.send_keys('http://mozqa.com/data/firefox/layout/mozilla.html')
 
-        self.marionette.find_element(*self._url_button_locator).click()
+        url_button = self.marionette.find_element(*self._url_button_locator)
+        self.marionette.tap(url_button)
 
         # TODO see if we can reduce this timeout in the future. >10 seconds is poor UX
         self.wait_for_condition(lambda m: not self.is_throbber_visible(), timeout=20)
