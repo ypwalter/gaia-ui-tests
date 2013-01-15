@@ -11,9 +11,6 @@ TITLE = 'Index of /data'
 
 class TestDeleteApp(GaiaTestCase):
 
-    # Homescreen locators
-    _homescreen_frame_locator = ('css selector', 'iframe.homescreen')
-
     _icon_locator = ('css selector', 'li.icon[aria-label="%s"]' % APP_NAME)
     _delete_app_locator = ('css selector', 'span.options')
 

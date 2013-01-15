@@ -30,7 +30,7 @@ class TestSearchMarketplaceAndInstallApp(GaiaTestCase):
 
     # Label identifier for all homescreen apps
     _app_icon_locator = ('xpath', "//li[@class='icon']//span[text()='%s']" % APP_NAME)
-    _homescreen_iframe_locator = ('css selector', 'iframe.homescreen')
+    _homescreen_iframe_locator = ('css selector', 'div.homescreen iframe')
 
     def setUp(self):
         GaiaTestCase.setUp(self)

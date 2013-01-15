@@ -15,7 +15,7 @@ class TestLockScreen(GaiaTestCase):
     _camera_button_locator = ('id', 'lockscreen-area-camera')
 
     # Homescreen locators
-    _homescreen_frame_locator = ('css selector', 'iframe.homescreen')
+    _homescreen_frame_locator = ('css selector', 'div.homescreen iframe')
     _homescreen_landing_locator = ('id', 'landing-page')
 
     # Camera locators
