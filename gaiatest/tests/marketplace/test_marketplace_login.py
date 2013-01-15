@@ -37,7 +37,7 @@ class TestMarketplaceLogin(GaiaTestCase):
 
         # Switch back to marketplace and verify that user is logged in
         self.marionette.switch_to_frame()
-        self.marionette.switch_to_frame(self.app.frame_id)
+        self.marionette.switch_to_frame(self.app.frame)
 
         # If you go too fast here marionette seems to crash the marketplace app
         time.sleep(5)
@@ -98,7 +98,7 @@ class TestMarketplaceLogin(GaiaTestCase):
         # In the event that the test fails, a 2nd attempt
         # switch to marketplace frame and if we are logged in attempt to log out again
         self.marionette.switch_to_frame()
-        self.marionette.switch_to_frame(self.app.frame_id)
+        self.marionette.switch_to_frame(self.app.frame)
 
         if self.is_element_present(*self._logged_in_locator):
             # Refresh to get back to the marketplace main page

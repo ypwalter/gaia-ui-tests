@@ -58,7 +58,7 @@ class TestCardsView(GaiaTestCase):
         # launch the app from the cards view
         app_card = self.marionette.find_element(*self._app_card_locator)
         app_card.click()
-        self.marionette.switch_to_frame(self.app.frame_id)
+        self.marionette.switch_to_frame(self.app.frame)
 
     def _hold_home_button(self):
         self.marionette.execute_script("window.wrappedJSObject.dispatchEvent(new Event('holdhome'));")

@@ -39,8 +39,9 @@ class LockScreen(object):
 
 class GaiaApp(object):
 
-    def __init__(self, origin=None, name=None, frame_id=None, src=None):
-        self.frame_id = frame_id
+    def __init__(self, origin=None, name=None, frame=None, src=None):
+        self.frame = frame
+        self.frame_id = frame
         self.src = src
         self.name = name
         self.origin = origin
@@ -57,7 +58,7 @@ class GaiaApps(object):
         self.marionette.switch_to_frame()
         result = self.marionette.execute_async_script("GaiaApps.launchWithName('%s')" % name)
         assert result, "Failed to launch app with name '%s'" % name
-        app = GaiaApp(frame_id=result.get('frame'),
+        app = GaiaApp(frame=result.get('frame'),
                       src=result.get('src'),
                       name=result.get('name'),
                       origin=result.get('origin'))
@@ -85,10 +86,7 @@ class GaiaApps(object):
         self.marionette.execute_async_script("GaiaApps.killAll()")
 
     def runningApps(self):
-        apps = self.marionette.execute_script("""
-return window.wrappedJSObject.WindowManager.getRunningApps();
-            """)
-        return apps
+        return self.marionette.execute_script("return GaiaApps.getRunningApps()")
 
     def switch_to_frame(self, app_frame, url=None, timeout=30):
         self.marionette.switch_to_frame(app_frame)
