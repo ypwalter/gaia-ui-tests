@@ -230,19 +230,24 @@ class GaiaTestCase(MarionetteTestCase):
             'wifi' in self.testvars and \
             self.marionette.execute_script('return window.navigator.mozWifiManager !== undefined')
 
-        # device manager
-        dm_type = os.environ.get('DM_TRANS', 'adb')
-        if dm_type == 'adb':
-            self.device_manager = mozdevice.DeviceManagerADB()
-        elif dm_type == 'sut':
-            host = os.environ.get('TEST_DEVICE')
-            if not host:
-                raise Exception('Must specify host with SUT!')
-            self.device_manager = mozdevice.DeviceManagerSUT(host=host)
-        else:
-            raise Exception('Unknown device manager type: %s' % dm_type)
-
         self.cleanUp()
+
+    @property
+    def device_manager(self):
+        if hasattr(self, '_device_manager') and self._device_manager:
+            return self._device_manager
+        else:
+            dm_type = os.environ.get('DM_TRANS', 'adb')
+            if dm_type == 'adb':
+                self._device_manager = mozdevice.DeviceManagerADB()
+            elif dm_type == 'sut':
+                host = os.environ.get('TEST_DEVICE')
+                if not host:
+                    raise Exception('Must specify host with SUT!')
+                self._device_manager = mozdevice.DeviceManagerSUT(host=host)
+            else:
+                raise Exception('Unknown device manager type: %s' % dm_type)
+            return self._device_manager
 
     def cleanUp(self):
         # remove media
