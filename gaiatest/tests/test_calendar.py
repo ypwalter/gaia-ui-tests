@@ -33,10 +33,11 @@ class TestCalendar(GaiaTestCase):
     def setUp(self):
         GaiaTestCase.setUp(self)
 
+        # Setting the system time to a hardcoded datetime to avoid timezone issues
         _seconds_since_epoch = 382936122
         self.today = datetime.datetime.utcfromtimestamp(_seconds_since_epoch)
 
-        # set the system date to an expected date
+        # set the system date to an expected date, and timezone to UTC
         self.data_layer.set_time(_seconds_since_epoch * 1000)
         self.data_layer.set_setting('time.timezone', 'Atlantic/Reykjavik')
 
