@@ -33,6 +33,13 @@ class TestCalendar(GaiaTestCase):
     def setUp(self):
         GaiaTestCase.setUp(self)
 
+        _seconds_since_epoch = 382936122
+        self.today = datetime.datetime.utcfromtimestamp(_seconds_since_epoch)
+
+        # set the system date to an expected date
+        self.data_layer.set_time(_seconds_since_epoch * 1000)
+        self.data_layer.set_setting('time.timezone', 'Atlantic/Reykjavik')
+
         # launch the Calendar app
         self.app = self.apps.launch('calendar')
 
@@ -51,13 +58,9 @@ class TestCalendar(GaiaTestCase):
         month_title = self.marionette.find_element(
             *self._current_month_year_locator)
 
-        # Get today's date from the phone
-        today = self.marionette.execute_script('return new Date().toUTCString();')
-        date = datetime.datetime.strptime(today, "%a, %d %b %Y %H:%M:%S %Z")
-
         # validate month title and selected day aligns with today's date
-        self.assertEquals(month_title.text, date.strftime('%B %Y'))
-        self.assertEquals(selected_day.text, date.strftime('%A %d %B %Y').upper())
+        self.assertEquals(month_title.text, self.today.strftime('%B %Y'))
+        self.assertEquals(selected_day.text, self.today.strftime('%A %-d %B %Y').upper())
 
     def test_that_new_event_appears_on_all_calendar_views(self):
         # https://github.com/mozilla/gaia-ui-tests/issues/102
@@ -66,7 +69,7 @@ class TestCalendar(GaiaTestCase):
         event_location = "Event Location %s" % str(time.time())
         event_start_time = "01:00:00"
         event_end_time = "02:00:00"
-        formatted_today = time.strftime("%b %d")
+        formatted_today = self.today.strftime("%b %d")
         this_event_time_slot_locator = ('css selector',
                                          '#event-list section.hour-1 span.display-hour')
         month_view_time_slot_all_events_locator = ('css selector',
