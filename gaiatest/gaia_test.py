@@ -54,6 +54,13 @@ class GaiaApps(object):
         js = os.path.abspath(os.path.join(__file__, os.path.pardir, 'atoms', "gaia_apps.js"))
         self.marionette.import_script(js)
 
+    def get_permission(self, app_name, permission_name):
+        return self.marionette.execute_async_script("return GaiaApps.getPermission('%s','%s')" % (app_name, permission_name))
+
+    def set_permission(self, app_name, permission_name, value):
+        return self.marionette.execute_async_script("return GaiaApps.setPermission('%s','%s', '%s')" %
+                                                    (app_name, permission_name, value))
+
     def launch(self, name, switch_to_frame=True, url=None):
         self.marionette.switch_to_frame()
         result = self.marionette.execute_async_script("GaiaApps.launchWithName('%s')" % name)
