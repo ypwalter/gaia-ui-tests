@@ -24,6 +24,9 @@ class TestMusic(GaiaTestCase):
   def setUp(self):
       GaiaTestCase.setUp(self)
 
+      # add track to storage
+      self.push_resource('MUS_0001.mp3')
+
       # launch the Music application
       self.app = self.apps.launch("music")
 
