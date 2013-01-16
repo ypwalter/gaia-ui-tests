@@ -6,6 +6,7 @@ from gaiatest import GaiaTestCase
 
 import time
 
+
 class TestFtu(GaiaTestCase):
 
     _activation_section_locator = ('id', 'activation')
@@ -66,7 +67,6 @@ class TestFtu(GaiaTestCase):
     _section_tutorial_finish_locator = ('id', 'tutorialFinish')
     _lets_go_button_locator = ('id', 'tutorialFinished')
 
-
     def setUp(self):
         GaiaTestCase.setUp(self)
 
@@ -79,7 +79,6 @@ class TestFtu(GaiaTestCase):
 
         # launch the First Time User app
         self.app = self.apps.launch('FTU')
-
 
     def test_ftu_skip_tour(self):
         # https://moztrap.mozilla.org/manage/case/3876/
@@ -105,14 +104,14 @@ class TestFtu(GaiaTestCase):
 
         # Wait for some networks to be found
         self.wait_for_condition(lambda m: len(m.find_elements(*self._found_wifi_networks_locator)) > 0,
-            message="No networks listed on screen")
+                                message="No networks listed on screen")
 
         # TODO This will only work on Mozilla Guest or unsecure network
         wifi_network = self.marionette.find_element('id', self.testvars['wifi']['ssid'])
         wifi_network.click()
 
-        self.wait_for_condition(lambda m:
-        wifi_network.find_element(*self._network_state_locator).text == "Connected")
+        self.wait_for_condition(
+            lambda m: wifi_network.find_element(*self._network_state_locator).text == "Connected")
 
         # Click next
         self.marionette.find_element(*self._next_button_locator).click()
@@ -130,7 +129,7 @@ class TestFtu(GaiaTestCase):
         self._select("Almaty")
 
         self.assertEqual(self.marionette.find_element(*self._time_zone_title_locator).text,
-            "UTC+06:00 Asia/Almaty")
+                         "UTC+06:00 Asia/Almaty")
 
         # Click next
         self.marionette.find_element(*self._next_button_locator).click()
@@ -175,7 +174,6 @@ class TestFtu(GaiaTestCase):
         self.assertTrue(self.data_layer.get_setting("ril.data.enabled"), "Cell data was not enabled by FTU app")
         self.assertTrue(self.data_layer.is_wifi_connected(self.testvars['wifi']), "WiFi was not connected via FTU app")
 
-
     def test_ftu_with_tour(self):
 
         self.wait_for_element_displayed(*self._section_languages_locator)
@@ -207,23 +205,23 @@ class TestFtu(GaiaTestCase):
         # Walk through the tour
         self.wait_for_element_displayed(*self._step1_header_locator)
         self.assertEqual(self.marionette.find_element(*self._step1_header_locator).text,
-            "Swipe from right to left to browse your apps.")
+                         "Swipe from right to left to browse your apps.")
         self.marionette.find_element(*self._tour_next_button_locator).click()
         self.wait_for_element_displayed(*self._step2_header_locator)
         self.assertEqual(self.marionette.find_element(*self._step2_header_locator).text,
-            "Swipe from left to right to discover new apps.")
+                         "Swipe from left to right to discover new apps.")
         self.marionette.find_element(*self._tour_next_button_locator).click()
         self.wait_for_element_displayed(*self._step3_header_locator)
         self.assertEqual(self.marionette.find_element(*self._step3_header_locator).text,
-            "Tap and hold on an icon to delete or move it.")
+                         "Tap and hold on an icon to delete or move it.")
         self.marionette.find_element(*self._tour_next_button_locator).click()
         self.wait_for_element_displayed(*self._step4_header_locator)
         self.assertEqual(self.marionette.find_element(*self._step4_header_locator).text,
-            "Swipe down to access recent notifications, credit information and settings.")
+                         "Swipe down to access recent notifications, credit information and settings.")
         self.marionette.find_element(*self._tour_next_button_locator).click()
         self.wait_for_element_displayed(*self._step5_header_locator)
         self.assertEqual(self.marionette.find_element(*self._step5_header_locator).text,
-            "Tap and hold the home button to browse and close recent apps.")
+                         "Tap and hold the home button to browse and close recent apps.")
         # Try going back a step
         self.marionette.find_element(*self._tour_back_button_locator).click()
         self.wait_for_element_displayed(*self._step4_header_locator)

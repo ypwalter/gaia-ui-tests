@@ -4,6 +4,7 @@
 
 from gaiatest import GaiaTestCase
 
+
 class TestWallpaper(GaiaTestCase):
 
     _display_locator = ('id', 'menuItem-display')
@@ -14,7 +15,7 @@ class TestWallpaper(GaiaTestCase):
     _wallpaper_frame_locator = ('css selector', "iframe[src='app://wallpaper.gaiamobile.org/pick.html']")
     _settings_frame_locator = ('css selector', "iframe[src='app://settings.gaiamobile.org/index.html#root']")
 
-    # default wallpaper 
+    # default wallpaper
     _default_wallpaper_src = None
 
     def setUp(self):
@@ -39,14 +40,14 @@ class TestWallpaper(GaiaTestCase):
 
         # Send the pick event to system
         wallpaper_preview.click()
-        
+
         # switch to the system app
         self.marionette.switch_to_frame()
 
         # choose the source as wallpaper app
         self.wait_for_element_displayed(*self._wallpaper_button_locator)
         self.marionette.find_element(*self._wallpaper_button_locator).click()
-        
+
         # switch to the wallpaper app
         self.wait_for_element_displayed(*self._wallpaper_frame_locator)
         self.marionette.switch_to_frame(self.marionette.find_element(*self._wallpaper_frame_locator))
@@ -59,7 +60,7 @@ class TestWallpaper(GaiaTestCase):
 
         # switch to the system app
         self.marionette.switch_to_frame()
-        
+
         # switch to the setting app
         self.marionette.switch_to_frame(self.marionette.find_element(*self._settings_frame_locator))
         self.wait_for_element_displayed(*self._wallpaper_preview_locator)

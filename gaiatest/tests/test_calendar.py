@@ -71,16 +71,21 @@ class TestCalendar(GaiaTestCase):
         event_start_time = "01:00:00"
         event_end_time = "02:00:00"
         formatted_today = self.today.strftime("%b %d")
-        this_event_time_slot_locator = ('css selector',
-                                         '#event-list section.hour-1 span.display-hour')
-        month_view_time_slot_all_events_locator = ('css selector',
-                                                '#event-list section.hour-1 div.events')
-        week_view_time_slot_all_events_locator = ('css selector',
-                                                "#week-view section.active[data-date*='%s'] ol.hour-1" % formatted_today)
-        day_view_time_slot_all_events_locator = ('css selector',
-                                                "#day-view section.active[data-date*='%s'] section.hour-1" % formatted_today)
-        day_view_time_slot_individual_events_locator = ('css selector',
-                                               "#day-view section.active[data-date*='%s'] section.hour-1 div.events div.container" % formatted_today)
+        this_event_time_slot_locator = (
+            'css selector',
+            '#event-list section.hour-1 span.display-hour')
+        month_view_time_slot_all_events_locator = (
+            'css selector',
+            '#event-list section.hour-1 div.events')
+        week_view_time_slot_all_events_locator = (
+            'css selector',
+            "#week-view section.active[data-date*='%s'] ol.hour-1" % formatted_today)
+        day_view_time_slot_all_events_locator = (
+            'css selector',
+            "#day-view section.active[data-date*='%s'] section.hour-1" % formatted_today)
+        day_view_time_slot_individual_events_locator = (
+            'css selector',
+            "#day-view section.active[data-date*='%s'] section.hour-1 div.events div.container" % formatted_today)
 
         # wait for the add event button to appear
         self.wait_for_element_displayed(*self._add_event_button_locator)
@@ -105,7 +110,7 @@ class TestCalendar(GaiaTestCase):
 
         # assert that the event is displayed as expected
         self.assertTrue(self.marionette.find_element(*this_event_time_slot_locator).is_displayed(),
-            "Expected the time slot for the event to be present.")
+                        "Expected the time slot for the event to be present.")
         displayed_events = self.marionette.find_element(*month_view_time_slot_all_events_locator).text
         self.assertIn(event_title, displayed_events)
         self.assertIn(event_location, displayed_events)

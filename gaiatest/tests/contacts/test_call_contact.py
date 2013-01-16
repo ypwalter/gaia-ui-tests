@@ -25,7 +25,6 @@ class TestContacts(GaiaTestCase):
     _hangup_bar_locator = ('id', 'callbar-hang-up-action')
     _call_app_locator = ('css selector', "iframe[name='call_screen']")
 
-
     def setUp(self):
         GaiaTestCase.setUp(self)
 
@@ -34,7 +33,9 @@ class TestContacts(GaiaTestCase):
         self.wait_for_element_not_displayed(*self._loading_overlay)
 
         # Seed the contact with the remote phone number so we don't call random people
-        self.contact = MockContact(tel={'type':'Mobile','value':"%s" % self.testvars['remote_phone_number']})
+        self.contact = MockContact(tel={
+            'type': 'Mobile',
+            'value': "%s" % self.testvars['remote_phone_number']})
         self.data_layer.insert_contact(self.contact)
         self.marionette.refresh()
 
@@ -69,12 +70,11 @@ class TestContacts(GaiaTestCase):
         # Check the number displayed is the one we dialed
         # TODO if this step fails bug 817291 may have been fixed
         self.assertIn(self.contact['tel']['value'],
-            self.marionette.find_element(*self._calling_number_locator).text)
+                      self.marionette.find_element(*self._calling_number_locator).text)
 
         # hang up before the person answers ;)
         hangup_bar = self.marionette.find_element(*self._hangup_bar_locator)
         self.marionette.tap(hangup_bar)
-
 
     def tearDown(self):
 

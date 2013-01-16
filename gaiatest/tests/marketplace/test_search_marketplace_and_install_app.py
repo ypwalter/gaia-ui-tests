@@ -62,7 +62,7 @@ class TestSearchMarketplaceAndInstallApp(GaiaTestCase):
         author = results[0].find_element(*self._author_locator)
         self.assertEquals(app_name.text, APP_NAME, 'First app has wrong name')
         self.assertEquals(author.text, APP_DEVELOPER,
-            'First app wrong developer')
+                          'First app wrong developer')
 
         # Find and click the install button to the install the web app
         install_button = results[0].find_element(*self._install_button)

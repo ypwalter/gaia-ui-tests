@@ -18,7 +18,8 @@ class TestSms(GaiaTestCase):
     _message_field_locator = ('id', 'message-to-send')
     _send_message_button_locator = ('id', 'send-message')
     _back_header_link_locator = ('xpath', '//header/a[1]')
-    _message_sending_spinner_locator = ('css selector',
+    _message_sending_spinner_locator = (
+        'css selector',
         "img[src='style/images/spinningwheel_small_animation.gif']")
 
     # Conversation view
@@ -90,4 +91,4 @@ class TestSms(GaiaTestCase):
 
         # Check that most recent message is also the most recent received message
         self.assertEqual(received_message.get_attribute('id'),
-            last_message.get_attribute('id'))
+                         last_message.get_attribute('id'))

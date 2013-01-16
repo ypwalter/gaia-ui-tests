@@ -35,7 +35,7 @@ class TestKeyboard(GaiaTestCase):
         # click/load the Keyboard test page
         self.marionette.find_element(*self._test_keyboard_link_locator).click()
 
-        test_page_frame = self.marionette.find_element('id','test-iframe')
+        test_page_frame = self.marionette.find_element('id', 'test-iframe')
         self.marionette.switch_to_frame(test_page_frame)
 
         self.wait_for_element_displayed(*self._text_input_locator)
@@ -45,8 +45,8 @@ class TestKeyboard(GaiaTestCase):
 
         self.marionette.switch_to_frame(self.app.frame)
 
-        self.wait_for_element_present('id','test-iframe')
-        test_page_frame = self.marionette.find_element('id','test-iframe')
+        self.wait_for_element_present('id', 'test-iframe')
+        test_page_frame = self.marionette.find_element('id', 'test-iframe')
         self.marionette.switch_to_frame(test_page_frame)
 
         self.wait_for_element_displayed(*self._text_input_locator)
