@@ -8,7 +8,7 @@ from gaiatest import GaiaTestCase
 class TestCamera(GaiaTestCase):
 
     _capture_button_locator = ('id', 'capture-button')
-    _focus_ring = ('id','focus-ring')
+    _focus_ring = ('id', 'focus-ring')
     _switch_source_button_locator = ('id', 'switch-button')
     _film_strip_locator = ('id', 'filmstrip')
     _film_strip_image_locator = ('css selector', '#filmstrip > img.thumbnail')
@@ -71,7 +71,6 @@ class TestCamera(GaiaTestCase):
 
         # Find the new film thumbnail in the film strip
         self.assertTrue(self.marionette.find_element(*self._film_strip_image_locator).is_displayed())
-
 
     def wait_for_capture_ready(self):
         self.marionette.set_script_timeout(10000)

@@ -19,7 +19,6 @@ class TestVideoPlayer(GaiaTestCase):
     _video_title_locator = ('id', 'video-title')
     _elapsed_text_locator = ('id', 'elapsed-text')
 
-
     def setUp(self):
         GaiaTestCase.setUp(self)
 
@@ -56,4 +55,4 @@ class TestVideoPlayer(GaiaTestCase):
 
         # Check the name too. This will only work if the toolbar is visible
         self.assertEqual(first_video_name,
-                        self.marionette.find_element(*self._video_title_locator).text)
+                         self.marionette.find_element(*self._video_title_locator).text)
