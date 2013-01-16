@@ -11,6 +11,7 @@ class TestCardsView(GaiaTestCase):
     # Home/Cards view locators
     _cards_view_locator = ('id', 'cards-view')
     _app_card_locator = ('xpath', "//li[@class='card']/h1[text()='%s']" % _app_under_test)
+    _clock_frame_locator = ('css selector', "iframe[mozapp='app://clock.gaiamobile.org/manifest.webapp']")
 
     def setUp(self):
         GaiaTestCase.setUp(self)
@@ -50,15 +51,24 @@ class TestCardsView(GaiaTestCase):
         self.marionette.switch_to_frame()
         self._touch_home_button()
 
+        # find the cards frame htmlelement
+        clock_frame = self.marionette.find_element(*self._clock_frame_locator)
+
         # pull up the cards view
-        self.marionette.switch_to_frame()
         self._hold_home_button()
         self.wait_for_element_displayed(*self._cards_view_locator)
 
+        self.assertFalse(clock_frame.is_displayed(),
+            "Clock frame expected to be not displayed but was")
+
         # launch the app from the cards view
         app_card = self.marionette.find_element(*self._app_card_locator)
-        app_card.click()
-        self.marionette.switch_to_frame(self.app.frame)
+        self.marionette.tap(app_card)
+
+        self.wait_for_element_not_displayed(*self._cards_view_locator)
+
+        self.assertTrue(clock_frame.is_displayed(),
+            "Clock frame was expected to be displayed but was not")
 
     def _hold_home_button(self):
         self.marionette.execute_script("window.wrappedJSObject.dispatchEvent(new Event('holdhome'));")
