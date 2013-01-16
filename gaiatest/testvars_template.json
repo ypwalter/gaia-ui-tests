@@ -1,6 +1,8 @@
 {
-    "remote_phone_number": "",
     "this_phone_number": "",
+    "twilio_account_sid": "",
+    "twilio_auth_token": "",
+    "twilio_phone_number": "",
 
     "wifi": {
         "ssid": ""

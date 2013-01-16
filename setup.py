@@ -12,7 +12,7 @@ except (OSError, IOError):
     description = ''
 
 # dependencies
-deps = ['marionette_client']
+deps = ['marionette_client','twilio==3.4.2']
 
 # copy atoms directory over
 setupdir = os.path.dirname(__file__)
