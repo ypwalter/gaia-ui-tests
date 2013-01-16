@@ -233,7 +233,13 @@ class GaiaTestCase(MarionetteTestCase):
         self.cleanUp()
 
     @property
+    def is_android_build(self):
+        return 'Android' in self.marionette.session_capabilities['platform']
+
+    @property
     def device_manager(self):
+        if not self.is_android_build:
+            raise Exception('Device manager is only available for devices.')
         if hasattr(self, '_device_manager') and self._device_manager:
             return self._device_manager
         else:
@@ -251,8 +257,9 @@ class GaiaTestCase(MarionetteTestCase):
 
     def cleanUp(self):
         # remove media
-        for filename in self.data_layer.media_files:
-            self.device_manager.removeFile('/'.join(['sdcard', filename]))
+        if self.is_android_build and self.data_layer.media_files:
+            for filename in self.data_layer.media_files:
+                self.device_manager.removeFile('/'.join(['sdcard', filename]))
 
         # unlock
         self.lockscreen.unlock()
