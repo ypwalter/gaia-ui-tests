@@ -85,25 +85,26 @@ class TestCallLog(GaiaTestCase):
 
     def place_call_with_twilio(self, number):
 
-        # Twilio credentials
-        account_sid = self.testvars['twilio_account_sid']
-        auth_token = self.testvars['twilio_auth_token']
+        # There can be a significant delay in the call reaching the phone
+        wait_for_call_timeout = 30
 
-        client = TwilioRestClient(account_sid, auth_token)
+        # Twilio credentials
+        twilio = self.testvars['twilio']
+
+        client = TwilioRestClient(twilio['account_sid'], twilio['auth_token'])
 
         # Make the call
-        call = client.calls.create(to=number, # This phone number
-            from_=self.testvars['twilio_phone_number'], # Must be a valid Twilio number
+        caller = client.calls.create(to=number, # This phone number
+            from_=twilio['phone_number'], # Must be a valid Twilio number
             url="http://twimlets.com/holdmusic?Bucket=com.twilio.music.ambient")
-        sid = call.sid
-        call = client.calls.get(sid)
+        call = client.calls.get(caller.sid)
 
         # wait to connect
         self.marionette.switch_to_frame()
+        self.wait_for_element_present(*self._incoming_call_frame_locator, timeout=wait_for_call_timeout)
         frame = self.marionette.find_element(*self._incoming_call_frame_locator)
         self.marionette.switch_to_frame(frame)
         self.wait_for_element_displayed(*self._incoming_call_number_locator)
 
-        # stop call
         call.hangup()
 
