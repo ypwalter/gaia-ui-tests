@@ -343,6 +343,7 @@ class GaiaTestCase(MarionetteTestCase):
         self.data_layer = None
         MarionetteTestCase.tearDown(self)
 
+
 class Keyboard(object):
     _upper_case_key = '20'
     _numeric_sign_key = '-2'
@@ -350,7 +351,7 @@ class Keyboard(object):
     _alt_key = '18'
 
     # Keyboard app
-    _keyboard_frame_locator = ('css selector','#keyboard-frame iframe')
+    _keyboard_frame_locator = ('css selector', '#keyboard-frame iframe')
 
     _button_locator = ('css selector', 'button.keyboard-key[data-keycode="%s"]')
 
@@ -405,7 +406,7 @@ class Keyboard(object):
                     if self.is_element_present(*self._key_locator(val)):
                         self._press(val)
                     else:
-                        assert False , 'Key %s not found on the keyboard' %val
+                        assert False, 'Key %s not found on the keyboard' % val
                 self._press(self._alpha_key)
 
         self.marionette.switch_to_frame()

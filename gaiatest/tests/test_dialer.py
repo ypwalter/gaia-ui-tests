@@ -19,7 +19,6 @@ class TestDialer(GaiaTestCase):
     _hangup_bar_locator = ('id', 'callbar-hang-up-action')
     _call_screen_locator = ('css selector', "iframe[name='call_screen']")
 
-
     def setUp(self):
         GaiaTestCase.setUp(self)
 
@@ -66,7 +65,7 @@ class TestDialer(GaiaTestCase):
 
         # Check the number displayed is the one we dialed
         self.assertEqual(self._test_phone_number,
-            self.marionette.find_element(*self._calling_number_locator).text)
+                         self.marionette.find_element(*self._calling_number_locator).text)
 
         # hang up before the person answers ;)
         self.marionette.find_element(*self._hangup_bar_locator).click()

@@ -55,8 +55,8 @@ class TestContacts(GaiaTestCase):
         sms_iframe = self.marionette.find_element(*self._sms_app_iframe_locator)
         self.marionette.switch_to_frame(sms_iframe)
 
-        self.wait_for_condition(lambda m: m.find_element(*self._contact_carrier_locator).text
-                                    != "Carrier unknown")
+        self.wait_for_condition(
+            lambda m: m.find_element(*self._contact_carrier_locator).text != "Carrier unknown")
 
         header_element = self.marionette.find_element(*self._sms_app_header_locator)
         expected_name = self.contact['givenName'] + " " + self.contact['familyName']

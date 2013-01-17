@@ -21,7 +21,6 @@ class TestDeleteApp(GaiaTestCase):
     # Delete popup
     _confirm_delete_locator = ('id', 'confirm-dialog-confirm-button')
 
-
     def setUp(self):
         GaiaTestCase.setUp(self)
 
@@ -31,7 +30,6 @@ class TestDeleteApp(GaiaTestCase):
             self.data_layer.connect_to_wifi(self.testvars['wifi'])
 
         self.homescreen = self.apps.launch('Homescreen')
-
 
     def test_delete_app(self):
 
@@ -48,7 +46,7 @@ class TestDeleteApp(GaiaTestCase):
         # wait for the app to be installed and the notification banner to be available
         self.wait_for_element_displayed(*self._notification_banner_locator)
         notification = self.marionette.find_element(*self._notification_banner_locator).text
-        self.assertEqual('%s installed' %APP_NAME, notification)
+        self.assertEqual('%s installed' % APP_NAME, notification)
         self.wait_for_element_not_displayed(*self._notification_banner_locator)
 
         self.marionette.switch_to_frame(self.homescreen.frame)

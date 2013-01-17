@@ -26,7 +26,6 @@ class TestContacts(GaiaTestCase):
     _country_field_locator = ('id', 'countryName_0')
     _comment_field_locator = ('id', 'note_0')
 
-
     def setUp(self):
         GaiaTestCase.setUp(self)
 

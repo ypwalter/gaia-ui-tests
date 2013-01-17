@@ -4,6 +4,7 @@
 
 from gaiatest import GaiaTestCase
 
+
 class TestCardsView(GaiaTestCase):
 
     _app_under_test = "Clock"
@@ -27,13 +28,13 @@ class TestCardsView(GaiaTestCase):
 
         card_view_element = self.marionette.find_element(*self._cards_view_locator)
         self.assertFalse(card_view_element.is_displayed(),
-            "Card view not expected to be visible")
+                         "Card view not expected to be visible")
 
         self._hold_home_button()
         self.wait_for_element_displayed(*self._cards_view_locator)
 
         self.assertTrue(card_view_element.is_displayed(),
-            "Card view expected to be visible")
+                        "Card view expected to be visible")
 
         app_card = self.marionette.find_element(*self._app_card_locator)
         self.assertTrue(app_card.is_displayed())
@@ -42,7 +43,7 @@ class TestCardsView(GaiaTestCase):
         self.wait_for_element_not_displayed(*self._cards_view_locator)
 
         self.assertFalse(card_view_element.is_displayed(),
-            "Card view not expected to be visible")
+                         "Card view not expected to be visible")
 
     def test_that_app_can_be_launched_from_cards_view(self):
         # https://github.com/mozilla/gaia-ui-tests/issues/98
