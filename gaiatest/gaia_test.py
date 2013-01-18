@@ -26,13 +26,16 @@ class LockScreen(object):
 
     @property
     def is_locked(self):
+        self.marionette.switch_to_frame()
         return self.marionette.execute_script('window.wrappedJSObject.LockScreen.locked')
 
     def lock(self):
+        self.marionette.switch_to_frame()
         result = self.marionette.execute_async_script('GaiaLockScreen.lock()')
         assert result, 'Unable to lock screen'
 
     def unlock(self):
+        self.marionette.switch_to_frame()
         result = self.marionette.execute_async_script('GaiaLockScreen.unlock()')
         assert result, 'Unable to unlock screen'
 
