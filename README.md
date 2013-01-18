@@ -82,8 +82,8 @@ Variables:
 
 ` Marketplace:
 "marketplace": {
-    "username: "MyUsername",
-    "password: "MyPassword"
+    "username": "MyUsername",
+    "password": "MyPassword"
 }
 `
 
