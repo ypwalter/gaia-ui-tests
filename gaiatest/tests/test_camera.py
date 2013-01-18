@@ -8,6 +8,8 @@ from gaiatest import GaiaTestCase
 class TestCamera(GaiaTestCase):
 
     _capture_button_locator = ('id', 'capture-button')
+    # This is a workaround for the Bug 832045
+    _capture_button_enabled_locator = ('css selector', '#capture-button:not([disabled])')
     _focus_ring = ('id', 'focus-ring')
     _switch_source_button_locator = ('id', 'switch-button')
     _video_mode_locator = ('css selector', 'body.video')
@@ -50,7 +52,7 @@ class TestCamera(GaiaTestCase):
         switch_source_button = self.marionette.find_element(*self._switch_source_button_locator)
 
         self.marionette.tap(switch_source_button)
-        self.wait_for_element_present(*self._video_mode_locator)
+        self.wait_for_element_present(*self._capture_button_enabled_locator)
 
         capture_button = self.marionette.find_element(*self._capture_button_locator)
         self.marionette.tap(capture_button)

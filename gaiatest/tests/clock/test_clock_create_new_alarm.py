@@ -61,6 +61,9 @@ class TestClockCreateNewAlarm(GaiaTestCase):
         alarm_create_new = self.marionette.find_element(*clock_object._alarm_create_new_locator)
         self.marionette.tap(alarm_create_new)
 
+        # Hack job on this, track Bug 830197
+        time.sleep(1)
+
         # set label
         alarm_label = self.marionette.find_element(*clock_object._new_alarm_label)
         alarm_label.send_keys("\b\b\b\b\btest4321")
