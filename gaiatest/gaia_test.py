@@ -14,6 +14,7 @@ from marionette import MarionetteTouchMixin
 from marionette.errors import NoSuchElementException
 from marionette.errors import ElementNotVisibleException
 from marionette.errors import TimeoutException
+import mozdevice
 
 
 class LockScreen(object):
@@ -204,6 +205,10 @@ class GaiaData(object):
     def fm_radio_frequency(self):
         return self.marionette.execute_script('return window.navigator.mozFMRadio.frequency')
 
+    @property
+    def media_files(self):
+        return self.marionette.execute_async_script('return GaiaDataLayer.getAllMediaFiles();')
+
 
 class GaiaTestCase(MarionetteTestCase):
 
@@ -227,7 +232,35 @@ class GaiaTestCase(MarionetteTestCase):
 
         self.cleanUp()
 
+    @property
+    def is_android_build(self):
+        return 'Android' in self.marionette.session_capabilities['platform']
+
+    @property
+    def device_manager(self):
+        if not self.is_android_build:
+            raise Exception('Device manager is only available for devices.')
+        if hasattr(self, '_device_manager') and self._device_manager:
+            return self._device_manager
+        else:
+            dm_type = os.environ.get('DM_TRANS', 'adb')
+            if dm_type == 'adb':
+                self._device_manager = mozdevice.DeviceManagerADB()
+            elif dm_type == 'sut':
+                host = os.environ.get('TEST_DEVICE')
+                if not host:
+                    raise Exception('Must specify host with SUT!')
+                self._device_manager = mozdevice.DeviceManagerSUT(host=host)
+            else:
+                raise Exception('Unknown device manager type: %s' % dm_type)
+            return self._device_manager
+
     def cleanUp(self):
+        # remove media
+        if self.is_android_build and self.data_layer.media_files:
+            for filename in self.data_layer.media_files:
+                self.device_manager.removeFile('/'.join(['sdcard', filename]))
+
         # unlock
         self.lockscreen.unlock()
 
@@ -245,6 +278,12 @@ class GaiaTestCase(MarionetteTestCase):
 
         # reset to home screen
         self.marionette.execute_script("window.wrappedJSObject.dispatchEvent(new Event('home'));")
+
+    def push_resource(self, filename, destination=''):
+        local = os.path.abspath(os.path.join(os.path.dirname(__file__), 'resources', filename))
+        remote = '/'.join(['sdcard', destination, filename])
+        self.device_manager.mkDirs(remote)
+        self.device_manager.pushFile(local, remote)
 
     def wait_for_element_present(self, by, locator, timeout=10):
         timeout = float(timeout) + time.time()
