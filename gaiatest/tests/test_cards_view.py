@@ -4,6 +4,8 @@
 
 from gaiatest import GaiaTestCase
 
+from marionette.errors import NoSuchElementException
+
 
 class TestCardsView(GaiaTestCase):
 
@@ -11,7 +13,10 @@ class TestCardsView(GaiaTestCase):
 
     # Home/Cards view locators
     _cards_view_locator = ('id', 'cards-view')
-    _app_card_locator = ('xpath', "//li[@class='card']/h1[text()='%s']" % _app_under_test)
+    # Check that the origin contains the current app name, origin is in the format:
+    # app://clock.gaiamobile.org
+    _app_card_locator = ('css selector', '#cards-view li[data-origin*="%s"]' % _app_under_test.lower())
+    _close_button_locator = ('css selector', '#cards-view li[data-origin*="%s"] .close-card' % _app_under_test.lower())
     _clock_frame_locator = ('css selector', "iframe[mozapp='app://clock.gaiamobile.org/manifest.webapp']")
 
     def setUp(self):
@@ -70,6 +75,30 @@ class TestCardsView(GaiaTestCase):
 
         self.assertTrue(clock_frame.is_displayed(),
             "Clock frame was expected to be displayed but was not")
+
+    def test_kill_app_from_cards_view(self):
+        # go to the home screen
+        self.marionette.switch_to_frame()
+        self._touch_home_button()
+
+        # pull up the cards view
+        self._hold_home_button()
+        self.wait_for_element_displayed(*self._cards_view_locator)
+
+        # Find the close icon for the current app
+        close_button = self.marionette.find_element(*self._close_button_locator)
+        self.marionette.tap(close_button)
+
+        self.marionette.switch_to_frame()
+
+        # pull up the cards view again
+        self._hold_home_button()
+        self.wait_for_element_displayed(*self._cards_view_locator)
+
+        # If we successfully killed the app, we should no longer find the app
+        # card inside cards view.
+        self.assertRaises(NoSuchElementException, self.marionette.find_element,
+                *self._app_card_locator)
 
     def _hold_home_button(self):
         self.marionette.execute_script("window.wrappedJSObject.dispatchEvent(new Event('holdhome'));")
