@@ -8,7 +8,7 @@ from marionette.keys import Keys
 
 APP_NAME = 'Lanyrd Mobile'
 APP_DEVELOPER = 'Lanyrd'
-
+APP_INSTALLED = False
 
 class TestSearchMarketplaceAndInstallApp(GaiaTestCase):
 
@@ -77,6 +77,8 @@ class TestSearchMarketplaceAndInstallApp(GaiaTestCase):
         self.marionette.tap(yes_button)
         self.wait_for_element_not_displayed(*self._yes_button_locator)
 
+        APP_INSTALLED = True
+
         homescreen_frame = self.marionette.find_element(*self._homescreen_iframe_locator)
         self.marionette.switch_to_frame(homescreen_frame)
 
@@ -85,6 +87,7 @@ class TestSearchMarketplaceAndInstallApp(GaiaTestCase):
 
     def tearDown(self):
 
-        self.apps.uninstall(APP_NAME)
+        if APP_INSTALLED:
+            self.apps.uninstall(APP_NAME)
 
         GaiaTestCase.tearDown(self)
