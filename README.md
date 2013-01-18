@@ -80,6 +80,14 @@ Variables:
 }
 `
 
+` Marketplace:
+"marketplace": {
+    "username: "MyUsername",
+    "password: "MyPassword"
+}
+`
+
+
 __Note__: Due to [Bug 775499](http://bugzil.la/775499), WiFi connections via WPA-EAP are not capable at this time.
 
 Test data Prerequisites
