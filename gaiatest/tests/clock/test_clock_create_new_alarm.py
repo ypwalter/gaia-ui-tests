@@ -6,8 +6,9 @@ from gaiatest import GaiaTestCase
 from gaiatest.tests.clock import clock_object
 import time
 
+
 class TestClockCreateNewAlarm(GaiaTestCase):
-    
+
     def setUp(self):
         GaiaTestCase.setUp(self)
 
@@ -17,12 +18,11 @@ class TestClockCreateNewAlarm(GaiaTestCase):
         # launch the Clock app
         self.app = self.apps.launch('Clock')
 
-    
     def test_clock_create_new_alarm(self):
         """ Add an alarm
-        
-        https://moztrap.mozilla.org/manage/case/1772/ 
-        
+
+        https://moztrap.mozilla.org/manage/case/1772/
+
         """
         self.wait_for_element_displayed(*clock_object._alarm_create_new_locator)
 
@@ -47,25 +47,27 @@ class TestClockCreateNewAlarm(GaiaTestCase):
 
         # Ensure the new alarm has been added and is displayed
         self.assertTrue(initial_alarms_count < new_alarms_count,
-            'Alarms count did not increment')
-        
-        
+                        'Alarms count did not increment')
+
     def test_clock_set_alarm_label(self):
         """ Set label of the new alarm
-        
+
         https://moztrap.mozilla.org/manage/case/1775/
-        
+
         """
         self.wait_for_element_displayed(*clock_object._alarm_create_new_locator)
-        
+
         # create a new alarm
         alarm_create_new = self.marionette.find_element(*clock_object._alarm_create_new_locator)
         self.marionette.tap(alarm_create_new)
 
+        # Hack job on this, track Bug 830197
+        time.sleep(1)
+
         # set label
         alarm_label = self.marionette.find_element(*clock_object._new_alarm_label)
         alarm_label.send_keys("\b\b\b\b\btest4321")
-        
+
         # save the alarm
         alarm_save = self.marionette.find_element(*clock_object._alarm_save_locator)
         self.marionette.tap(alarm_save)
@@ -74,8 +76,7 @@ class TestClockCreateNewAlarm(GaiaTestCase):
         self.wait_for_element_displayed(*clock_object._alarm_label)
         alarm_label = self.marionette.find_element(*clock_object._alarm_label).text
         self.assertTrue("test4321" == alarm_label, 'Actual label was: "' + alarm_label + '", not "test4321".')
-        
-        
+
     def tearDown(self):
         # delete the new alarm
         clock_object.delete_alarm(self)

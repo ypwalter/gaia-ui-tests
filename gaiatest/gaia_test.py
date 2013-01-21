@@ -14,6 +14,7 @@ from marionette import MarionetteTouchMixin
 from marionette.errors import NoSuchElementException
 from marionette.errors import ElementNotVisibleException
 from marionette.errors import TimeoutException
+import mozdevice
 
 
 class LockScreen(object):
@@ -25,13 +26,16 @@ class LockScreen(object):
 
     @property
     def is_locked(self):
+        self.marionette.switch_to_frame()
         return self.marionette.execute_script('window.wrappedJSObject.LockScreen.locked')
 
     def lock(self):
+        self.marionette.switch_to_frame()
         result = self.marionette.execute_async_script('GaiaLockScreen.lock()')
         assert result, 'Unable to lock screen'
 
     def unlock(self):
+        self.marionette.switch_to_frame()
         result = self.marionette.execute_async_script('GaiaLockScreen.unlock()')
         assert result, 'Unable to unlock screen'
 
@@ -118,6 +122,11 @@ class GaiaData(object):
         self.marionette.import_script(js)
         self.marionette.set_search_timeout(10000)
 
+    def set_time(self, date_number):
+        self.marionette.set_context(self.marionette.CONTEXT_CHROME)
+        self.marionette.execute_script("window.navigator.mozTime.set(%s);" % date_number)
+        self.marionette.set_context(self.marionette.CONTEXT_CONTENT)
+
     def insert_contact(self, contact):
         self.marionette.execute_script("GaiaDataLayer.insertContact(%s)" % contact.json())
 
@@ -199,6 +208,10 @@ class GaiaData(object):
     def fm_radio_frequency(self):
         return self.marionette.execute_script('return window.navigator.mozFMRadio.frequency')
 
+    @property
+    def media_files(self):
+        return self.marionette.execute_async_script('return GaiaDataLayer.getAllMediaFiles();')
+
 
 class GaiaTestCase(MarionetteTestCase):
 
@@ -222,7 +235,35 @@ class GaiaTestCase(MarionetteTestCase):
 
         self.cleanUp()
 
+    @property
+    def is_android_build(self):
+        return 'Android' in self.marionette.session_capabilities['platform']
+
+    @property
+    def device_manager(self):
+        if not self.is_android_build:
+            raise Exception('Device manager is only available for devices.')
+        if hasattr(self, '_device_manager') and self._device_manager:
+            return self._device_manager
+        else:
+            dm_type = os.environ.get('DM_TRANS', 'adb')
+            if dm_type == 'adb':
+                self._device_manager = mozdevice.DeviceManagerADB()
+            elif dm_type == 'sut':
+                host = os.environ.get('TEST_DEVICE')
+                if not host:
+                    raise Exception('Must specify host with SUT!')
+                self._device_manager = mozdevice.DeviceManagerSUT(host=host)
+            else:
+                raise Exception('Unknown device manager type: %s' % dm_type)
+            return self._device_manager
+
     def cleanUp(self):
+        # remove media
+        if self.is_android_build and self.data_layer.media_files:
+            for filename in self.data_layer.media_files:
+                self.device_manager.removeFile('/'.join(['sdcard', filename]))
+
         # unlock
         self.lockscreen.unlock()
 
@@ -240,6 +281,12 @@ class GaiaTestCase(MarionetteTestCase):
 
         # reset to home screen
         self.marionette.execute_script("window.wrappedJSObject.dispatchEvent(new Event('home'));")
+
+    def push_resource(self, filename, destination=''):
+        local = os.path.abspath(os.path.join(os.path.dirname(__file__), 'resources', filename))
+        remote = '/'.join(['sdcard', destination, filename])
+        self.device_manager.mkDirs(remote)
+        self.device_manager.pushFile(local, remote)
 
     def wait_for_element_present(self, by, locator, timeout=10):
         timeout = float(timeout) + time.time()
@@ -338,6 +385,7 @@ class GaiaTestCase(MarionetteTestCase):
         self.data_layer = None
         MarionetteTestCase.tearDown(self)
 
+
 class Keyboard(object):
     _upper_case_key = '20'
     _numeric_sign_key = '-2'
@@ -345,7 +393,7 @@ class Keyboard(object):
     _alt_key = '18'
 
     # Keyboard app
-    _keyboard_frame_locator = ('css selector','#keyboard-frame iframe')
+    _keyboard_frame_locator = ('css selector', '#keyboard-frame iframe')
 
     _button_locator = ('css selector', 'button.keyboard-key[data-keycode="%s"]')
 
@@ -400,7 +448,7 @@ class Keyboard(object):
                     if self.is_element_present(*self._key_locator(val)):
                         self._press(val)
                     else:
-                        assert False , 'Key %s not found on the keyboard' %val
+                        assert False, 'Key %s not found on the keyboard' % val
                 self._press(self._alpha_key)
 
         self.marionette.switch_to_frame()

@@ -28,7 +28,6 @@ class TestContacts(GaiaTestCase):
     _family_name_field_locator = ('id', 'familyName')
     _phone_field_locator = ('id', "number_0")
 
-
     def setUp(self):
         GaiaTestCase.setUp(self)
 
