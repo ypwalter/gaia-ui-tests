@@ -32,7 +32,7 @@ class TestDialer(GaiaTestCase):
 
         self.wait_for_element_displayed(*self._keyboard_container_locator)
 
-        self.dial_number(test_phone_number)
+        self._dial_number(test_phone_number)
 
         # Assert that the number was entered correctly.
         phone_view = self.marionette.find_element(*self._phone_number_view_locator)
@@ -57,18 +57,13 @@ class TestDialer(GaiaTestCase):
         self.wait_for_condition(lambda m: self.data_layer.active_telephony_state == "alerting", timeout=30)
 
         # Check the number displayed is the one we dialed
-<<<<<<< HEAD
         self.assertEqual(test_phone_number,
             self.marionette.find_element(*self._calling_number_locator).text)
-=======
-        self.assertEqual(self._test_phone_number,
-                         self.marionette.find_element(*self._calling_number_locator).text)
->>>>>>> master
 
         # hang up before the person answers ;)
         self.marionette.tap(self.marionette.find_element(*self._hangup_bar_locator))
 
-    def dial_number(self, phone_number):
+    def _dial_number(self, phone_number):
         '''
         Dial a number using the keypad
         '''
