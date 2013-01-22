@@ -411,6 +411,7 @@ class Keyboard(object):
                     else:
                         assert False , 'Key %s not found on the keyboard' %val
                 self._tap(self._alpha_key)
+        self.marionette.switch_to_frame()
 
     def switch_to_number_keyboard(self):
         self._switch_to_keyboard()
