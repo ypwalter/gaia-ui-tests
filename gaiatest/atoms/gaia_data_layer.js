@@ -290,5 +290,80 @@ var GaiaDataLayer = {
       function () { callback(media); },
       function () { return remainingMediaTypes === 0; }
     );
+  },
+
+  deleteAllSms: function(aCallback) {
+    var callback = aCallback || marionetteScriptFinished;
+    console.log('searching for sms messages');
+
+    SpecialPowers.addPermission("sms", true, document);
+    SpecialPowers.setBoolPref("dom.sms.enabled", true);
+    let sms = window.navigator.mozSms;
+
+    let msgList = new Array();
+    let filter = new MozSmsFilter;
+    let request = sms.getMessages(filter, false);
+
+    request.onsuccess = function(event) {
+      cursor = event.target.result;
+      // Check if message was found
+      if (cursor.message) {
+        msgList.push(cursor.message.id);
+        // Now get next message in the list
+        cursor.continue();
+      } else {
+        // No (more) messages found
+        if (msgList.length) {
+          console.log("found " + msgList.length + " sms messages to delete");
+          deleteSmsMsgs(msgList);
+        } else {
+          console.log("zero sms messages found");
+          disableSms();
+          callback(true);
+        }
+      }
+    };
+
+    request.onerror = function(event) {
+      console.log("sms.getMessages error: " + event.target.error.name);
+      disableSms();
+      callback(false);
+    };
+
+    function deleteSmsMsgs(msgList) {
+      let smsId = msgList.shift();
+      console.log("deleting sms id: " + smsId);
+      let request = sms.delete(smsId);
+
+      request.onsuccess = function(event) {
+        if (event.target.result) {
+          // Message deleted, continue until none are left
+          if (msgList.length) {
+            deleteSmsMsgs(msgList);
+          } else {
+            // All messages deleted
+            console.log('finished deleting all sms messages');
+            disableSms();
+            callback(true);
+          }
+        } else {
+          console.log("sms delete failed");
+          disableSms();
+          callback(false);
+        }
+      };
+
+      request.onerror = function(event) {
+        console.log("sms.delete request returned unexpected error: "
+            + event.target.error.name );
+        disableSms();
+        callback(false);
+      };
+    }
+
+    function disableSms() {
+      SpecialPowers.removePermission("sms", document);
+      SpecialPowers.clearUserPref("dom.sms.enabled");
+    }
   }
 };
