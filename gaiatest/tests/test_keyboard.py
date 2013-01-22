@@ -42,6 +42,9 @@ class TestKeyboard(GaiaTestCase):
         self.marionette.find_element(*self._text_input_locator).click()
 
         self.keyboard.send(self._test_string)
+        self.keyboard.tap_backspace()
+        self.keyboard.enable_caps_lock()
+        self.keyboard.long_press('A')
 
         self.marionette.switch_to_frame(self.app.frame)
 
