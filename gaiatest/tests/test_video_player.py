@@ -18,6 +18,7 @@ class TestVideoPlayer(GaiaTestCase):
     _video_loaded_locator = ('css selector', 'video[style]')
     _video_title_locator = ('id', 'video-title')
     _elapsed_text_locator = ('id', 'elapsed-text')
+    _video_controls_locator = ('id', 'videoControls')
 
     def setUp(self):
         GaiaTestCase.setUp(self)
@@ -51,7 +52,7 @@ class TestVideoPlayer(GaiaTestCase):
         self.assertTrue(self.marionette.execute_script("return window.wrappedJSObject.playing;"))
 
         # Tap to make toolbar visible
-        self.marionette.tap(self.marionette.find_element(*self._video_frame_locator))
+        self.marionette.tap(self.marionette.find_element(*self._video_controls_locator))
 
         # The elapsed time != 0:00 is the only indication of the toolbar visible
         self.assertNotEqual(self.marionette.find_element(*self._elapsed_text_locator).text, "00:00")
