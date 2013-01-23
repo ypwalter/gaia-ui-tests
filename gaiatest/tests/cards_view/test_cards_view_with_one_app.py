@@ -27,7 +27,7 @@ class TestCardsView(GaiaTestCase):
         self.app = self.apps.launch(self._app_under_test)
 
     def test_cards_view(self):
-
+        # https://moztrap.mozilla.org/manage/case/1909/
         # switch to top level frame before dispatching the event
         self.marionette.switch_to_frame()
 
@@ -77,6 +77,7 @@ class TestCardsView(GaiaTestCase):
             "Clock frame was expected to be displayed but was not")
 
     def test_kill_app_from_cards_view(self):
+        # https://moztrap.mozilla.org/manage/case/1917/
         # go to the home screen
         self.marionette.switch_to_frame()
         self._touch_home_button()
