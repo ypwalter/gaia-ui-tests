@@ -5,13 +5,11 @@
 from gaiatest import GaiaTestCase
 
 from marionette.errors import NoSuchElementException
-import time
+
 
 class TestCardsViewThreeApps(GaiaTestCase):
 
-    _first_app = "Clock"
-    _second_app = "Gallery"
-    _third_app = "Calendar"
+    _test_apps = ["Clock", "Gallery", "Calendar"]
 
     # Home/Cards view locators
     _cards_view_locator = ('id', 'cards-view')
@@ -26,9 +24,15 @@ class TestCardsViewThreeApps(GaiaTestCase):
         GaiaTestCase.setUp(self)
 
         # launch the test apps
-        self.first_app = self.apps.launch(self._first_app)
-        self.second_app = self.apps.launch(self._second_app)
-        self.third_app = self.apps.launch(self._third_app)
+        self.test_apps = []
+        for app in self._test_apps:
+            test_app = {
+                'name': app,
+                'app': self.apps.launch(app),
+                'card_locator': (self._app_card_locator[0], self._app_card_locator[1] % app.lower()),
+                'close_button_locator': (self._close_button_locator[0], self._close_button_locator[1] % app.lower())
+            }
+            self.test_apps.append(test_app)
 
     def test_cards_view(self):
 
@@ -37,72 +41,31 @@ class TestCardsViewThreeApps(GaiaTestCase):
 
         card_view_element = self.marionette.find_element(*self._cards_view_locator)
         self.assertFalse(card_view_element.is_displayed(),
-            "Card view not expected to be visible")
+                         "Card view not expected to be visible")
 
         self._hold_home_button()
         self.wait_for_element_displayed(*self._cards_view_locator)
 
         self.assertTrue(card_view_element.is_displayed(),
-            "Card view expected to be visible")
+                        "Card view expected to be visible")
 
-        first_app_card = self.marionette.find_element(self._app_card_locator[0], self._app_card_locator[1] %self._first_app.lower())
-        self.assertFalse(first_app_card.is_displayed(), "First opened app should not be visible in cards view")
+        self.assertFalse(
+            self.marionette.find_element(*self.test_apps[0]['card_locator']). is_displayed(),
+            "First opened app should not be visible in cards view")
 
-        second_app_card = self.marionette.find_element(self._app_card_locator[0], self._app_card_locator[1] %self._second_app.lower())
-        self.assertTrue(second_app_card.is_displayed())
+        self.assertTrue(
+            self.marionette.find_element(*self.test_apps[1]['card_locator']). is_displayed(),
+            "Second app opened should be visible in cards view")
 
-        third_app_card = self.marionette.find_element(self._app_card_locator[0], self._app_card_locator[1] %self._third_app.lower())
-        self.assertTrue(third_app_card.is_displayed())
+        self.assertTrue(
+            self.marionette.find_element(*self.test_apps[2]['card_locator']). is_displayed(),
+            "Third app opened should be visible in cards view")
 
         self._touch_home_button()
         self.wait_for_element_not_displayed(*self._cards_view_locator)
 
         self.assertFalse(card_view_element.is_displayed(),
-            "Card view not expected to be visible")
-
-    def test_that_app_can_be_launched_from_cards_view(self):
-        # https://github.com/mozilla/gaia-ui-tests/issues/98
-
-        # go to the home screen
-        self.marionette.switch_to_frame()
-        self._touch_home_button()
-
-        time.sleep(2) # wait for the animation to finish
-        self.assertFalse(self.first_app.frame.is_displayed())
-        self.assertFalse(self.second_app.frame.is_displayed())
-        self.assertFalse(self.third_app.frame.is_displayed())
-
-        # pull up the cards view
-        self._hold_home_button()
-        self.wait_for_element_displayed(*self._cards_view_locator)
-
-        self.assertFalse(self.first_app.frame.is_displayed())
-        self.assertFalse(self.second_app.frame.is_displayed())
-        self.assertFalse(self.third_app.frame.is_displayed())
-
-
-        # launch the app from the cards view
-        second_app_card = self.marionette.find_element(self._app_card_locator[0], self._app_card_locator[1] %self._second_app.lower())
-        self.assertTrue(second_app_card.is_displayed())
-        self.marionette.tap(second_app_card)
-
-        self.wait_for_element_not_displayed(*self._cards_view_locator)
-
-        self.assertTrue(self.second_app.frame.is_displayed(),
-            "Clock frame was expected to be displayed but was not")
-
-        # check the app order in the cards view
-        self._hold_home_button()
-        self.wait_for_element_displayed(*self._cards_view_locator)
-
-        first_app_card = self.marionette.find_element(self._app_card_locator[0], self._app_card_locator[1] %self._first_app.lower())
-        self.assertFalse(first_app_card.is_displayed(), "First opened app should not be visible in cards view")
-
-        second_app_card = self.marionette.find_element(self._app_card_locator[0], self._app_card_locator[1] %self._second_app.lower())
-        self.assertTrue(second_app_card.is_displayed())
-
-        third_app_card = self.marionette.find_element(self._app_card_locator[0], self._app_card_locator[1] %self._third_app.lower())
-        self.assertTrue(third_app_card.is_displayed())
+                         "Card view not expected to be visible")
 
     def test_kill_app_from_cards_view(self):
         # go to the home screen
@@ -114,8 +77,8 @@ class TestCardsViewThreeApps(GaiaTestCase):
         self.wait_for_element_displayed(*self._cards_view_locator)
 
         # Find the close icon for the current app
-        close_first_app_button = self.marionette.find_element(self._close_button_locator[0], self._close_button_locator[1] %self._third_app.lower())
-        self.marionette.tap(close_first_app_button)
+        close_third_app_button = self.marionette.find_element(*self.test_apps[2]['close_button_locator'])
+        self.marionette.tap(close_third_app_button)
 
         self.marionette.switch_to_frame()
 
@@ -125,15 +88,18 @@ class TestCardsViewThreeApps(GaiaTestCase):
 
         # If we successfully killed the app, we should no longer find the app
         # card inside cards view.
-        self.assertRaises(NoSuchElementException, self.marionette.find_element,
-                self._app_card_locator[0], self._app_card_locator[1] %self._third_app.lower())
+        self.assertRaises(NoSuchElementException,
+                        self.marionette.find_element,
+                        *self.test_apps[2]['card_locator'])
 
         # Check if the remaining 2 apps are visible in the cards view
-        first_app_card = self.marionette.find_element(self._app_card_locator[0], self._app_card_locator[1] %self._first_app.lower())
-        self.assertTrue(first_app_card.is_displayed(), "First opened app should not be visible in cards view")
+        self.assertTrue(
+            self.marionette.find_element(*self.test_apps[0]['card_locator']). is_displayed(),
+                "First opened app should not be visible in cards view")
 
-        second_app_card = self.marionette.find_element(self._app_card_locator[0], self._app_card_locator[1] %self._second_app.lower())
-        self.assertTrue(second_app_card.is_displayed())
+        self.assertTrue(
+            self.marionette.find_element(*self.test_apps[1]['card_locator']). is_displayed(),
+                "Second app opened should be visible in cards view")
 
     def _hold_home_button(self):
         self.marionette.execute_script("window.wrappedJSObject.dispatchEvent(new Event('holdhome'));")
