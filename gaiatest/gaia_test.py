@@ -387,6 +387,7 @@ class GaiaTestCase(MarionetteTestCase):
 
 
 class Keyboard(object):
+    _language_key = '-3'
     _numeric_sign_key = '-2'
     _alpha_key = '-1'
     _backspace_key = '8'
@@ -409,8 +410,7 @@ class Keyboard(object):
         self.marionette.switch_to_frame(keybframe, focus=False)
 
     def _key_locator(self, val):
-        # '8' is for backspack key
-        if len(val) == 1 and val != '8':
+        if len(val) == 1:
             val = ord(val)
         return (self._button_locator[0], self._button_locator[1] % val)
 
@@ -433,27 +433,21 @@ class Keyboard(object):
         self._switch_to_keyboard()
 
         for val in string:
-            if val.isalnum():
-                if val.islower():
-                    self._tap(val)
-                elif val.isupper():
-                    self._tap(self._upper_case_key)
-                    self._tap(val)
-                elif val.isdigit():
-                    self._tap(self._numeric_sign_key)
-                    self._tap(val)
+            if val.isalpha():
+                if self.is_element_present(*self._key_locator(self._alpha_key)):
                     self._tap(self._alpha_key)
+                if not self.is_element_present(*self._key_locator(val)):
+                    self._tap(self._upper_case_key)
             else:
-                self._tap(self._numeric_sign_key)
-                if self.is_element_present(*self._key_locator(val)):
-                    self._tap(val)
-                else:
+                if self.is_element_present(*self._key_locator(self._numeric_sign_key)):
+                    self._tap(self._numeric_sign_key)
+                if not self.is_element_present(*self._key_locator(val)):
                     self._tap(self._alt_key)
-                    if self.is_element_present(*self._key_locator(val)):
-                        self._tap(val)
-                    else:
-                        assert False, 'Key %s not found on the keyboard' % val
-                self._tap(self._alpha_key)
+            if self.is_element_present(*self._key_locator(val)):
+                self._tap(val)
+            else:
+                assert False, 'Key %s not found on the keyboard' % val
+
         self.marionette.switch_to_frame()
 
     def switch_to_number_keyboard(self):
@@ -473,7 +467,8 @@ class Keyboard(object):
 
     def tap_backspace(self):
         self._switch_to_keyboard()
-        self._tap(self._backspace_key)
+        bs = self.marionette.find_element(self._button_locator[0], self._button_locator[1] % _backspace_key)
+        self.marionette.tap(bs)
         self.marionette.switch_to_frame()
 
     def tap_space(self):
