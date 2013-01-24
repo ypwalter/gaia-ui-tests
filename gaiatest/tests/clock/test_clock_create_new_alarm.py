@@ -14,7 +14,6 @@ class TestClockCreateNewAlarm(GaiaTestCase):
 
         # unlock the lockscreen if it's locked
         self.lockscreen.unlock()
-
         # launch the Clock app
         self.app = self.apps.launch('Clock')
 
@@ -24,6 +23,7 @@ class TestClockCreateNewAlarm(GaiaTestCase):
         https://moztrap.mozilla.org/manage/case/1772/
 
         """
+
         self.wait_for_element_displayed(*clock_object._alarm_create_new_locator)
 
         # Get the number of alarms set, before adding the new alarm
@@ -78,7 +78,7 @@ class TestClockCreateNewAlarm(GaiaTestCase):
         self.assertTrue("test4321" == alarm_label, 'Actual label was: "' + alarm_label + '", not "test4321".')
 
     def tearDown(self):
-        # delete the new alarm
-        clock_object.delete_alarm(self)
+        # delete any existing alarms
+        self.data_layer.delete_all_alarms()
 
         GaiaTestCase.tearDown(self)

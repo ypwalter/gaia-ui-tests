@@ -221,6 +221,8 @@ class GaiaData(object):
     def media_files(self):
         return self.marionette.execute_async_script('return GaiaDataLayer.getAllMediaFiles();')
 
+    def delete_all_alarms(self):
+        self.marionette.execute_script('GaiaDataLayer.deleteAllAlarms();')
 
 class GaiaTestCase(MarionetteTestCase):
 
