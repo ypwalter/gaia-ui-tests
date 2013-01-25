@@ -71,7 +71,7 @@ class TestCardsView(GaiaTestCase):
         app_card = self.marionette.find_element(*self._app_card_locator)
         self.marionette.tap(app_card)
 
-        self.wait_for_element_not_displayed(*self._cards_view_locator)
+        self.wait_for_element_not_displayed(*self._app_card_locator)
 
         self.assertTrue(clock_frame.is_displayed(),
             "Clock frame was expected to be displayed but was not")
