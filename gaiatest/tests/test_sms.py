@@ -25,6 +25,7 @@ class TestSms(GaiaTestCase):
     # Conversation view
     _all_messages_locator = ('css selector', 'li.bubble')
     _received_message_content_locator = ('xpath', "//li[@class='bubble'][a[@class='received']]")
+    _unread_icon_locator = ('css selector', 'aside.icon-unread')
 
     def setUp(self):
         GaiaTestCase.setUp(self)
@@ -76,9 +77,7 @@ class TestSms(GaiaTestCase):
         # go into the new message
         unread_message = self.marionette.find_element(*self._unread_message_locator)
         self.marionette.tap(unread_message)
-
-        # TODO Due to displayed bugs I cannot find a good wait for switch btw views
-        time.sleep(5)
+        self.wait_for_element_not_displayed(*self._unread_icon_locator)
 
         # get the most recent listed and most recent received text message
         received_message = self.marionette.find_elements(
