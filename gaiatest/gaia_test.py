@@ -398,6 +398,7 @@ class Keyboard(object):
 
     # Keyboard app
     _keyboard_frame_locator = ('css selector', '#keyboard-frame iframe')
+    _keyboard_locator = ('css selector', '#keyboard')
 
     _button_locator = ('css selector', 'button.keyboard-key[data-keycode="%s"]')
 
@@ -433,20 +434,28 @@ class Keyboard(object):
         self._switch_to_keyboard()
 
         for val in string:
+            # alpha is in on keyboard
             if val.isalpha():
                 if self.is_element_present(*self._key_locator(self._alpha_key)):
                     self._tap(self._alpha_key)
                 if not self.is_element_present(*self._key_locator(val)):
                     self._tap(self._upper_case_key)
+            # numbers and symbols are in another keyboard
             else:
                 if self.is_element_present(*self._key_locator(self._numeric_sign_key)):
                     self._tap(self._numeric_sign_key)
                 if not self.is_element_present(*self._key_locator(val)):
                     self._tap(self._alt_key)
+
+            # after switching to correct keyboard, tap/click if the key is there
             if self.is_element_present(*self._key_locator(val)):
                 self._tap(val)
             else:
                 assert False, 'Key %s not found on the keyboard' % val
+
+            # after tap/click space key, it might get screwed up due to timing issue. adding 0.7sec for it.
+            if ord(val) == int(self._space_key):
+                time.sleep(0.7)
 
         self.marionette.switch_to_frame()
 
