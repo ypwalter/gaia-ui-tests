@@ -31,6 +31,3 @@ class TestGalleryEmpty(GaiaTestCase):
         # Verify empty gallery text
         self.assertEqual(self.marionette.find_element(*self._empty_gallery_text_locator).text,
                          "Use the Camera app to get started.")
-
-    def tearDown(self):
-        GaiaTestCase.tearDown(self)
