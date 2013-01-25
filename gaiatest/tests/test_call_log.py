@@ -23,9 +23,6 @@ class TestCallLog(GaiaTestCase):
         # TODO insert call data before the test
         # This test will fail if no calls have been made
 
-        # unlock the lockscreen if it's locked
-        self.lockscreen.unlock()
-
         # launch the app
         self.app = self.apps.launch('Phone')
 
@@ -80,11 +77,3 @@ class TestCallLog(GaiaTestCase):
 
         # Check that the first one is displayed. this is only a smoke test after all
         self.assertTrue(missed_calls[0].is_displayed())
-
-    def tearDown(self):
-
-        # close the app
-        if self.app:
-            self.apps.kill(self.app)
-
-        GaiaTestCase.tearDown(self)

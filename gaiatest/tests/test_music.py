@@ -5,64 +5,75 @@
 from gaiatest import GaiaTestCase
 import time
 
+
 class TestMusic(GaiaTestCase):
 
-  _body_list_mode_locator = ('css selector', 'body.list-mode')
+    _body_list_mode_locator = ('css selector', 'body.list-mode')
 
-  _album_tile_locator = ('css selector', '#views-tiles div.tile-container')
-  _album_list_locator = ('css selector', '#views-list li > a')
+    _album_tile_locator = ('css selector', '#views-tiles div.tile-container')
+    _album_list_locator = ('css selector', '#views-list li > a')
+    _album_title_locator = ('class name', "list-main-title")
+    _audio_locator = ('id', 'player-audio')
+    _player_seek_elapsed_locator = ('id', 'player-seek-elapsed')
+    _player_controls_play_locator = ('id', 'player-controls-play')
+    _tab_albums_locator = ('id', 'tabs-albums')
+    _views_player_locator = ('id', 'views-player')
+    _views_sublist_controls_play_locator = ('id', 'views-sublist-controls-play')
 
-  _album_title_locator = ('class name', "list-main-title")
-  _player_seek_elapsed_locator = ('id', 'player-seek-elapsed')
-  _player_controls_play_locator = ('id', 'player-controls-play')
-  _tab_albums_locator = ('id', 'tabs-albums')
-  _views_player_locator = ('id', 'views-player')
-  _views_sublist_controls_play_locator = ('id', 'views-sublist-controls-play')
+    def setUp(self):
+        GaiaTestCase.setUp(self)
 
+        # add track to storage
+        self.push_resource('MUS_0001.mp3')
 
-  def setUp(self):
-      GaiaTestCase.setUp(self)
+        # launch the Music application
+        self.app = self.apps.launch("music")
 
-      self.lockscreen.unlock()
+    def test_select_album_play(self):
+        # https://moztrap.mozilla.org/manage/case/4031/
 
-      # launch the Music application
-      self.app = self.apps.launch("music")
+        # wait for music tiles to appear as indication of indexing
+        self.wait_for_element_displayed(*self._album_tile_locator, timeout=60)
 
-  def test_select_album_play(self):
-      # https://moztrap.mozilla.org/manage/case/4031/
+        # switch to albums view
+        tab_albums = self.marionette.find_element(*self._tab_albums_locator)
+        self.marionette.tap(tab_albums)
 
-      # wait for music tiles to appear as indication of indexing
-      self.wait_for_element_displayed(*self._album_tile_locator, timeout=60)
+        # wait for it to switch into list mode
+        self.wait_for_element_present(*self._body_list_mode_locator)
 
-      # switch to albums view
-      self.marionette.find_element(*self._tab_albums_locator).click()
+        # check that albums (at least one) are available
+        albums = self.marionette.find_elements(*self._album_list_locator)
+        self.assertGreater(len(albums), 0, 'no albums found')
 
-      # wait for it to switch into list mode
-      self.wait_for_element_present(*self._body_list_mode_locator)
+        # select an album
+        album_list = self.marionette.find_element(*self._album_list_locator)
+        self.marionette.tap(album_list)
 
-      # check that albums (at least one) are available
-      albums = self.marionette.find_elements(*self._album_list_locator)
-      self.assertGreater(len(albums), 0, 'no albums found')
+        # need a wait but cannot due to an is_displayed bug
+        time.sleep(2)
 
-      # select an album
-      self.marionette.find_element(*self._album_list_locator).click()
+        # select play
+        views_sublist_controls_play = self.marionette.find_element(*self._views_sublist_controls_play_locator)
+        self.marionette.tap(views_sublist_controls_play)
 
-      # select play
-      self.marionette.find_element(*self._views_sublist_controls_play_locator).click()
+        # play for a short duration
+        self.wait_for_condition(
+            lambda m: m.find_element(*self._player_seek_elapsed_locator).text == '00:05')
 
-      # play for a short duration
-      self.wait_for_condition(lambda m: m.find_element(
-          *self._player_seek_elapsed_locator).text == '00:05')
+        audiotag = self.marionette.find_element(*self._audio_locator)
 
-      # select stop
-      self.marionette.find_element(*self._player_controls_play_locator).click()
+        self.assertNotEqual(audiotag.get_attribute('currentTime'), audiotag.get_attribute('duration'))
 
-      # TODO
-      # Validate audio playback
+        # validate playback
+        self.assertEqual(audiotag.get_attribute('paused'), 'false')
 
-  def tearDown(self):
-      # close the app
-      if hasattr(self, 'app'):
-          self.apps.kill(self.app)
+        # select stop
+        player_controls_play = self.marionette.find_element(*self._player_controls_play_locator)
+        self.marionette.tap(player_controls_play)
 
-      GaiaTestCase.tearDown(self)
+        # wait to be sure the pause settles in
+        time.sleep(2)
+
+        # validate stopped playback
+        self.assertEqual(audiotag.get_attribute('paused'), 'true')

@@ -8,24 +8,19 @@ from gaiatest import GaiaTestCase
 class TestKillAll(GaiaTestCase):
 
     def test_kill_all(self):
-        self.lockscreen.unlock()
-
-        for app in ['Calculator', 'Clock']:
+        for app in ['Calendar', 'Clock']:
             self.apps.launch(app)
 
         self.apps.kill_all()
         self.check_no_apps_running()
 
     def test_kill_all_with_no_apps_running(self):
-        self.lockscreen.unlock()
         self.check_no_apps_running()
         self.apps.kill_all()
         self.check_no_apps_running()
 
     def test_kill_all_twice(self):
-        self.lockscreen.unlock()
-
-        apps = ['Calculator', 'Clock']
+        apps = ['Calendar', 'Clock']
         for app in apps:
             self.apps.launch(app)
 

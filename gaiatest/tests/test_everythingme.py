@@ -8,66 +8,56 @@ class TestEverythingMe(GaiaTestCase):
 
     # Everything.Me locators
     _shortcut_items_locator = ('css selector', '#shortcuts-items li')
+    _facebook_icon_locator = ('xpath', "//div/b[text()='Facebook']")
 
     # Homescreen locators
-    _homescreen_frame_locator = ('css selector', 'iframe.homescreen')
+    _homescreen_frame_locator = ('css selector', 'div.homescreen > iframe')
     _homescreen_landing_locator = ('id', 'landing-page')
+
+    # Facebook app locator
+    _facebook_iframe_locator = ('css selector', "iframe[data-url='http://touch.facebook.com/']")
+    _facebook_title_locator = ('tag name', 'title')
 
     def setUp(self):
 
         GaiaTestCase.setUp(self)
-        self.lockscreen.unlock()
 
-        self.data_layer.disable_wifi()
-        self.data_layer.enable_cell_data()
+        if self.wifi:
+            self.data_layer.enable_wifi()
+            self.data_layer.connect_to_wifi(self.testvars['wifi'])
+
+        self.lockscreen.unlock()
 
     def test_launch_everything_me_app(self):
         # https://github.com/mozilla/gaia-ui-tests/issues/69
 
-        # start on the home-screen
-        self._touch_home_button()
-
         # swipe to Everything.Me
-        self._swipe_to_everything_me()
-
-        # check for the available shortcut categories 
-        self.wait_for_element_present(*self._shortcut_items_locator, timeout=180)
-
-        shortcuts = self.marionette.find_elements(*self._shortcut_items_locator)
-        self.assertGreater(len(shortcuts), 0, 'no shortcut categories found')
-
-        # click on the first category of shortcuts
-        # Does not work?
-        ### shortcuts[0].click()
-        
-        # wait and click on a shortcut in the category
-
-        # verify launch
-        # close and exit back to home
-        self._touch_home_button()
-
-
-    def _swipe_to_everything_me(self):
-
         hs_frame = self.marionette.find_element(*self._homescreen_frame_locator)
         self.marionette.switch_to_frame(hs_frame)
 
-        landing_element = self.marionette.find_element(*self._homescreen_landing_locator)
-        landing_element_x_centre = int(landing_element.size['width']/2)
-        landing_element_y_centre = int(landing_element.size['height']/2)
+        # We'll use js to flick pages for reliability/Touch is unreliable
+        self.marionette.execute_script("window.wrappedJSObject.GridManager.goToPreviousPage();")
 
-        self.assertTrue(landing_element.is_displayed(), "Landing element not displayed after unlocking")
-        self.marionette.flick(landing_element, landing_element_x_centre, landing_element_y_centre, 300, 0, 0)
+        # check for the available shortcut categories 
+        self.wait_for_element_present(*self._shortcut_items_locator)
 
-    def _touch_home_button(self):
-        self.marionette.execute_script("window.wrappedJSObject.dispatchEvent(new Event('home'));")
+        shortcuts = self.marionette.find_elements(*self._shortcut_items_locator)
+        self.assertGreater(len(shortcuts), 0, 'No shortcut categories found')
 
-    def tearDown(self):
+        # Tap on the first category of shortcuts
+        self.marionette.tap(shortcuts[0])
 
-        # close the app
-        if hasattr(self, 'app'):
-            self.apps.kill(self.app)
+        self.wait_for_element_displayed(*self._facebook_icon_locator)
 
-        self.data_layer.disable_cell_data()
+        fb_icon = self.marionette.find_element(*self._facebook_icon_locator)
+        self.marionette.tap(fb_icon)
 
-        GaiaTestCase.tearDown(self)
+        # Switch to top level frame then we'll look for the Facebook app
+        self.marionette.switch_to_frame()
+
+        # Find the frame and switch to it
+        fb_iframe = self.wait_for_element_present(*self._facebook_iframe_locator)
+        self.marionette.switch_to_frame(fb_iframe)
+
+        fb_title = self.marionette.find_element(*self._facebook_title_locator)
+        self.assertIn("Facebook", fb_title.text)

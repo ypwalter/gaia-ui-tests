@@ -1,4 +1,6 @@
 build/
+debug/
 dist/
+gaiatest/debug/
 *.pyc
 gaiatest.egg-info
