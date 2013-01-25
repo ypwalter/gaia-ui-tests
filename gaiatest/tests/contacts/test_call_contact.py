@@ -45,6 +45,7 @@ class TestContacts(GaiaTestCase):
     def test_call_contact(self):
         # NB This is not a listed smoke test
         # Call phone from a contact
+        # https://moztrap.mozilla.org/manage/case/5679/
 
         contact_locator = self.create_contact_locator(self.contact['givenName'])
         self.wait_for_element_displayed(*contact_locator)
