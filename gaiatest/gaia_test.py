@@ -391,10 +391,14 @@ class GaiaTestCase(MarionetteTestCase):
 
 
 class Keyboard(object):
-    _upper_case_key = '20'
+    _language_key = '-3'
     _numeric_sign_key = '-2'
     _alpha_key = '-1'
+    _backspace_key = '8'
+    _enter_key = '13'
     _alt_key = '18'
+    _upper_case_key = '20'
+    _space_key = '32'
 
     # Keyboard app
     _keyboard_frame_locator = ('css selector', '#keyboard-frame iframe')
@@ -406,7 +410,6 @@ class Keyboard(object):
 
     def _switch_to_keyboard(self):
         self.marionette.switch_to_frame()
-
         keybframe = self.marionette.find_element(*self._keyboard_frame_locator)
         self.marionette.switch_to_frame(keybframe, focus=False)
 
@@ -415,8 +418,9 @@ class Keyboard(object):
             val = ord(val)
         return (self._button_locator[0], self._button_locator[1] % val)
 
-    def _press(self, val):
-        self.marionette.find_element(*self._key_locator(val)).click()
+    def _tap(self, val):
+        key = self.marionette.find_element(*self._key_locator(val))
+        self.marionette.tap(key)
 
     def is_element_present(self, by, locator):
         try:
@@ -435,24 +439,74 @@ class Keyboard(object):
         for val in string:
             if val.isalnum():
                 if val.islower():
-                    self._press(val)
+                    self._tap(val)
                 elif val.isupper():
-                    self._press(self._upper_case_key)
-                    self._press(val)
+                    self._tap(self._upper_case_key)
+                    self._tap(val)
                 elif val.isdigit():
-                    self._press(self._numeric_sign_key)
-                    self._press(val)
-                    self._press(self._alpha_key)
+                    self._tap(self._numeric_sign_key)
+                    self._tap(val)
+                    self._tap(self._alpha_key)
             else:
-                self._press(self._numeric_sign_key)
+                self._tap(self._numeric_sign_key)
                 if self.is_element_present(*self._key_locator(val)):
-                    self._press(val)
+                    self._tap(val)
                 else:
-                    self._press(self._alt_key)
+                    self._tap(self._alt_key)
                     if self.is_element_present(*self._key_locator(val)):
-                        self._press(val)
+                        self._tap(val)
                     else:
                         assert False, 'Key %s not found on the keyboard' % val
-                self._press(self._alpha_key)
-
+                self._tap(self._alpha_key)
         self.marionette.switch_to_frame()
+
+    def switch_to_number_keyboard(self):
+        self._switch_to_keyboard()
+        self._tap(self._numeric_sign_key)
+        self.marionette.switch_to_frame()
+
+    def switch_to_alpha_keyboard(self):
+        self._switch_to_keyboard()
+        self._tap(self._alpha_key)
+        self.marionette.switch_to_frame()
+
+    def tap_shift(self):
+        self._switch_to_keyboard()
+        self._tap(self._upper_case_key)
+        self.marionette.switch_to_frame()
+
+    def tap_backspace(self):
+        self._switch_to_keyboard()
+        bs = self.marionette.find_element(self._button_locator[0], self._button_locator[1] % self._backspace_key)
+        self.marionette.tap(bs)
+        self.marionette.switch_to_frame()
+
+    def tap_space(self):
+        self._switch_to_keyboard()
+        self._tap(self._space_key)
+        self.marionette.switch_to_frame()
+
+    def tap_enter(self):
+        self._switch_to_keyboard()
+        self._tap(self._enter_key)
+        self.marionette.switch_to_frame()
+
+    def tap_alt(self):
+        self._switch_to_keyboard()
+        self._tap(self._alt_key)
+        self.marionette.switch_to_frame()
+
+    def enable_caps_lock(self):
+        self._switch_to_keyboard()
+        key_obj = self.marionette.find_element(*self._key_locator(self._upper_case_key))
+        self.marionette.double_tap(key_obj)
+        self.marionette.switch_to_frame()
+
+    def long_press(self, key, timeout=2000):
+        if len(key) == 1:
+            self._switch_to_keyboard()
+            key_obj = self.marionette.find_element(*self._key_locator(key))
+            self.marionette.long_press(key_obj, timeout)
+            time.sleep(timeout/1000+1)
+            self.marionette.switch_to_frame()
+
