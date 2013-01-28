@@ -30,6 +30,9 @@ class TestSms(GaiaTestCase):
     def setUp(self):
         GaiaTestCase.setUp(self)
 
+        # delete any existing SMS messages to start clean
+        self.data_layer.delete_all_sms()
+
         # launch the app
         self.app = self.apps.launch('Messages')
 
