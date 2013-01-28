@@ -22,6 +22,9 @@ class TestEverythingMe(GaiaTestCase):
 
         GaiaTestCase.setUp(self)
 
+        # Turn off geolocation prompt
+        self.apps.set_permission('Homescreen', 'geolocation', 'deny')
+
         if self.wifi:
             self.data_layer.enable_wifi()
             self.data_layer.connect_to_wifi(self.testvars['wifi'])
