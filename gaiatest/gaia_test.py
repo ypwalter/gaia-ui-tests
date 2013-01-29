@@ -505,7 +505,7 @@ class Keyboard(object):
             self._tap(self._alpha_key)
         key_obj = self.marionette.find_element(*self._key_locator(self._upper_case_key))
         self.marionette.double_tap(key_obj)
-        self.marionette.switch_to_frame() 
+        self.marionette.switch_to_frame()
 
     def long_press(self, key, timeout=2000):
         if len(key) == 1:
