@@ -471,12 +471,14 @@ class Keyboard(object):
 
     def tap_shift(self):
         self._switch_to_keyboard()
+        if self.is_element_present(*self._key_locator(self._alpha_key)):
+            self._tap(self._alpha_key)
         self._tap(self._upper_case_key)
         self.marionette.switch_to_frame()
 
     def tap_backspace(self):
         self._switch_to_keyboard()
-        bs = self.marionette.find_element(self._button_locator[0], self._button_locator[1] % _backspace_key)
+        bs = self.marionette.find_element(self._button_locator[0], self._button_locator[1] % self._backspace_key)
         self.marionette.tap(bs)
         self.marionette.switch_to_frame()
 
@@ -492,14 +494,18 @@ class Keyboard(object):
 
     def tap_alt(self):
         self._switch_to_keyboard()
+        if self.is_element_present(*self._key_locator(self._numeric_sign_key)):
+            self._tap(self._numeric_sign_key)
         self._tap(self._alt_key)
         self.marionette.switch_to_frame()
 
     def enable_caps_lock(self):
         self._switch_to_keyboard()
+        if self.is_element_present(*self._key_locator(self._alpha_key)):
+            self._tap(self._alpha_key)
         key_obj = self.marionette.find_element(*self._key_locator(self._upper_case_key))
         self.marionette.double_tap(key_obj)
-        self.marionette.switch_to_frame()
+        self.marionette.switch_to_frame() 
 
     def long_press(self, key, timeout=2000):
         if len(key) == 1:
