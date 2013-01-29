@@ -507,6 +507,5 @@ class Keyboard(object):
             self._switch_to_keyboard()
             key_obj = self.marionette.find_element(*self._key_locator(key))
             self.marionette.long_press(key_obj, timeout)
-            time.sleep(timeout/1000+1)
+            time.sleep(timeout / 1000 + 1)
             self.marionette.switch_to_frame()
-
