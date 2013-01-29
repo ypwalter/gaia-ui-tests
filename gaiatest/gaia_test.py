@@ -128,10 +128,14 @@ class GaiaData(object):
         self.marionette.set_context(self.marionette.CONTEXT_CONTENT)
 
     def insert_contact(self, contact):
-        self.marionette.execute_script("GaiaDataLayer.insertContact(%s)" % contact.json())
+        self.marionette.switch_to_frame()
+        result = self.marionette.execute_async_script('return GaiaDataLayer.insertContact(%s);' % contact.json(), special_powers=True)
+        assert result, 'Unable to insert contact %s' % contact
 
     def remove_contact(self, contact):
-        self.marionette.execute_script("GaiaDataLayer.findAndRemoveContact(%s)" % contact.json())
+        self.marionette.switch_to_frame()
+        result = self.marionette.execute_async_script('return GaiaDataLayer.removeContact(%s);' % contact.json(), special_powers=True)
+        assert result, 'Unable to remove contact %s' % contact
 
     def get_setting(self, name):
         self.marionette.switch_to_frame()
