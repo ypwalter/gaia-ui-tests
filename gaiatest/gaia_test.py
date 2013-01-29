@@ -282,8 +282,11 @@ class GaiaTestCase(MarionetteTestCase):
         # reset to home screen
         self.marionette.execute_script("window.wrappedJSObject.dispatchEvent(new Event('home'));")
 
+    def local_resource_path(self, filename):
+        return os.path.abspath(os.path.join(os.path.dirname(__file__), 'resources', filename))
+
     def push_resource(self, filename, destination=''):
-        local = os.path.abspath(os.path.join(os.path.dirname(__file__), 'resources', filename))
+        local = self.local_resource_path(filename)
         remote = '/'.join(['sdcard', destination, filename])
         self.device_manager.mkDirs(remote)
         self.device_manager.pushFile(local, remote)
