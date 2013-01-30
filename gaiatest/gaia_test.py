@@ -127,11 +127,20 @@ class GaiaData(object):
         self.marionette.execute_script("window.navigator.mozTime.set(%s);" % date_number)
         self.marionette.set_context(self.marionette.CONTEXT_CONTENT)
 
-    def insert_contact(self, contact):
-        self.marionette.execute_script("GaiaDataLayer.insertContact(%s)" % contact.json())
+    @property
+    def all_contacts(self):
+        self.marionette.switch_to_frame()
+        return self.marionette.execute_async_script('return GaiaDataLayer.getAllContacts();', special_powers=True)
 
-    def remove_contact(self, contact):
-        self.marionette.execute_script("GaiaDataLayer.findAndRemoveContact(%s)" % contact.json())
+    def insert_contact(self, contact):
+        self.marionette.switch_to_frame()
+        result = self.marionette.execute_async_script('return GaiaDataLayer.insertContact(%s);' % contact.json(), special_powers=True)
+        assert result, 'Unable to insert contact %s' % contact
+
+    def remove_all_contacts(self):
+        self.marionette.switch_to_frame()
+        result = self.marionette.execute_async_script('return GaiaDataLayer.removeAllContacts();', special_powers=True)
+        assert result, 'Unable to remove all contacts'
 
     def get_setting(self, name):
         self.marionette.switch_to_frame()
@@ -279,6 +288,9 @@ class GaiaTestCase(MarionetteTestCase):
             self.data_layer.forget_all_networks()
             self.data_layer.disable_wifi()
 
+        # remove data
+        self.data_layer.remove_all_contacts()
+
         # reset to home screen
         self.marionette.execute_script("window.wrappedJSObject.dispatchEvent(new Event('home'));")
 
@@ -401,6 +413,7 @@ class Keyboard(object):
 
     # Keyboard app
     _keyboard_frame_locator = ('css selector', '#keyboard-frame iframe')
+    _keyboard_locator = ('css selector', '#keyboard')
 
     _button_locator = ('css selector', 'button.keyboard-key[data-keycode="%s"]')
 
@@ -436,27 +449,29 @@ class Keyboard(object):
         self._switch_to_keyboard()
 
         for val in string:
-            if val.isalnum():
-                if val.islower():
-                    self._tap(val)
-                elif val.isupper():
-                    self._tap(self._upper_case_key)
-                    self._tap(val)
-                elif val.isdigit():
-                    self._tap(self._numeric_sign_key)
-                    self._tap(val)
+            # alpha is in on keyboard
+            if val.isalpha():
+                if self.is_element_present(*self._key_locator(self._alpha_key)):
                     self._tap(self._alpha_key)
+                if not self.is_element_present(*self._key_locator(val)):
+                    self._tap(self._upper_case_key)
+            # numbers and symbols are in another keyboard
             else:
-                self._tap(self._numeric_sign_key)
-                if self.is_element_present(*self._key_locator(val)):
-                    self._tap(val)
-                else:
+                if self.is_element_present(*self._key_locator(self._numeric_sign_key)):
+                    self._tap(self._numeric_sign_key)
+                if not self.is_element_present(*self._key_locator(val)):
                     self._tap(self._alt_key)
-                    if self.is_element_present(*self._key_locator(val)):
-                        self._tap(val)
-                    else:
-                        assert False, 'Key %s not found on the keyboard' % val
-                self._tap(self._alpha_key)
+
+            # after switching to correct keyboard, tap/click if the key is there
+            if self.is_element_present(*self._key_locator(val)):
+                self._tap(val)
+            else:
+                assert False, 'Key %s not found on the keyboard' % val
+
+            # after tap/click space key, it might get screwed up due to timing issue. adding 0.7sec for it.
+            if ord(val) == int(self._space_key):
+                time.sleep(0.7)
+
         self.marionette.switch_to_frame()
 
     def switch_to_number_keyboard(self):
@@ -471,6 +486,8 @@ class Keyboard(object):
 
     def tap_shift(self):
         self._switch_to_keyboard()
+        if self.is_element_present(*self._key_locator(self._alpha_key)):
+            self._tap(self._alpha_key)
         self._tap(self._upper_case_key)
         self.marionette.switch_to_frame()
 
@@ -492,11 +509,15 @@ class Keyboard(object):
 
     def tap_alt(self):
         self._switch_to_keyboard()
+        if self.is_element_present(*self._key_locator(self._numeric_sign_key)):
+            self._tap(self._numeric_sign_key)
         self._tap(self._alt_key)
         self.marionette.switch_to_frame()
 
     def enable_caps_lock(self):
         self._switch_to_keyboard()
+        if self.is_element_present(*self._key_locator(self._alpha_key)):
+            self._tap(self._alpha_key)
         key_obj = self.marionette.find_element(*self._key_locator(self._upper_case_key))
         self.marionette.double_tap(key_obj)
         self.marionette.switch_to_frame()
@@ -506,6 +527,5 @@ class Keyboard(object):
             self._switch_to_keyboard()
             key_obj = self.marionette.find_element(*self._key_locator(key))
             self.marionette.long_press(key_obj, timeout)
-            time.sleep(timeout/1000+1)
+            time.sleep(timeout / 1000 + 1)
             self.marionette.switch_to_frame()
-
