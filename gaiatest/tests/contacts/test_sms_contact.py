@@ -63,7 +63,3 @@ class TestContacts(GaiaTestCase):
         self.assertEqual(header_element.text, expected_name)
         self.assertEqual(header_element.get_attribute('data-phone-number'),
                          expected_tel)
-
-    def tearDown(self):
-        self.data_layer.remove_contact(self.contact)
-        GaiaTestCase.tearDown(self)

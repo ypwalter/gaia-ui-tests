@@ -127,15 +127,20 @@ class GaiaData(object):
         self.marionette.execute_script("window.navigator.mozTime.set(%s);" % date_number)
         self.marionette.set_context(self.marionette.CONTEXT_CONTENT)
 
+    @property
+    def all_contacts(self):
+        self.marionette.switch_to_frame()
+        return self.marionette.execute_async_script('return GaiaDataLayer.getAllContacts();', special_powers=True)
+
     def insert_contact(self, contact):
         self.marionette.switch_to_frame()
         result = self.marionette.execute_async_script('return GaiaDataLayer.insertContact(%s);' % contact.json(), special_powers=True)
         assert result, 'Unable to insert contact %s' % contact
 
-    def remove_contact(self, contact):
+    def remove_all_contacts(self):
         self.marionette.switch_to_frame()
-        result = self.marionette.execute_async_script('return GaiaDataLayer.removeContact(%s);' % contact.json(), special_powers=True)
-        assert result, 'Unable to remove contact %s' % contact
+        result = self.marionette.execute_async_script('return GaiaDataLayer.removeAllContacts();', special_powers=True)
+        assert result, 'Unable to remove all contacts'
 
     def get_setting(self, name):
         self.marionette.switch_to_frame()
@@ -282,6 +287,9 @@ class GaiaTestCase(MarionetteTestCase):
             self.data_layer.enable_wifi()
             self.data_layer.forget_all_networks()
             self.data_layer.disable_wifi()
+
+        # remove data
+        self.data_layer.remove_all_contacts()
 
         # reset to home screen
         self.marionette.execute_script("window.wrappedJSObject.dispatchEvent(new Event('home'));")

@@ -103,7 +103,3 @@ class TestContacts(GaiaTestCase):
                          full_name)
         self.assertEqual(self.marionette.find_element(*self._call_phone_number_button_locator).text,
                          self.contact['tel']['value'])
-
-    def tearDown(self):
-        self.data_layer.remove_contact(self.contact)
-        GaiaTestCase.tearDown(self)

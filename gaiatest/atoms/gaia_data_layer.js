@@ -23,42 +23,58 @@ var GaiaDataLayer = {
     };
   },
 
-  findContact: function(aContact, aCallback) {
+  getAllContacts: function(aCallback) {
     var callback = aCallback || marionetteScriptFinished;
     SpecialPowers.addPermission('contacts-read', true, document);
-    var options = {
-      filterBy: ['familyName'],
-      filterOp: 'contains',
-      filterValue: aContact['familyName']
-    };
-    var req = window.navigator.mozContacts.find(options);
+    var req = window.navigator.mozContacts.find({});
     req.onsuccess = function () {
-      console.log('success finding contact');
+      console.log('success finding contacts');
       SpecialPowers.removePermission('contacts-read', document);
-      callback(req);
+      callback(req.result);
     };
     req.onerror = function () {
-      console.error('error finding contact', req.error.name);
+      console.error('error finding contacts', req.error.name);
       SpecialPowers.removePermission('contacts-read', document);
       callback(false);
     };
   },
 
-  removeContact: function(aContact) {
-    this.findContact(aContact, function (aContact) {
-      SpecialPowers.addPermission('contacts-write', true, document);
-      var req = window.navigator.mozContacts.remove(aContact.result[0]);
-      req.onsuccess = function() {
-        console.log('success removing contact');
-        SpecialPowers.removePermission('contacts-write', document);
-        marionetteScriptFinished(true);
-      };
-      req.onerror = function() {
-        console.error('error removing contact', req.error.name);
-        SpecialPowers.removePermission('contacts-write', document);
-        marionetteScriptFinished(false);
-      };
+  removeAllContacts: function() {
+    var self = this;
+    this.getAllContacts(function (aContacts) {
+      if (aContacts.length > 0) {
+        var contactsLength = aContacts.length;
+        var done = 0;
+        for (var i = 0; i < contactsLength; i++) {
+          self.removeContact(aContacts[i], function () {
+            if (++done === contactsLength) {
+              marionetteScriptFinished(true);
+            }
+          });
+        }
+      }
+      else {
+        console.log('no contacts to remove');
+          marionetteScriptFinished(true);
+      }
     });
+  },
+
+  removeContact: function(aContact, aCallback) {
+    var callback = aCallback || marionetteScriptFinished;
+    SpecialPowers.addPermission('contacts-write', true, document);
+    console.log("removing contact with id '" + aContact.id + "'")
+    var req = window.navigator.mozContacts.remove(aContact);
+    req.onsuccess = function() {
+      console.log("success removing contact with id '" + aContact.id + "'");
+      SpecialPowers.removePermission('contacts-write', document);
+      callback(true);
+    };
+    req.onerror = function() {
+      console.error("error removing contact with id '" + aContacts[i].id + "'");
+      SpecialPowers.removePermission('contacts-write', document);
+      callback(false);
+    };
   },
 
   getSetting: function(aName) {

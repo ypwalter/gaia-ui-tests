@@ -75,7 +75,3 @@ class TestContacts(GaiaTestCase):
         # hang up before the person answers ;)
         hangup_bar = self.marionette.find_element(*self._hangup_bar_locator)
         self.marionette.tap(hangup_bar)
-
-    def tearDown(self):
-        self.data_layer.remove_contact(self.contact)
-        GaiaTestCase.tearDown(self)

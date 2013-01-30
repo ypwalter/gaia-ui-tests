@@ -8,7 +8,8 @@ from gaiatest.mocks.mock_contact import MockContact
 
 class TestContacts(GaiaTestCase):
 
-    def test_add_and_remove_contact(self):
-        contact = MockContact()
-        self.data_layer.insert_contact(contact)
-        self.data_layer.remove_contact(contact)
+    def test_and_remove_contact(self):
+        self.data_layer.insert_contact(MockContact())
+        self.assertEqual(len(self.data_layer.all_contacts), 1)
+        self.data_layer.remove_all_contacts()
+        self.assertEqual(self.data_layer.all_contacts, [])
