@@ -137,10 +137,12 @@ class GaiaData(object):
         result = self.marionette.execute_async_script('return GaiaDataLayer.insertContact(%s);' % contact.json(), special_powers=True)
         assert result, 'Unable to insert contact %s' % contact
 
-    def remove_all_contacts(self):
+    def remove_all_contacts(self, default_script_timeout):
         self.marionette.switch_to_frame()
+        self.marionette.set_script_timeout(max(default_script_timeout, 1000 * len(self.all_contacts)))
         result = self.marionette.execute_async_script('return GaiaDataLayer.removeAllContacts();', special_powers=True)
         assert result, 'Unable to remove all contacts'
+        self.marionette.set_script_timeout(default_script_timeout)
 
     def get_setting(self, name):
         self.marionette.switch_to_frame()
@@ -224,14 +226,17 @@ class GaiaData(object):
 
 class GaiaTestCase(MarionetteTestCase):
 
+    _script_timeout = 60000
+    _search_timeout = 10000
+
     def setUp(self):
         MarionetteTestCase.setUp(self)
         self.marionette.__class__ = type('Marionette', (Marionette, MarionetteTouchMixin), {})
         self.marionette.setup_touch()
 
         # the emulator can be really slow!
-        self.marionette.set_script_timeout(60000)
-        self.marionette.set_search_timeout(10000)
+        self.marionette.set_script_timeout(self._script_timeout)
+        self.marionette.set_search_timeout(self._search_timeout)
         self.lockscreen = LockScreen(self.marionette)
         self.apps = GaiaApps(self.marionette)
         self.data_layer = GaiaData(self.marionette)
@@ -289,7 +294,7 @@ class GaiaTestCase(MarionetteTestCase):
             self.data_layer.disable_wifi()
 
         # remove data
-        self.data_layer.remove_all_contacts()
+        self.data_layer.remove_all_contacts(self._script_timeout)
 
         # reset to home screen
         self.marionette.execute_script("window.wrappedJSObject.dispatchEvent(new Event('home'));")
