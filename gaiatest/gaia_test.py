@@ -224,6 +224,9 @@ class GaiaData(object):
 
 class GaiaTestCase(MarionetteTestCase):
 
+    # deafult timeout in seconds for the wait_for methods
+    _default_timeout = 30
+
     def setUp(self):
         MarionetteTestCase.setUp(self)
         self.marionette.__class__ = type('Marionette', (Marionette, MarionetteTouchMixin), {})
@@ -303,7 +306,7 @@ class GaiaTestCase(MarionetteTestCase):
         self.device_manager.mkDirs(remote)
         self.device_manager.pushFile(local, remote)
 
-    def wait_for_element_present(self, by, locator, timeout=10):
+    def wait_for_element_present(self, by, locator, timeout=_default_timeout):
         timeout = float(timeout) + time.time()
 
         while time.time() < timeout:
@@ -316,7 +319,7 @@ class GaiaTestCase(MarionetteTestCase):
             raise TimeoutException(
                 'Element %s not found before timeout' % locator)
 
-    def wait_for_element_not_present(self, by, locator, timeout=10):
+    def wait_for_element_not_present(self, by, locator, timeout=_default_timeout):
         timeout = float(timeout) + time.time()
 
         while time.time() < timeout:
@@ -329,7 +332,7 @@ class GaiaTestCase(MarionetteTestCase):
             raise TimeoutException(
                 'Element %s still present after timeout' % locator)
 
-    def wait_for_element_displayed(self, by, locator, timeout=10):
+    def wait_for_element_displayed(self, by, locator, timeout=_default_timeout):
         timeout = float(timeout) + time.time()
 
         while time.time() < timeout:
@@ -343,7 +346,7 @@ class GaiaTestCase(MarionetteTestCase):
             raise TimeoutException(
                 'Element %s not visible before timeout' % locator)
 
-    def wait_for_element_not_displayed(self, by, locator, timeout=10):
+    def wait_for_element_not_displayed(self, by, locator, timeout=_default_timeout):
         timeout = float(timeout) + time.time()
 
         while time.time() < timeout:
@@ -357,7 +360,7 @@ class GaiaTestCase(MarionetteTestCase):
             raise TimeoutException(
                 'Element %s still visible after timeout' % locator)
 
-    def wait_for_condition(self, method, timeout=10,
+    def wait_for_condition(self, method, timeout=_default_timeout,
                            message="Condition timed out"):
         """Calls the method provided with the driver as an argument until the \
         return value is not False."""
