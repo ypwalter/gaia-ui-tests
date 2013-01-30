@@ -250,22 +250,23 @@ class GaiaTestCase(MarionetteTestCase):
 
     @property
     def device_manager(self):
-        if not self.is_android_build:
-            raise Exception('Device manager is only available for devices.')
         if hasattr(self, '_device_manager') and self._device_manager:
             return self._device_manager
+
+        if not self.is_android_build:
+            raise Exception('Device manager is only available for devices.')
+
+        dm_type = os.environ.get('DM_TRANS', 'adb')
+        if dm_type == 'adb':
+            self._device_manager = mozdevice.DeviceManagerADB()
+        elif dm_type == 'sut':
+            host = os.environ.get('TEST_DEVICE')
+            if not host:
+                raise Exception('Must specify host with SUT!')
+            self._device_manager = mozdevice.DeviceManagerSUT(host=host)
         else:
-            dm_type = os.environ.get('DM_TRANS', 'adb')
-            if dm_type == 'adb':
-                self._device_manager = mozdevice.DeviceManagerADB()
-            elif dm_type == 'sut':
-                host = os.environ.get('TEST_DEVICE')
-                if not host:
-                    raise Exception('Must specify host with SUT!')
-                self._device_manager = mozdevice.DeviceManagerSUT(host=host)
-            else:
-                raise Exception('Unknown device manager type: %s' % dm_type)
-            return self._device_manager
+            raise Exception('Unknown device manager type: %s' % dm_type)
+        return self._device_manager
 
     def cleanUp(self):
         # remove media
