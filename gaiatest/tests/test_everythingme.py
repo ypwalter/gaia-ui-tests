@@ -22,6 +22,10 @@ class TestEverythingMe(GaiaTestCase):
 
         GaiaTestCase.setUp(self)
 
+        # Bumping up default timeouts as we are getting failures on CI
+        # TODO: Revert back to default timeouts if they get increased from 10
+        self.timeout = 60
+
         # Turn off geolocation prompt
         self.apps.set_permission('Homescreen', 'geolocation', 'deny')
 
@@ -42,7 +46,7 @@ class TestEverythingMe(GaiaTestCase):
         self.marionette.execute_script("window.wrappedJSObject.GridManager.goToPreviousPage();")
 
         # check for the available shortcut categories 
-        self.wait_for_element_present(*self._shortcut_items_locator)
+        self.wait_for_element_present(*self._shortcut_items_locator, timeout=self.timeout)
 
         shortcuts = self.marionette.find_elements(*self._shortcut_items_locator)
         self.assertGreater(len(shortcuts), 0, 'No shortcut categories found')
@@ -50,7 +54,7 @@ class TestEverythingMe(GaiaTestCase):
         # Tap on the first category of shortcuts
         self.marionette.tap(shortcuts[0])
 
-        self.wait_for_element_displayed(*self._facebook_icon_locator)
+        self.wait_for_element_displayed(*self._facebook_icon_locator, timeout=self.timeout)
 
         fb_icon = self.marionette.find_element(*self._facebook_icon_locator)
         self.marionette.tap(fb_icon)
@@ -59,7 +63,7 @@ class TestEverythingMe(GaiaTestCase):
         self.marionette.switch_to_frame()
 
         # Find the frame and switch to it
-        fb_iframe = self.wait_for_element_present(*self._facebook_iframe_locator)
+        fb_iframe = self.wait_for_element_present(*self._facebook_iframe_locator, timeout=self.timeout)
         self.marionette.switch_to_frame(fb_iframe)
 
         fb_title = self.marionette.find_element(*self._facebook_title_locator)
