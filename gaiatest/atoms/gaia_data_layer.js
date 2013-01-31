@@ -325,5 +325,14 @@ var GaiaDataLayer = {
       function () { callback(media); },
       function () { return remainingMediaTypes === 0; }
     );
+  },
+
+  deleteAllAlarms: function() {
+    window.wrappedJSObject.AlarmManager.getAlarmList (function(aList) {
+      aList.forEach(function(aAlarm) {
+         console.log("Deleting alarm with id  '" + aAlarm.id + "'");
+         window.wrappedJSObject.AlarmManager.delete(aAlarm);
+      });
+    });
   }
 };
