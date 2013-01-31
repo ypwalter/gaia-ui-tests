@@ -58,7 +58,7 @@ class TestSettingsWifi(GaiaTestCase):
             self.marionette.tap(wifi_network)
 
             self.wait_for_condition(
-                lambda m: self.marionette.find_element(*self._connected_message_locator).text == "Connected")
+                lambda m: self.marionette.find_element(*self._connected_message_locator).text == "Connected", timeout=30)
 
             # verify that wifi is now on
             self.assertTrue(self.data_layer.is_wifi_connected(self.testvars['wifi']), "WiFi was not connected via Settings app")
@@ -100,6 +100,7 @@ class TestSettingsWifi(GaiaTestCase):
             wifi_network = self.marionette.find_element(*this_network_locator)
             self.marionette.tap(wifi_network)
 
+            self.wait_for_element_present(*self._password_input_locator)
             password_input = self.marionette.find_element(*self._password_input_locator)
             password_input.send_keys(password)
             ok = self.marionette.find_element(*self._password_ok_button_locator)
