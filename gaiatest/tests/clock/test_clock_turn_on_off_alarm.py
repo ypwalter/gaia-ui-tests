@@ -46,7 +46,7 @@ class TestClockTurnOnOffAlarm(GaiaTestCase):
         self.assertTrue(origin_alarm_checked != new_alarm_checked, 'user should be able to turn off the alarm.')
 
     def tearDown(self):
-        # delete the new alarm
-        clock_object.delete_alarm(self)
+        # delete any existing alarms
+        self.data_layer.delete_all_alarms()
 
         GaiaTestCase.tearDown(self)
