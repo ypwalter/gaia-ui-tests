@@ -65,7 +65,9 @@ class TestEverythingMe(GaiaTestCase):
         fb_title = self.marionette.find_element(*self._facebook_title_locator)
         self.assertIn("Facebook", fb_title.text)
 
+    def tearDown(self):
         # this will take us back to everything.me Social page, from whence cleanUp can return to the home page
         self.marionette.switch_to_frame()
         self.marionette.execute_script("window.wrappedJSObject.dispatchEvent(new Event('home'));")
 
+        GaiaTestCase.tearDown(self)
