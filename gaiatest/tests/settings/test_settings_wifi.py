@@ -19,86 +19,40 @@ class TestSettingsWifi(GaiaTestCase):
 
         GaiaTestCase.setUp(self)
 
-        # disable wifi so we can turn it on in the test(s)
-        self.data_layer.disable_wifi()
-
         # launch the Settings app
         self.app = self.apps.launch('Settings')
 
-    def test_connect_to_open_wifi_via_settings_app(self):
-        """ Connect to an open wifi network via the Settings app
+    def test_connect_to_wifi_via_settings_app(self):
+        """ Connect to a wifi network via the Settings app
 
         https://github.com/mozilla/gaia-ui-tests/issues/342
 
         """
+        # navigate to wifi settings
+        self.wait_for_element_present(*self._wifi_menu_item_locator)
+        wifi_menu_item = self.marionette.find_element(*self._wifi_menu_item_locator)
+        self.marionette.tap(wifi_menu_item)
 
-        # this test only applies to open networks
+        # enable wifi
+        self.wait_for_element_present(*self._wifi_enabled_checkbox_locator)
+        enabled_checkbox = self.marionette.find_element(*self._wifi_enabled_checkbox_locator)
+        self.assertIsNone(enabled_checkbox.get_attribute('checked'))
+        # we have to tap on the label rather than the input
+        enabled_label = self.marionette.find_element(*self._wifi_enabled_label_locator)
+        self.marionette.tap(enabled_label)
+
+        # Wait for some networks to be found
+        self.wait_for_condition(lambda m: len(m.find_elements(*self._available_networks_locator)) > 0,
+            message="No networks listed on screen")
+
+        this_network_locator = ('xpath', "//li/a[text()='%s']" % self.testvars['wifi']['ssid'])
+        wifi_network = self.marionette.find_element(*this_network_locator)
+        self.marionette.tap(wifi_network)
+
         if self.testvars['wifi'].get('keyManagement'):
-            print 'Not running test_connect_to_open_wifi_via_settings_app due to secured network found in testvars'
-        else:
-            # navigate to wifi settings
-            self.wait_for_element_present(*self._wifi_menu_item_locator)
-            wifi_menu_item = self.marionette.find_element(*self._wifi_menu_item_locator)
-            self.marionette.tap(wifi_menu_item)
-
-            # enable wifi
-            self.wait_for_element_present(*self._wifi_enabled_checkbox_locator)
-            enabled_checkbox = self.marionette.find_element(*self._wifi_enabled_checkbox_locator)
-            self.assertIsNone(enabled_checkbox.get_attribute('checked'))
-            # we have to tap on the label rather than the input
-            enabled_label = self.marionette.find_element(*self._wifi_enabled_label_locator)
-            self.marionette.tap(enabled_label)
-
-            # Wait for some networks to be found
-            self.wait_for_condition(lambda m: len(m.find_elements(*self._available_networks_locator)) > 0,
-                message="No networks listed on screen")
-
-            this_network_locator = ('xpath', "//li/a[text()='%s']" % self.testvars['wifi']['ssid'])
-            wifi_network = self.marionette.find_element(*this_network_locator)
-            self.marionette.tap(wifi_network)
-
-            self.wait_for_condition(
-                lambda m: self.marionette.find_element(*self._connected_message_locator).text == "Connected")
-
-            # verify that wifi is now on
-            self.assertTrue(self.data_layer.is_wifi_connected(self.testvars['wifi']), "WiFi was not connected via Settings app")
-
-    def test_connect_to_secured_wifi_via_settings_app(self):
-        """ Connect to an open wifi network via the Settings app
-
-        https://github.com/mozilla/gaia-ui-tests/issues/342
-
-        """
-
-        # this test only applies to open networks
-        if not self.testvars['wifi'].get('keyManagement'):
-            print 'Not running test_connect_to_secured_wifi_via_settings_app due to open network found in testvars'
-        else:
-            # determine password
             password = self.testvars['wifi'].get('psk') or self.testvars['wifi'].get('wep')
             if not password:
                 self.fail('No psk or wep key found in testvars for secured wifi network.')
-
-            # navigate to wifi settings
-            self.wait_for_element_present(*self._wifi_menu_item_locator)
-            wifi_menu_item = self.marionette.find_element(*self._wifi_menu_item_locator)
-            self.marionette.tap(wifi_menu_item)
-
-            # enable wifi
-            self.wait_for_element_present(*self._wifi_enabled_checkbox_locator)
-            enabled_checkbox = self.marionette.find_element(*self._wifi_enabled_checkbox_locator)
-            self.assertIsNone(enabled_checkbox.get_attribute('checked'))
-            # we have to tap on the label rather than the input
-            enabled_label = self.marionette.find_element(*self._wifi_enabled_label_locator)
-            self.marionette.tap(enabled_label)
-
-            # Wait for some networks to be found
-            self.wait_for_condition(lambda m: len(m.find_elements(*self._available_networks_locator)) > 0,
-                message="No networks listed on screen")
-
-            this_network_locator = ('xpath', "//li/a[text()='%s']" % self.testvars['wifi']['ssid'])
-            wifi_network = self.marionette.find_element(*this_network_locator)
-            self.marionette.tap(wifi_network)
 
             self.wait_for_element_present(*self._password_input_locator)
             password_input = self.marionette.find_element(*self._password_input_locator)
@@ -106,8 +60,8 @@ class TestSettingsWifi(GaiaTestCase):
             ok = self.marionette.find_element(*self._password_ok_button_locator)
             self.marionette.tap(ok)
 
-            self.wait_for_condition(
-                lambda m: self.marionette.find_element(*self._connected_message_locator).text == "Connected")
+        self.wait_for_condition(
+            lambda m: self.marionette.find_element(*self._connected_message_locator).text == "Connected")
 
-            # verify that wifi is now on
-            self.assertTrue(self.data_layer.is_wifi_connected(self.testvars['wifi']), "WiFi was not connected via Settings app")
+        # verify that wifi is now on
+        self.assertTrue(self.data_layer.is_wifi_connected(self.testvars['wifi']), "WiFi was not connected via Settings app")
