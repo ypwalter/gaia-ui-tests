@@ -30,6 +30,14 @@ class TestSms(GaiaTestCase):
     def setUp(self):
         GaiaTestCase.setUp(self)
 
+        # delete any existing SMS messages to start clean
+        self.data_layer.delete_all_sms()
+
+        # temporary workaround for bug 837029
+        # launch and then kill messags app, to clear any left-over sms msg notifications
+        self.app = self.apps.launch('Messages', False)
+        self.apps.kill(self.app)
+
         # launch the app
         self.app = self.apps.launch('Messages')
 
