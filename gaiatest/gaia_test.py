@@ -127,11 +127,22 @@ class GaiaData(object):
         self.marionette.execute_script("window.navigator.mozTime.set(%s);" % date_number)
         self.marionette.set_context(self.marionette.CONTEXT_CONTENT)
 
-    def insert_contact(self, contact):
-        self.marionette.execute_script("GaiaDataLayer.insertContact(%s)" % contact.json())
+    @property
+    def all_contacts(self):
+        self.marionette.switch_to_frame()
+        return self.marionette.execute_async_script('return GaiaDataLayer.getAllContacts();', special_powers=True)
 
-    def remove_contact(self, contact):
-        self.marionette.execute_script("GaiaDataLayer.findAndRemoveContact(%s)" % contact.json())
+    def insert_contact(self, contact):
+        self.marionette.switch_to_frame()
+        result = self.marionette.execute_async_script('return GaiaDataLayer.insertContact(%s);' % contact.json(), special_powers=True)
+        assert result, 'Unable to insert contact %s' % contact
+
+    def remove_all_contacts(self, default_script_timeout):
+        self.marionette.switch_to_frame()
+        self.marionette.set_script_timeout(max(default_script_timeout, 1000 * len(self.all_contacts)))
+        result = self.marionette.execute_async_script('return GaiaDataLayer.removeAllContacts();', special_powers=True)
+        assert result, 'Unable to remove all contacts'
+        self.marionette.set_script_timeout(default_script_timeout)
 
     def get_setting(self, name):
         self.marionette.switch_to_frame()
@@ -216,8 +227,16 @@ class GaiaData(object):
         self.marionette.switch_to_frame()
         return self.marionette.execute_async_script("return GaiaDataLayer.deleteAllSms();", special_powers=True)
 
+    def delete_all_alarms(self):
+        self.marionette.execute_script('GaiaDataLayer.deleteAllAlarms();')
 
 class GaiaTestCase(MarionetteTestCase):
+
+    _script_timeout = 60000
+    _search_timeout = 10000
+
+    # deafult timeout in seconds for the wait_for methods
+    _default_timeout = 30
 
     def setUp(self):
         MarionetteTestCase.setUp(self)
@@ -225,8 +244,8 @@ class GaiaTestCase(MarionetteTestCase):
         self.marionette.setup_touch()
 
         # the emulator can be really slow!
-        self.marionette.set_script_timeout(60000)
-        self.marionette.set_search_timeout(10000)
+        self.marionette.set_script_timeout(self._script_timeout)
+        self.marionette.set_search_timeout(self._search_timeout)
         self.lockscreen = LockScreen(self.marionette)
         self.apps = GaiaApps(self.marionette)
         self.data_layer = GaiaData(self.marionette)
@@ -245,22 +264,23 @@ class GaiaTestCase(MarionetteTestCase):
 
     @property
     def device_manager(self):
-        if not self.is_android_build:
-            raise Exception('Device manager is only available for devices.')
         if hasattr(self, '_device_manager') and self._device_manager:
             return self._device_manager
+
+        if not self.is_android_build:
+            raise Exception('Device manager is only available for devices.')
+
+        dm_type = os.environ.get('DM_TRANS', 'adb')
+        if dm_type == 'adb':
+            self._device_manager = mozdevice.DeviceManagerADB()
+        elif dm_type == 'sut':
+            host = os.environ.get('TEST_DEVICE')
+            if not host:
+                raise Exception('Must specify host with SUT!')
+            self._device_manager = mozdevice.DeviceManagerSUT(host=host)
         else:
-            dm_type = os.environ.get('DM_TRANS', 'adb')
-            if dm_type == 'adb':
-                self._device_manager = mozdevice.DeviceManagerADB()
-            elif dm_type == 'sut':
-                host = os.environ.get('TEST_DEVICE')
-                if not host:
-                    raise Exception('Must specify host with SUT!')
-                self._device_manager = mozdevice.DeviceManagerSUT(host=host)
-            else:
-                raise Exception('Unknown device manager type: %s' % dm_type)
-            return self._device_manager
+            raise Exception('Unknown device manager type: %s' % dm_type)
+        return self._device_manager
 
     def cleanUp(self):
         # remove media
@@ -283,16 +303,22 @@ class GaiaTestCase(MarionetteTestCase):
             self.data_layer.forget_all_networks()
             self.data_layer.disable_wifi()
 
+        # remove data
+        self.data_layer.remove_all_contacts(self._script_timeout)
+
         # reset to home screen
         self.marionette.execute_script("window.wrappedJSObject.dispatchEvent(new Event('home'));")
 
+    def local_resource_path(self, filename):
+        return os.path.abspath(os.path.join(os.path.dirname(__file__), 'resources', filename))
+
     def push_resource(self, filename, destination=''):
-        local = os.path.abspath(os.path.join(os.path.dirname(__file__), 'resources', filename))
+        local = self.local_resource_path(filename)
         remote = '/'.join(['sdcard', destination, filename])
         self.device_manager.mkDirs(remote)
         self.device_manager.pushFile(local, remote)
 
-    def wait_for_element_present(self, by, locator, timeout=10):
+    def wait_for_element_present(self, by, locator, timeout=_default_timeout):
         timeout = float(timeout) + time.time()
 
         while time.time() < timeout:
@@ -305,7 +331,7 @@ class GaiaTestCase(MarionetteTestCase):
             raise TimeoutException(
                 'Element %s not found before timeout' % locator)
 
-    def wait_for_element_not_present(self, by, locator, timeout=10):
+    def wait_for_element_not_present(self, by, locator, timeout=_default_timeout):
         timeout = float(timeout) + time.time()
 
         while time.time() < timeout:
@@ -318,7 +344,7 @@ class GaiaTestCase(MarionetteTestCase):
             raise TimeoutException(
                 'Element %s still present after timeout' % locator)
 
-    def wait_for_element_displayed(self, by, locator, timeout=10):
+    def wait_for_element_displayed(self, by, locator, timeout=_default_timeout):
         timeout = float(timeout) + time.time()
 
         while time.time() < timeout:
@@ -332,7 +358,7 @@ class GaiaTestCase(MarionetteTestCase):
             raise TimeoutException(
                 'Element %s not visible before timeout' % locator)
 
-    def wait_for_element_not_displayed(self, by, locator, timeout=10):
+    def wait_for_element_not_displayed(self, by, locator, timeout=_default_timeout):
         timeout = float(timeout) + time.time()
 
         while time.time() < timeout:
@@ -346,7 +372,7 @@ class GaiaTestCase(MarionetteTestCase):
             raise TimeoutException(
                 'Element %s still visible after timeout' % locator)
 
-    def wait_for_condition(self, method, timeout=10,
+    def wait_for_condition(self, method, timeout=_default_timeout,
                            message="Condition timed out"):
         """Calls the method provided with the driver as an argument until the \
         return value is not False."""
@@ -402,6 +428,7 @@ class Keyboard(object):
 
     # Keyboard app
     _keyboard_frame_locator = ('css selector', '#keyboard-frame iframe')
+    _keyboard_locator = ('css selector', '#keyboard')
 
     _button_locator = ('css selector', 'button.keyboard-key[data-keycode="%s"]')
 
@@ -437,27 +464,29 @@ class Keyboard(object):
         self._switch_to_keyboard()
 
         for val in string:
-            if val.isalnum():
-                if val.islower():
-                    self._tap(val)
-                elif val.isupper():
-                    self._tap(self._upper_case_key)
-                    self._tap(val)
-                elif val.isdigit():
-                    self._tap(self._numeric_sign_key)
-                    self._tap(val)
+            # alpha is in on keyboard
+            if val.isalpha():
+                if self.is_element_present(*self._key_locator(self._alpha_key)):
                     self._tap(self._alpha_key)
+                if not self.is_element_present(*self._key_locator(val)):
+                    self._tap(self._upper_case_key)
+            # numbers and symbols are in another keyboard
             else:
-                self._tap(self._numeric_sign_key)
-                if self.is_element_present(*self._key_locator(val)):
-                    self._tap(val)
-                else:
+                if self.is_element_present(*self._key_locator(self._numeric_sign_key)):
+                    self._tap(self._numeric_sign_key)
+                if not self.is_element_present(*self._key_locator(val)):
                     self._tap(self._alt_key)
-                    if self.is_element_present(*self._key_locator(val)):
-                        self._tap(val)
-                    else:
-                        assert False, 'Key %s not found on the keyboard' % val
-                self._tap(self._alpha_key)
+
+            # after switching to correct keyboard, tap/click if the key is there
+            if self.is_element_present(*self._key_locator(val)):
+                self._tap(val)
+            else:
+                assert False, 'Key %s not found on the keyboard' % val
+
+            # after tap/click space key, it might get screwed up due to timing issue. adding 0.7sec for it.
+            if ord(val) == int(self._space_key):
+                time.sleep(0.7)
+
         self.marionette.switch_to_frame()
 
     def switch_to_number_keyboard(self):
@@ -472,6 +501,8 @@ class Keyboard(object):
 
     def tap_shift(self):
         self._switch_to_keyboard()
+        if self.is_element_present(*self._key_locator(self._alpha_key)):
+            self._tap(self._alpha_key)
         self._tap(self._upper_case_key)
         self.marionette.switch_to_frame()
 
@@ -493,11 +524,15 @@ class Keyboard(object):
 
     def tap_alt(self):
         self._switch_to_keyboard()
+        if self.is_element_present(*self._key_locator(self._numeric_sign_key)):
+            self._tap(self._numeric_sign_key)
         self._tap(self._alt_key)
         self.marionette.switch_to_frame()
 
     def enable_caps_lock(self):
         self._switch_to_keyboard()
+        if self.is_element_present(*self._key_locator(self._alpha_key)):
+            self._tap(self._alpha_key)
         key_obj = self.marionette.find_element(*self._key_locator(self._upper_case_key))
         self.marionette.double_tap(key_obj)
         self.marionette.switch_to_frame()
@@ -507,6 +542,5 @@ class Keyboard(object):
             self._switch_to_keyboard()
             key_obj = self.marionette.find_element(*self._key_locator(key))
             self.marionette.long_press(key_obj, timeout)
-            time.sleep(timeout/1000+1)
+            time.sleep(timeout / 1000 + 1)
             self.marionette.switch_to_frame()
-
