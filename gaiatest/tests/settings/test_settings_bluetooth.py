@@ -26,7 +26,7 @@ class TestBluetoothSettings(GaiaTestCase):
         """
 
         # Navigate to Bluetooth settings
-        self.wait_for_element_present(*self._bluetooth_settings_locator)
+        self.wait_for_element_displayed(*self._bluetooth_settings_locator)
         bluetooth_menu_item = self.marionette.find_element(*self._bluetooth_settings_locator)
         self.marionette.tap(bluetooth_menu_item)
 
