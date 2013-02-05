@@ -134,13 +134,15 @@ class GaiaData(object):
 
     def insert_contact(self, contact):
         self.marionette.switch_to_frame()
-        result = self.marionette.execute_async_script('return GaiaDataLayer.insertContact(%s);' % contact.json(), special_powers=True)
+        result = self.marionette.execute_async_script('return GaiaDataLayer.insertContact(%s);' % json.dumps(contact), special_powers=True)
         assert result, 'Unable to insert contact %s' % contact
 
-    def remove_all_contacts(self):
+    def remove_all_contacts(self, default_script_timeout):
         self.marionette.switch_to_frame()
+        self.marionette.set_script_timeout(max(default_script_timeout, 1000 * len(self.all_contacts)))
         result = self.marionette.execute_async_script('return GaiaDataLayer.removeAllContacts();', special_powers=True)
         assert result, 'Unable to remove all contacts'
+        self.marionette.set_script_timeout(default_script_timeout)
 
     def get_setting(self, name):
         self.marionette.switch_to_frame()
@@ -221,10 +223,21 @@ class GaiaData(object):
     def media_files(self):
         return self.marionette.execute_async_script('return GaiaDataLayer.getAllMediaFiles();')
 
+    def delete_all_sms(self):
+        self.marionette.switch_to_frame()
+        return self.marionette.execute_async_script("return GaiaDataLayer.deleteAllSms();", special_powers=True)
+
     def delete_all_alarms(self):
         self.marionette.execute_script('GaiaDataLayer.deleteAllAlarms();')
 
+
 class GaiaTestCase(MarionetteTestCase):
+
+    _script_timeout = 60000
+    _search_timeout = 10000
+
+    # deafult timeout in seconds for the wait_for methods
+    _default_timeout = 30
 
     def setUp(self):
         MarionetteTestCase.setUp(self)
@@ -232,8 +245,8 @@ class GaiaTestCase(MarionetteTestCase):
         self.marionette.setup_touch()
 
         # the emulator can be really slow!
-        self.marionette.set_script_timeout(60000)
-        self.marionette.set_search_timeout(10000)
+        self.marionette.set_script_timeout(self._script_timeout)
+        self.marionette.set_search_timeout(self._search_timeout)
         self.lockscreen = LockScreen(self.marionette)
         self.apps = GaiaApps(self.marionette)
         self.data_layer = GaiaData(self.marionette)
@@ -292,7 +305,7 @@ class GaiaTestCase(MarionetteTestCase):
             self.data_layer.disable_wifi()
 
         # remove data
-        self.data_layer.remove_all_contacts()
+        self.data_layer.remove_all_contacts(self._script_timeout)
 
         # reset to home screen
         self.marionette.execute_script("window.wrappedJSObject.dispatchEvent(new Event('home'));")
@@ -306,7 +319,7 @@ class GaiaTestCase(MarionetteTestCase):
         self.device_manager.mkDirs(remote)
         self.device_manager.pushFile(local, remote)
 
-    def wait_for_element_present(self, by, locator, timeout=10):
+    def wait_for_element_present(self, by, locator, timeout=_default_timeout):
         timeout = float(timeout) + time.time()
 
         while time.time() < timeout:
@@ -319,7 +332,7 @@ class GaiaTestCase(MarionetteTestCase):
             raise TimeoutException(
                 'Element %s not found before timeout' % locator)
 
-    def wait_for_element_not_present(self, by, locator, timeout=10):
+    def wait_for_element_not_present(self, by, locator, timeout=_default_timeout):
         timeout = float(timeout) + time.time()
 
         while time.time() < timeout:
@@ -332,7 +345,7 @@ class GaiaTestCase(MarionetteTestCase):
             raise TimeoutException(
                 'Element %s still present after timeout' % locator)
 
-    def wait_for_element_displayed(self, by, locator, timeout=10):
+    def wait_for_element_displayed(self, by, locator, timeout=_default_timeout):
         timeout = float(timeout) + time.time()
 
         while time.time() < timeout:
@@ -346,7 +359,7 @@ class GaiaTestCase(MarionetteTestCase):
             raise TimeoutException(
                 'Element %s not visible before timeout' % locator)
 
-    def wait_for_element_not_displayed(self, by, locator, timeout=10):
+    def wait_for_element_not_displayed(self, by, locator, timeout=_default_timeout):
         timeout = float(timeout) + time.time()
 
         while time.time() < timeout:
@@ -360,7 +373,7 @@ class GaiaTestCase(MarionetteTestCase):
             raise TimeoutException(
                 'Element %s still visible after timeout' % locator)
 
-    def wait_for_condition(self, method, timeout=10,
+    def wait_for_condition(self, method, timeout=_default_timeout,
                            message="Condition timed out"):
         """Calls the method provided with the driver as an argument until the \
         return value is not False."""
