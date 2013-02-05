@@ -12,6 +12,7 @@ class TestSettingsCellData(GaiaTestCase):
     _cell_data_enabled_input_locator = ('xpath', "//input[@name='ril.data.enabled']")
     _cell_data_enabled_label_locator = ('xpath', "//input[@name='ril.data.enabled']/..")
     _cell_data_prompt_turn_on_button_locator = ('css selector', '#carrier-dc-warning button[type="submit"]')
+    _cell_data_prompt_container_locator = ('css selector', '#carrier-dc-warning')
 
     def setUp(self):
 
@@ -47,7 +48,10 @@ class TestSettingsCellData(GaiaTestCase):
 
         # deal with prompt that sometimes appears (on first setting)
         turn_on_prompt_button = self.marionette.find_element(*self._cell_data_prompt_turn_on_button_locator)
-        if turn_on_prompt_button.is_displayed:
+        if turn_on_prompt_button.is_displayed and \
+           'current' in self.marionette.find_element(*self._cell_data_prompt_container_locator).get_attribute('class'):
+            # the following two asserts will currently fail due to bug 837664, so xfailing the test for now
+            # https://bugzilla.mozilla.org/show_bug.cgi?id=837664
             self.assertFalse(enabled_checkbox.get_attribute('checked'))
             self.assertFalse(self.data_layer.get_setting('ril.data.enabled'), "Cell data was enabled before responding to the prompt")
             self.marionette.tap(turn_on_prompt_button)
