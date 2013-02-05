@@ -1,5 +1,6 @@
 {
     "this_phone_number": "",
+    "imei": "",
 
     "twilio": {
         "account_sid": "",
