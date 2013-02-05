@@ -409,5 +409,19 @@ var GaiaDataLayer = {
          window.wrappedJSObject.AlarmManager.delete(aAlarm);
       });
     });
+  },
+
+  deleteBookmark: function(aBookmark) {
+      let aList = window.wrappedJSObject.GridManager.getApps();
+      aList.forEach(function(app) {
+          if (app.isBookmark){
+              if (app.manifest.name ==aBookmark){
+                  console.log('Uninstalling app with name ' + app.manifest.name);
+                  app.uninstall();
+                  return;
+              };
+          };
+      });
+      console.log('app ' + aBookmark + 'not found');
   }
 };

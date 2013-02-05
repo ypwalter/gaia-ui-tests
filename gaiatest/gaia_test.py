@@ -230,6 +230,8 @@ class GaiaData(object):
     def delete_all_alarms(self):
         self.marionette.execute_script('GaiaDataLayer.deleteAllAlarms();')
 
+    def delete_bookmark(self, bookmark_name):
+        self.marionette.execute_script("GaiaDataLayer.deleteBookmark('%s');" %bookmark_name)
 
 class GaiaTestCase(MarionetteTestCase):
 
