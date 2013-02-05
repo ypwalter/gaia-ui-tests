@@ -78,18 +78,22 @@ var GaiaDataLayer = {
   },
 
   getSetting: function(aName) {
+    SpecialPowers.addPermission('settings-read', true, document);
     var req = window.navigator.mozSettings.createLock().get(aName);
     req.onsuccess = function() {
       console.log('setting retrieved');
       let result = aName === '*' ? req.result : req.result[aName];
+      SpecialPowers.removePermission('settings-read', document);
       marionetteScriptFinished(result);
     };
     req.onerror = function() {
       console.log('error getting setting', req.error.name);
+      SpecialPowers.removePermission('settings-read', document);
     }
   },
 
   setSetting: function(aName, aValue, aReturnOnSuccess) {
+    SpecialPowers.addPermission('settings-readwrite', true, document);
     var returnOnSuccess = aReturnOnSuccess || aReturnOnSuccess === undefined;
     var setting = {};
     setting[aName] = aValue;
@@ -97,12 +101,14 @@ var GaiaDataLayer = {
     var req = window.navigator.mozSettings.createLock().set(setting);
     req.onsuccess = function() {
       console.log('setting changed');
+      SpecialPowers.removePermission('settings-readwrite', document);
       if (returnOnSuccess) {
         marionetteScriptFinished(true);
       }
     };
     req.onerror = function() {
       console.log('error changing setting', req.error.name);
+      SpecialPowers.removePermission('settings-readwrite', document);
       marionetteScriptFinished(false);
     }
   },
