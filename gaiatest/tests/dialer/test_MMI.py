@@ -47,28 +47,7 @@ class TestMMI(GaiaTestCase):
 
         imei = self.marionette.find_element(*self._message_locator).text
 
-    def test_MMI_code_call_forwarding(self):
-        self.wait_for_element_displayed(*self._keyboard_container_locator)
-
-        self._dial_number(CALL_FORWARDING_CODE)
-
-        # Assert that the number was entered correctly.
-        phone_view = self.marionette.find_element(*self._phone_number_view_locator)
-        self.assertEqual(phone_view.get_attribute('value'), CALL_FORWARDING_CODE)
-
-        # Click the call button
-        self.marionette.tap(self.marionette.find_element(*self._call_bar_locator))
-
-        self.marionette.switch_to_frame()
-
-        self.wait_for_element_displayed(*self._attention_frame_locator)
-        attention_frame = self.marionette.find_element(*self._attention_frame_locator)
-
-        # Switch to attention frame
-        self.marionette.switch_to_frame(attention_frame)
-
-        message = self.marionette.find_element(*self._message_locator).text
-
+        self.assertEqual(imei, self.testvars['imei'])
 
     def _dial_number(self, phone_number):
         '''
