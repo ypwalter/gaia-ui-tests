@@ -42,7 +42,6 @@ class TestSettingsGPS(GaiaTestCase):
         self.assertFalse(self.data_layer.get_setting('geolocation.enabled'), "GPS was not enabled via Settings app")
 
         # turn back on
-        self.marionette.switch_to_frame(self.app.frame_id)
         enabled_label = self.marionette.find_element(*self._gps_enabled_label_locator)
         self.marionette.tap(enabled_label)
         enabled_switch = self.marionette.find_element(*self._gps_enabled_input_locator)
