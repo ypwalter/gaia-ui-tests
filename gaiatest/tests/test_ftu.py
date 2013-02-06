@@ -35,8 +35,8 @@ class TestFtu(GaiaTestCase):
 
     # Section Import contacts
     _section_import_contacts_locator = ('id', 'import_contacts')
-    _import_from_sim_locator = ('id', 'sim_import')
-    _sim_import_feedback_locator = ('id', 'sim_import_feedback')
+    _import_from_sim_locator = ('id', 'sim-import-button')
+    _sim_import_feedback_locator = ('css selector', '.ftu p')
 
     # Section About Your rights
     _section_ayr_locator = ('id', 'about-your-rights')
@@ -137,13 +137,12 @@ class TestFtu(GaiaTestCase):
 
         # Commenting out SIM import for now
 
-        #        # Click import from SIM
-        #        # You can do this as many times as you like without db conflict
-        #        self.marionette.find_element(*self._import_from_sim_locator).click()
-        #
-        #        # TODO What if Sim has two contacts?
-        #        self.wait_for_condition(lambda m: m.find_element(*self._sim_import_feedback_locator).text ==
-        #                        "Imported one contact", message="Contact did not import from sim before timeout")
+        # Click import from SIM
+        # You can do this as many times as you like without db conflict
+        self.marionette.find_element(*self._import_from_sim_locator).click()
+
+        # TODO What if Sim has two contacts?
+        self.wait_for_element_displayed(*self._sim_import_feedback_locator)
 
         # Click next
         self.marionette.find_element(*self._next_button_locator).click()
