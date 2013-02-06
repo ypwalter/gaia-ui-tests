@@ -161,10 +161,12 @@ class GaiaData(object):
         self.set_setting('audio.volume.master', value)
 
     def enable_cell_data(self):
+        self.marionette.switch_to_frame()
         result = self.marionette.execute_async_script("return GaiaDataLayer.enableCellData()", special_powers=True)
         assert result, 'Unable to enable cell data'
 
     def disable_cell_data(self):
+        self.marionette.switch_to_frame()
         result = self.marionette.execute_async_script("return GaiaDataLayer.disableCellData()", special_powers=True)
         assert result, 'Unable to disable cell data'
 
@@ -175,21 +177,26 @@ class GaiaData(object):
         self.set_setting('ril.data.roaming_enabled', False)
 
     def enable_wifi(self):
+        self.marionette.switch_to_frame()
         result = self.marionette.execute_async_script("return GaiaDataLayer.enableWiFi()", special_powers=True)
         assert result, 'Unable to enable WiFi'
 
     def disable_wifi(self):
+        self.marionette.switch_to_frame()
         result = self.marionette.execute_async_script("return GaiaDataLayer.disableWiFi()", special_powers=True)
         assert result, 'Unable to disable WiFi'
 
     def connect_to_wifi(self, network):
+        self.marionette.switch_to_frame()
         result = self.marionette.execute_async_script("return GaiaDataLayer.connectToWiFi(%s)" % json.dumps(network))
         assert result, 'Unable to connect to WiFi network'
 
     def forget_all_networks(self):
+        self.marionette.switch_to_frame()
         self.marionette.execute_async_script('return GaiaDataLayer.forgetAllNetworks()')
 
     def is_wifi_connected(self, network):
+        self.marionette.switch_to_frame()
         return self.marionette.execute_script("return GaiaDataLayer.isWiFiConnected(%s)" % json.dumps(network))
 
     @property
