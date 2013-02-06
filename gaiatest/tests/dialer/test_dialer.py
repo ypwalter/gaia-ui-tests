@@ -67,8 +67,7 @@ class TestDialer(GaiaTestCase):
 
         # In case the assertion fails this will still kill the call
         # An open call creates problems for future tests
-        self.marionette.execute_script("var telephony = window.navigator.mozTelephony; " +\
-                                    "if(telephony.active) telephony.active.hangUp();")
+        self.data_layer.kill_active_call()
 
         GaiaTestCase.tearDown(self)
 
