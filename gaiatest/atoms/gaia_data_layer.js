@@ -35,7 +35,7 @@ var GaiaDataLayer = {
     req.onerror = function () {
       console.error('error finding contacts', req.error.name);
       SpecialPowers.removePermission('contacts-read', document);
-      callback(false);
+      callback([]);
     };
   },
 
