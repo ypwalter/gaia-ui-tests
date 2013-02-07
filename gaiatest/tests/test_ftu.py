@@ -142,7 +142,8 @@ class TestFtu(GaiaTestCase):
         self.marionette.find_element(*self._import_from_sim_locator).click()
 
         # TODO What if Sim has two contacts?
-        self.wait_for_element_displayed(*self._sim_import_feedback_locator)
+        self.wait_for_condition(lambda m: m.find_element(*self._sim_import_feedback_locator).text ==
+                                "Imported one contact", message="Contact did not import from sim before timeout")
 
         # Click next
         self.marionette.find_element(*self._next_button_locator).click()
