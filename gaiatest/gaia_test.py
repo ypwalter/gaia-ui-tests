@@ -145,8 +145,7 @@ class GaiaData(object):
         self.marionette.set_script_timeout(default_script_timeout)
 
     def get_setting(self, name):
-        self.marionette.switch_to_frame()
-        return self.marionette.execute_async_script('return GaiaDataLayer.getSetting("%s")' % name)
+        return self.marionette.execute_async_script('return GaiaDataLayer.getSetting("%s")' % name, special_powers=True)
 
     @property
     def all_settings(self):
@@ -155,8 +154,7 @@ class GaiaData(object):
     def set_setting(self, name, value):
         import json
         value = json.dumps(value)
-        self.marionette.switch_to_frame()
-        result = self.marionette.execute_async_script('return GaiaDataLayer.setSetting("%s", %s)' % (name, value))
+        result = self.marionette.execute_async_script('return GaiaDataLayer.setSetting("%s", %s)' % (name, value), special_powers=True)
         assert result, "Unable to change setting with name '%s' to '%s'" % (name, value)
 
     def set_volume(self, value):
@@ -164,12 +162,12 @@ class GaiaData(object):
 
     def enable_cell_data(self):
         self.marionette.switch_to_frame()
-        result = self.marionette.execute_async_script("return GaiaDataLayer.enableCellData()")
+        result = self.marionette.execute_async_script("return GaiaDataLayer.enableCellData()", special_powers=True)
         assert result, 'Unable to enable cell data'
 
     def disable_cell_data(self):
         self.marionette.switch_to_frame()
-        result = self.marionette.execute_async_script("return GaiaDataLayer.disableCellData()")
+        result = self.marionette.execute_async_script("return GaiaDataLayer.disableCellData()", special_powers=True)
         assert result, 'Unable to disable cell data'
 
     def enable_cell_roaming(self):
@@ -180,22 +178,25 @@ class GaiaData(object):
 
     def enable_wifi(self):
         self.marionette.switch_to_frame()
-        result = self.marionette.execute_async_script("return GaiaDataLayer.enableWiFi()")
+        result = self.marionette.execute_async_script("return GaiaDataLayer.enableWiFi()", special_powers=True)
         assert result, 'Unable to enable WiFi'
 
     def disable_wifi(self):
         self.marionette.switch_to_frame()
-        result = self.marionette.execute_async_script("return GaiaDataLayer.disableWiFi()")
+        result = self.marionette.execute_async_script("return GaiaDataLayer.disableWiFi()", special_powers=True)
         assert result, 'Unable to disable WiFi'
 
     def connect_to_wifi(self, network):
+        self.marionette.switch_to_frame()
         result = self.marionette.execute_async_script("return GaiaDataLayer.connectToWiFi(%s)" % json.dumps(network))
         assert result, 'Unable to connect to WiFi network'
 
     def forget_all_networks(self):
+        self.marionette.switch_to_frame()
         self.marionette.execute_async_script('return GaiaDataLayer.forgetAllNetworks()')
 
     def is_wifi_connected(self, network):
+        self.marionette.switch_to_frame()
         return self.marionette.execute_script("return GaiaDataLayer.isWiFiConnected(%s)" % json.dumps(network))
 
     @property
