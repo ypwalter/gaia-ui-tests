@@ -47,7 +47,7 @@ class TestMMI(GaiaTestCase):
 
         imei = self.marionette.find_element(*self._message_locator).text
 
-        self.assertEqual(imei, self.testvars['IMEI'])
+        self.assertEqual(imei, self.testvars['imei'])
 
     def _dial_number(self, phone_number):
         '''
