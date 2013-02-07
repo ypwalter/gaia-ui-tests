@@ -71,7 +71,7 @@ class TestEverythingMeInstallApp(GaiaTestCase):
 
         self.marionette.switch_to_frame(hs_frame)
 
-        while not self.marionette.find_element(*self._homescreen_facebook_icon_locator).is_displayed():
+        while not self.is_element_displayed(*self._homescreen_facebook_icon_locator):
             self._go_to_next_page()
 
         self.assertTrue(self.marionette.find_element(*self._homescreen_facebook_icon_locator).is_displayed())
