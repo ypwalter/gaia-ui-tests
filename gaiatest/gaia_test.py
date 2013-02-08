@@ -294,6 +294,9 @@ class GaiaTestCase(MarionetteTestCase):
             for filename in self.data_layer.media_files:
                 self.device_manager.removeFile('/'.join(['sdcard', filename]))
 
+        # restore settings from testvars
+        [self.data_layer.set_setting(name, value) for name, value in self.testvars.get('settings', {}).items()]
+
         # unlock
         self.lockscreen.unlock()
 
