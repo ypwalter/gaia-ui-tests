@@ -205,19 +205,10 @@ var GaiaApps = {
               marionetteScriptFinished(result);
             }
             else {
-              // wait until the new iframe sends the mozbrowserfirstpaint event
-              let frame = runningApps[origin].frame.firstChild;
-              if (frame.dataset.unpainted) {
-                window.addEventListener('mozbrowserfirstpaint',
-                    function firstpaint() {
-                      window.removeEventListener('mozbrowserfirstpaint',
-                                                 firstpaint);
-                      marionetteScriptFinished(result);
-                });
-              }
-              else {
-                marionetteScriptFinished(result);
-              }
+              window.addEventListener('apploadtime', function apploadtime() {
+                window.removeEventListener('apploadtime', apploadtime);
+                  marionetteScriptFinished(result);
+              });
             }
           },
           // wait until the app is found in the running apps list
