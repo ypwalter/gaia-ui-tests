@@ -75,3 +75,11 @@ class TestContacts(GaiaTestCase):
         # hang up before the person answers ;)
         hangup_bar = self.marionette.find_element(*self._hangup_bar_locator)
         self.marionette.tap(hangup_bar)
+
+    def tearDown(self):
+
+        # In case the assertion fails this will still kill the call
+        # An open call creates problems for future tests
+        self.data_layer.kill_active_call()
+
+        GaiaTestCase.tearDown(self)
