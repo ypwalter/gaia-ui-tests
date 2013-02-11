@@ -12,11 +12,10 @@ from gaiatest import GaiaApps
 
 class Base(object):
 
-    def __init__(self, marionette, name=None, url=None):
+    def __init__(self, marionette, name=None):
         self.marionette = marionette
         self.apps = GaiaApps(self.marionette)
         self.name = name or self.name
-        self.url = url or self.url
 
     def launch(self):
         self.app = self.apps.launch(self.name, url=self.url)

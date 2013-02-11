@@ -4,7 +4,8 @@
 
 from gaiatest import GaiaTestCase
 
-from  gaiatest.apps.dialer.dialer import Dialer
+from gaiatest.apps.dialer.dialer import Dialer
+
 
 class TestDialer(GaiaTestCase):
 
@@ -19,7 +20,7 @@ class TestDialer(GaiaTestCase):
         dialer.dial_number(test_phone_number)
 
         # Assert that the number was entered correctly.
-        self.assertEqual(dialer.phone_number_view_value, test_phone_number)
+        self.assertEqual(dialer.phone_number_view, test_phone_number)
 
         # Click the call button
         call_screen = dialer.tap_call_button()
@@ -31,7 +32,7 @@ class TestDialer(GaiaTestCase):
         call_screen.wait_for_condition(lambda m: self.data_layer.active_telephony_state == "alerting", timeout=30)
 
         # Check the number displayed is the one we dialed
-        self.assertEqual(test_phone_number, call_screen.calling_number_text)
+        self.assertEqual(test_phone_number, call_screen.outgoing_calling_number)
 
     def tearDown(self):
 

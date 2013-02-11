@@ -42,5 +42,5 @@ class Dialer(Base):
         return CallScreen(self.marionette, dialing_app=self)
 
     @property
-    def phone_number_view_value(self):
+    def phone_number_view(self):
         return self.marionette.find_element(*self._phone_number_view_locator).get_attribute('value')

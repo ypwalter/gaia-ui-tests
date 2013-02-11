@@ -4,6 +4,7 @@
 
 from gaiatest.apps.base import Base
 
+
 class CallScreen(Base):
     name = "Phone"
     url = ""
@@ -25,7 +26,7 @@ class CallScreen(Base):
         self.marionette.switch_to_frame(call_screen)
 
     @property
-    def calling_number_text(self):
+    def outgoing_calling_number(self):
         return self.marionette.find_element(*self._calling_number_locator).text
 
     def wait_for_outgoing_call(self):
@@ -34,3 +35,10 @@ class CallScreen(Base):
     def tap_hang_up(self):
         hang_up = self.marionette.find_element(*self._hangup_bar_locator)
         self.marionette.tap(hang_up)
+
+    def hang_up(self):
+        self.tap_hang_up()
+        self.marionette.switch_to_frame()
+        self.wait_for_condition(lambda m:
+                                self.marionette.execute_script("return window.navigator.mozTelephony.active;") is None,
+                                timeout=30)
