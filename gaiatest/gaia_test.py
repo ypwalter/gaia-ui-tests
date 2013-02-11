@@ -232,7 +232,12 @@ class GaiaData(object):
         self.marionette.execute_script('GaiaDataLayer.deleteAllAlarms();')
 
     def delete_bookmark(self, bookmark_name):
-        self.marionette.execute_script("GaiaDataLayer.deleteBookmark('%s');" %bookmark_name)
+        self.marionette.execute_script("GaiaDataLayer.deleteBookmark('%s');" % bookmark_name)
+
+    def kill_active_call(self):
+        self.marionette.execute_script("var telephony = window.navigator.mozTelephony; " +
+                                       "if(telephony.active) telephony.active.hangUp();")
+
 
 class GaiaTestCase(MarionetteTestCase):
 
