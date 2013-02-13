@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from gaiatest import GaiaTestCase
+import time
 
 
 class TestGallery(GaiaTestCase):
@@ -49,14 +50,15 @@ class TestGallery(GaiaTestCase):
         # Check the next flicks
         for i in range(len(gallery_items)):
 
-            img_src = self.marionette.find_element(*self._current_image_locator).get_attribute('src')
+            cur_img_src = self.marionette.find_element(*self._current_image_locator).get_attribute('src')
+            print 'current image is: %s' %(i+1)
 
-            self.assertIsNotNone(img_src)
-            self.assertNotEqual(img_src, prev_src)
+            self.assertIsNotNone(cur_img_src)
+            self.assertNotEqual(cur_img_src, prev_src)
 
             self.assertTrue(self.is_element_displayed(*self._photos_toolbar_locator))
 
-            prev_src = img_src
+            prev_src = cur_img_src
 
             if i != len(gallery_items) - 1:
                 self._flick_next_image()
@@ -64,38 +66,41 @@ class TestGallery(GaiaTestCase):
         # try to flick next image (No image should be available)
         self._flick_next_image()
 
-        img_src = self.marionette.find_element(*self._current_image_locator).get_attribute('src')
+        cur_img_src = self.marionette.find_element(*self._current_image_locator).get_attribute('src')
+        print 'current image is: 4'
 
-        self.assertIsNotNone(img_src)
-        self.assertEqual(img_src, prev_src)
+        self.assertIsNotNone(cur_img_src)
+        self.assertEqual(cur_img_src, prev_src)
 
         self.assertTrue(self.is_element_displayed(*self._photos_toolbar_locator))
 
-        prev_src = img_src
-
+        prev_src = cur_img_src
+        time.sleep(2)
 
         # check the prev flick
         for i in range(len(gallery_items) - 1):
 
             self._flick_prev_image()
 
-            img_src = self.marionette.find_element(*self._current_image_locator).get_attribute('src')
+            cur_img_src = self.marionette.find_element(*self._current_image_locator).get_attribute('src')
+            print 'current image is: %s' %(len(gallery_items) - i)
 
-            self.assertIsNotNone(img_src)
-            self.assertNotEqual(img_src, prev_src)
+            self.assertIsNotNone(cur_img_src)
+            self.assertNotEqual(cur_img_src, prev_src)
 
             self.assertTrue(self.is_element_displayed(*self._photos_toolbar_locator))
 
-            prev_src = img_src
+            prev_src = cur_img_src
 
 
         # try to flick prev image (No image should be available)
         self._flick_prev_image()
 
-        img_src = self.marionette.find_element(*self._current_image_locator).get_attribute('src')
+        cur_img_src = self.marionette.find_element(*self._current_image_locator).get_attribute('src')
+        print 'current image is: 1'
 
-        self.assertIsNotNone(img_src)
-        self.assertEqual(img_src, prev_src)
+        self.assertIsNotNone(cur_img_src)
+        self.assertEqual(cur_img_src, prev_src)
 
         self.assertTrue(self.is_element_displayed(*self._photos_toolbar_locator))
 
