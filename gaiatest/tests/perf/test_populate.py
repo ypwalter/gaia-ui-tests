@@ -10,23 +10,7 @@ import os
 
 class TestPopulateData(GaiaTestCase):
 
-    _loading_overlay = ('id', 'loading-overlay')
-
-    def cleanUp(self):
-        # unlock
-        self.lockscreen.unlock()
-
-        # kill any open apps
-        self.apps.kill_all()
-
-        # reset to home screen
-        self.marionette.execute_script("window.wrappedJSObject.dispatchEvent(new Event('home'));")
-
     def add_contacts(self):
-        # launch the Contacts app
-        self.app = self.apps.launch('Contacts')
-        self.wait_for_element_not_displayed(*self._loading_overlay)
-
         print 'adding contacts'
 
         for x in range(0, 1000):
@@ -35,16 +19,13 @@ class TestPopulateData(GaiaTestCase):
             contact = {'name': 'testcontact_%d' % x,
                        'tel': {'type': 'Mobile', 'value': '1-555-522-%d' % x}}
 
-            self.marionette.execute_script("GaiaDataLayer.insertContact(%s)" %
-                                           json.dumps(contact))
-
-        self.marionette.refresh()
+            self.data_layer.insert_contact(contact)
 
     def push_resource(self, filename, count=1, destination=''):
-        local = self.local_resource_path(filename)
-        remote = '/'.join(['sdcard', destination, filename])
-        self.device_manager.mkDirs(remote)
-        self.device_manager.pushFile(local, remote)
+        local = self.resource(filename)
+        remote = '/'.join(['sdcard', destination, local.rpartition(os.path.sep)[-1]])
+        self.device.manager.mkDirs(remote)
+        self.device.manager.pushFile(local, remote)
 
         for x in range(0, count):
             if not x % 100:
@@ -52,20 +33,20 @@ class TestPopulateData(GaiaTestCase):
             remote_copy = '%s_%d%s' % (remote[:remote.find('.')],
                                       x,
                                       remote[remote.find('.'):])
-            self.device_manager._checkCmd(['shell',
+            self.device.manager._checkCmd(['shell',
                                            'dd',
                                            'if=%s' % remote,
                                            'of=%s' % remote_copy])
 
-        self.device_manager.removeFile(remote)
+        self.device.manager.removeFile(remote)
 
     def add_music(self):
         print 'adding music'
-        self.push_resource('MUS_0001.mp3', count=500, destination='')
+        self.push_resource('MUS_0001.mp3', count=50)
 
     def add_photos(self):
         print 'adding photos'
-        self.push_resource('IMG_fx.jpg', count=700, destination='DCIM/100MZLLA')
+        self.push_resource('IMG_fx.jpg', count=70, destination='DCIM/100MZLLA')
 
     def test_populate_data(self):
         self.add_contacts()

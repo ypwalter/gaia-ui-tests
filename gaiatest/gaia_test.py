@@ -236,6 +236,56 @@ class GaiaData(object):
                                    "if(telephony.active) telephony.active.hangUp();")
 
 
+class GaiaDevice(object):
+
+    def __init__(self, marionette):
+        self.marionette = marionette
+
+    @property
+    def manager(self):
+        if hasattr(self, '_manager') and self._manager:
+            return self._manager
+
+        if not self.is_android_build:
+            raise Exception('Device manager is only available for devices.')
+
+        dm_type = os.environ.get('DM_TRANS', 'adb')
+        if dm_type == 'adb':
+            self._manager = mozdevice.DeviceManagerADB()
+        elif dm_type == 'sut':
+            host = os.environ.get('TEST_DEVICE')
+            if not host:
+                raise Exception('Must specify host with SUT!')
+            self._manager = mozdevice.DeviceManagerSUT(host=host)
+        else:
+            raise Exception('Unknown device manager type: %s' % dm_type)
+        return self._manager
+
+    @property
+    def is_android_build(self):
+        return 'Android' in self.marionette.session_capabilities['platform']
+
+    def push_file(self, source, destination=''):
+        remote_path = '/'.join(['sdcard', destination, source.rpartition(os.path.sep)[-1]])
+        self.manager.mkDirs(remote_path)
+        self.manager.pushFile(source, remote_path)
+
+    def restart_b2g(self):
+        self.manager.shellCheckOutput(['stop', 'b2g'])
+        self.marionette.client.close()
+        self.marionette.session = None
+        self.marionette.window = None
+        time.sleep(2)
+        self.manager.shellCheckOutput(['start', 'b2g'])
+        self.marionette.wait_for_port()
+        self.marionette.start_session()
+        self.marionette.execute_async_script("""
+window.addEventListener('mozbrowserloadend', function mozbrowserloadend(aEvent) {
+  window.removeEventListener('mozbrowserloadend', mozbrowserloadend);
+  marionetteScriptFinished();
+});""")
+
+
 class GaiaTestCase(MarionetteTestCase):
 
     _script_timeout = 60000
@@ -247,6 +297,10 @@ class GaiaTestCase(MarionetteTestCase):
     def setUp(self):
         MarionetteTestCase.setUp(self)
         self.marionette.__class__ = type('Marionette', (Marionette, MarionetteTouchMixin), {})
+
+        self.device = GaiaDevice(self.marionette)
+        self.device.restart_b2g()
+
         self.marionette.setup_touch()
 
         # the emulator can be really slow!
@@ -264,35 +318,11 @@ class GaiaTestCase(MarionetteTestCase):
 
         self.cleanUp()
 
-    @property
-    def is_android_build(self):
-        return 'Android' in self.marionette.session_capabilities['platform']
-
-    @property
-    def device_manager(self):
-        if hasattr(self, '_device_manager') and self._device_manager:
-            return self._device_manager
-
-        if not self.is_android_build:
-            raise Exception('Device manager is only available for devices.')
-
-        dm_type = os.environ.get('DM_TRANS', 'adb')
-        if dm_type == 'adb':
-            self._device_manager = mozdevice.DeviceManagerADB()
-        elif dm_type == 'sut':
-            host = os.environ.get('TEST_DEVICE')
-            if not host:
-                raise Exception('Must specify host with SUT!')
-            self._device_manager = mozdevice.DeviceManagerSUT(host=host)
-        else:
-            raise Exception('Unknown device manager type: %s' % dm_type)
-        return self._device_manager
-
     def cleanUp(self):
         # remove media
-        if self.is_android_build and self.data_layer.media_files:
+        if self.device.is_android_build and self.data_layer.media_files:
             for filename in self.data_layer.media_files:
-                self.device_manager.removeFile('/'.join(['sdcard', filename]))
+                self.device.manager.removeFile('/'.join(['sdcard', filename]))
 
         # restore settings from testvars
         [self.data_layer.set_setting(name, value) for name, value in self.testvars.get('settings', {}).items()]
@@ -318,14 +348,11 @@ class GaiaTestCase(MarionetteTestCase):
         # reset to home screen
         self.marionette.execute_script("window.wrappedJSObject.dispatchEvent(new Event('home'));")
 
-    def local_resource_path(self, filename):
-        return os.path.abspath(os.path.join(os.path.dirname(__file__), 'resources', filename))
-
     def push_resource(self, filename, destination=''):
-        local = self.local_resource_path(filename)
-        remote = '/'.join(['sdcard', destination, filename])
-        self.device_manager.mkDirs(remote)
-        self.device_manager.pushFile(local, remote)
+        self.device.push_file(self.resource(filename), destination)
+
+    def resource(self, filename):
+        return os.path.abspath(os.path.join(os.path.dirname(__file__), 'resources', filename))
 
     def wait_for_element_present(self, by, locator, timeout=_default_timeout):
         timeout = float(timeout) + time.time()
