@@ -9,5 +9,5 @@ class TestResources(GaiaTestCase):
 
     def test_push_resource(self):
         resource = 'IMG_0001.jpg'
-        self.data_layer.push_resource(resource)
+        self.push_resource(resource)
         self.assertTrue(resource in self.data_layer.media_files)
