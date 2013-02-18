@@ -18,7 +18,7 @@ class Base(object):
         self.name = name or self.name
 
     def launch(self):
-        self.app = self.apps.launch(self.name, url=self.url)
+        self.app = self.apps.launch(self.name)
 
     def wait_for_element_present(self, by, locator, timeout=10):
         timeout = float(timeout) + time.time()

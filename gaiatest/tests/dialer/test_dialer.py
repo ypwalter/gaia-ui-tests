@@ -4,7 +4,7 @@
 
 from gaiatest import GaiaTestCase
 
-from gaiatest.apps.dialer.dialer import Dialer
+from gaiatest.apps.phone.app import Phone
 
 
 class TestDialer(GaiaTestCase):
@@ -14,17 +14,18 @@ class TestDialer(GaiaTestCase):
 
         test_phone_number = self.testvars['twilio']['phone_number']
 
-        dialer = Dialer(self.marionette)
-        dialer.launch()
+        phone = Phone(self.marionette)
+        phone.launch()
 
-        dialer.dial_number(test_phone_number)
+        phone.dialer.dial_number(test_phone_number)
 
         # Assert that the number was entered correctly.
-        self.assertEqual(dialer.phone_number_view, test_phone_number)
+        self.assertEqual(phone.dialer.phone_number_view, test_phone_number)
 
         # Click the call button
-        call_screen = dialer.tap_call_button()
+        phone.dialer.tap_call_button()
 
+        call_screen = phone.call_screen(dialing_app=phone.dialer)
         # Wait for call screen to be dialing
         call_screen.wait_for_outgoing_call()
 

@@ -2,12 +2,11 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from gaiatest.apps.base import Base
+from gaiatest.apps.phone.app import Phone
 
 
-class CallScreen(Base):
-    name = "Phone"
-    url = ""
+class CallScreen(Phone):
+
     _call_screen_locator = ('css selector', "iframe[name='call_screen']")
 
     _calling_number_locator = ('css selector', "div.number")
@@ -15,7 +14,7 @@ class CallScreen(Base):
     _hangup_bar_locator = ('id', 'callbar-hang-up-action')
 
     def __init__(self, marionette, dialing_app):
-        Base.__init__(self, marionette)
+        Phone.__init__(self, marionette)
         self.dialing_app = dialing_app
 
         self.marionette.switch_to_frame()

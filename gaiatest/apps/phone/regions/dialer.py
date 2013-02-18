@@ -3,27 +3,26 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import time
-from gaiatest.apps.base import Base
+from gaiatest.apps.phone.app import Phone
 
 
-class Dialer(Base):
-
-    name = "Phone"
-    url = ""
+class Dialer(Phone):
 
     #locators
     _keyboard_container_locator = ('id', 'keyboard-container')
     _phone_number_view_locator = ('id', 'phone-number-view')
     _call_bar_locator = ('id', 'keypad-callbar-call-action')
 
-    def launch(self):
-        self.apps.launch(self.name, url=self.url)
+
+    def __init__(self, marionette):
+        Phone.__init__(self, marionette)
         self.wait_for_element_displayed(*self._keyboard_container_locator)
 
+
     def dial_number(self, phone_number):
-        '''
+        """
         Dial a number using the keypad
-        '''
+        """
         for i in phone_number:
             if i == "+":
                 zero_button = self.marionette.find_element('css selector', 'div.keypad-key[data-value="0"]')
@@ -38,8 +37,6 @@ class Dialer(Base):
     def tap_call_button(self):
         call_button = self.marionette.find_element(*self._call_bar_locator)
         self.marionette.tap(call_button)
-        from gaiatest.apps.dialer.call_screen import CallScreen
-        return CallScreen(self.marionette, dialing_app=self)
 
     @property
     def phone_number_view(self):
