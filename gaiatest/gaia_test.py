@@ -446,6 +446,10 @@ class GaiaTestCase(MarionetteTestCase):
                 screenshot = self.marionette.screenshot()[22:]
                 f.write(base64.decodestring(screenshot))
 
+            # settings
+            with open(os.path.join(debug_path, '%s_settings.json' % test_name), 'w') as f:
+                f.write(json.dumps(self.data_layer.all_settings))
+
         self.lockscreen = None
         self.apps = None
         self.data_layer = None
