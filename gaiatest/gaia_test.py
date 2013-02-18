@@ -446,6 +446,10 @@ class GaiaTestCase(MarionetteTestCase):
                 screenshot = self.marionette.screenshot()[22:]
                 f.write(base64.decodestring(screenshot))
 
+            # page source
+            with open(os.path.join(debug_path, '%s_source.txt' % test_name), 'w') as f:
+                f.write(self.marionette.page_source.encode('utf-8'))
+
             # settings
             with open(os.path.join(debug_path, '%s_settings.json' % test_name), 'w') as f:
                 f.write(json.dumps(self.data_layer.all_settings))
