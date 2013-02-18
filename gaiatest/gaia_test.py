@@ -265,10 +265,17 @@ class GaiaDevice(object):
     def is_android_build(self):
         return 'Android' in self.marionette.session_capabilities['platform']
 
-    def push_file(self, source, destination=''):
+    def push_file(self, source, count=1, destination=''):
         remote_path = '/'.join(['sdcard', destination, source.rpartition(os.path.sep)[-1]])
         self.manager.mkDirs(remote_path)
         self.manager.pushFile(source, remote_path)
+
+        if count > 1:
+            for i in range(1, count + 1):
+                remote_copy = '_%s.'.join(iter(remote_path.split('.'))) % i
+                self.manager._checkCmd(['shell', 'dd', 'if=%s' % remote_path, 'of=%s' % remote_copy])
+
+            self.manager.removeFile(remote_path)
 
     def restart_b2g(self):
         self.manager.shellCheckOutput(['stop', 'b2g'])
@@ -348,8 +355,8 @@ class GaiaTestCase(MarionetteTestCase):
         # reset to home screen
         self.marionette.execute_script("window.wrappedJSObject.dispatchEvent(new Event('home'));")
 
-    def push_resource(self, filename, destination=''):
-        self.device.push_file(self.resource(filename), destination)
+    def push_resource(self, filename, count=1, destination=''):
+        self.device.push_file(self.resource(filename), count, destination)
 
     def resource(self, filename):
         return os.path.abspath(os.path.join(os.path.dirname(__file__), 'resources', filename))

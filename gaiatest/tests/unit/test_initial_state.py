@@ -13,10 +13,10 @@ class TestInitialState(GaiaTestCase):
     def test_initial_state(self):
         self.check_initial_state()
 
-    def _test_state_after_reset(self):
+    def test_state_after_reset(self):
         # push media files
-        self.push_resource('IMG_0001.jpg', 'DCIM/100MZLLA')
-        self.push_resource('VID_0001.3gp', 'DCIM/100MZLLA')
+        self.push_resource('IMG_0001.jpg', destination='DCIM/100MZLLA')
+        self.push_resource('VID_0001.3gp', destination='DCIM/100MZLLA')
         self.push_resource('MUS_0001.mp3')
 
         # change volume
