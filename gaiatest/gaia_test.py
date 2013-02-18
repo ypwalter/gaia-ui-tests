@@ -265,7 +265,7 @@ class GaiaDevice(object):
     def is_android_build(self):
         return 'Android' in self.marionette.session_capabilities['platform']
 
-    def push_file(self, source, count=1, destination=''):
+    def push_file(self, source, count=1, destination='', progress=None):
         remote_path = '/'.join(['sdcard', destination, source.rpartition(os.path.sep)[-1]])
         self.manager.mkDirs(remote_path)
         self.manager.pushFile(source, remote_path)
@@ -274,6 +274,8 @@ class GaiaDevice(object):
             for i in range(1, count + 1):
                 remote_copy = '_%s.'.join(iter(remote_path.split('.'))) % i
                 self.manager._checkCmd(['shell', 'dd', 'if=%s' % remote_path, 'of=%s' % remote_copy])
+                if progress:
+                    progress.update(i)
 
             self.manager.removeFile(remote_path)
 
