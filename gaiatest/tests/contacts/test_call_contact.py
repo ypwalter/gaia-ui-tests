@@ -75,6 +75,8 @@ class TestContacts(GaiaTestCase):
         # hang up before the person answers ;)
         hangup_bar = self.marionette.find_element(*self._hangup_bar_locator)
         self.marionette.tap(hangup_bar)
+        # Switch back to main frame before Marionette loses track bug #840931
+        self.marionette.switch_to_frame()
 
     def tearDown(self):
 
