@@ -13,11 +13,9 @@ class Dialer(Phone):
     _phone_number_view_locator = ('id', 'phone-number-view')
     _call_bar_locator = ('id', 'keypad-callbar-call-action')
 
-
     def __init__(self, marionette):
         Phone.__init__(self, marionette)
         self.wait_for_element_displayed(*self._keyboard_container_locator)
-
 
     def dial_number(self, phone_number):
         """
