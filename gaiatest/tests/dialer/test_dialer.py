@@ -28,7 +28,7 @@ class TestDialer(GaiaTestCase):
     def test_dialer_make_call(self):
         # https://moztrap.mozilla.org/manage/case/1298/
 
-        test_phone_number = self.testvars['twilio']['phone_number']
+        test_phone_number = self.testvars['remote_phone_number']
 
         self.wait_for_element_displayed(*self._keyboard_container_locator)
 
