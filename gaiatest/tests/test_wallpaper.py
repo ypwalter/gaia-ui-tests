@@ -7,7 +7,11 @@ from gaiatest import GaiaTestCase
 
 class TestWallpaper(GaiaTestCase):
 
+    # settings menu
     _display_locator = ('id', 'menuItem-display')
+
+    # display menu
+    _visible_display_menu_locator = ('css selector', '#display.current')
     _wallpaper_preview_locator = ('id', 'wallpaper-preview')
     _wallpaper_button_locator = ('css selector', "a[data-value='0']")
     _wallpaper_title_locator = ('css selector', "h1[data-l10n-id='select-wallpaper']")
@@ -33,6 +37,10 @@ class TestWallpaper(GaiaTestCase):
         display_item = self.marionette.find_element(*self._display_locator)
         self.marionette.tap(display_item)
 
+        #  Wait for the display menu to be visible
+        self.wait_for_element_displayed(*self._visible_display_menu_locator)
+
+        # wait for the wallpaper preview to be visible
         self.wait_for_element_displayed(*self._wallpaper_preview_locator)
 
         # save the default wallpaper's src
