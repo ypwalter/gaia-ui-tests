@@ -33,6 +33,7 @@ class TestGallery(GaiaTestCase):
                 break
 
         self.marionette.tap(first_gallery_item)
+        self.wait_for_element_displayed(*self._current_image_locator)
 
         current_image = self.marionette.find_element(*self._current_image_locator)
         photos_toolbar = self.marionette.find_element(*self._photos_toolbar_locator)
