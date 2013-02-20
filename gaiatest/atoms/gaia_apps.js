@@ -237,8 +237,21 @@ var GaiaApps = {
    */
   uninstallWithName: function(name) {
     GaiaApps.locateWithName(name, function uninstall(app) {
+      if (app != false){
       navigator.mozApps.mgmt.uninstall(app);
-      marionetteScriptFinished(false);
+      marionetteScriptFinished(false);}
+      else{
+          let aList = window.wrappedJSObject.GridManager.getApps();
+          aList.forEach(function(app) {
+              if (app.isBookmark){
+                  if (app.manifest.name ==name){
+                      console.log('Uninstalling app with name ' + app.manifest.name);
+                      app.uninstall();
+                      marionetteScriptFinished(false);
+                  };
+              };
+          });
+      };
     });
   }
 

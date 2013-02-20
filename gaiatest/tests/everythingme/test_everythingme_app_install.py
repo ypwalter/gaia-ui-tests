@@ -77,7 +77,8 @@ class TestEverythingMeInstallApp(GaiaTestCase):
         self.assertTrue(self.marionette.find_element(*self._homescreen_facebook_icon_locator).is_displayed())
 
     def tearDown(self):
-        self.data_layer.delete_bookmark("Facebook")
+        # self.data_layer.delete_bookmark("Facebook")
+        self.apps.uninstall("Facebook")
 
         GaiaTestCase.tearDown(self)
 
