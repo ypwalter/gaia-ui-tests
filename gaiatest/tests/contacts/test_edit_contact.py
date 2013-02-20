@@ -39,7 +39,7 @@ class TestContacts(GaiaTestCase):
         self.wait_for_element_not_displayed(*self._loading_overlay)
 
     def create_contact_locator(self, contact):
-        return ('xpath', "//a[descendant::strong[text()='%s']]" % contact)
+        return ('css selector', '.contact-item p[data-search^=%s]' % contact)
 
     def test_edit_contact(self):
         # https://moztrap.mozilla.org/manage/case/1310/
