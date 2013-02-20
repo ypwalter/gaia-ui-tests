@@ -38,7 +38,6 @@ class TestGallery(GaiaTestCase):
         current_image = self.marionette.find_element(*self._current_image_locator)
         photos_toolbar = self.marionette.find_element(*self._photos_toolbar_locator)
 
-        self.wait_for_element_displayed(*self._current_image_locator)
         self.assertIsNotNone(current_image.get_attribute('src'))
         self.assertTrue(photos_toolbar.is_displayed())
 
