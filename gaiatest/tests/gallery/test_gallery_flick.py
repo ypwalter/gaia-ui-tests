@@ -12,14 +12,17 @@ class TestGallery(GaiaTestCase):
     _current_image_locator = ('css selector', '#frames > div.frame[style ~= "translateX(0px);"] > img')
     _photos_toolbar_locator = ('id', 'fullscreen-toolbar')
 
-    images = ['IMG_0001.jpg', 'IMG_0002.jpg', 'IMG_0003.jpg', 'IMG_0004.jpg']
+    images = 'IMG_0001.jpg'
+    image_count = 4
 
     def setUp(self):
         GaiaTestCase.setUp(self)
 
-        # add photo to storage
-        for image in self.images:
-            self.push_resource(image, 'DCIM/100MZLLA')
+        # unlock the lockscreen if it's locked
+        # self.lockscreen.unlock()
+
+        # add photos to storage
+        self.push_resource(self.images, self.image_count, 'DCIM/100MZLLA')
 
         # launch the Gallery app
         self.app = self.apps.launch('Gallery')
@@ -29,10 +32,10 @@ class TestGallery(GaiaTestCase):
 
         #wait for gallery to be available
         self.wait_for_element_displayed(*self._gallery_items_locator)
-
+        time.sleep(2)
         gallery_items = self.marionette.execute_script("return window.wrappedJSObject.files;")
 
-        self.assertEqual(len(gallery_items), len(self.images))
+        self.assertEqual(len(gallery_items), self.image_count)
 
         # check that the first image is not a video
         for index, item in enumerate(gallery_items):
