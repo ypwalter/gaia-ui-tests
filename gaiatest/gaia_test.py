@@ -266,25 +266,26 @@ class GaiaDevice(object):
         return 'Android' in self.marionette.session_capabilities['platform']
 
     def push_file(self, source, count=1, destination='', progress=None):
-        remote_path = '/'.join(['sdcard', destination, source.rpartition(os.path.sep)[-1]])
-        self.manager.mkDirs(remote_path)
-        self.manager.pushFile(source, remote_path)
+        if not destination.count('.') > 0:
+            destination = '/'.join([destination, source.rpartition(os.path.sep)[-1]])
+        self.manager.mkDirs(destination)
+        self.manager.pushFile(source, destination)
 
         if count > 1:
             for i in range(1, count + 1):
-                remote_copy = '_%s.'.join(iter(remote_path.split('.'))) % i
-                self.manager._checkCmd(['shell', 'dd', 'if=%s' % remote_path, 'of=%s' % remote_copy])
+                remote_copy = '_%s.'.join(iter(destination.split('.'))) % i
+                self.manager._checkCmd(['shell', 'dd', 'if=%s' % destination, 'of=%s' % remote_copy])
                 if progress:
                     progress.update(i)
 
-            self.manager.removeFile(remote_path)
+            self.manager.removeFile(destination)
 
     def restart_b2g(self):
-        self.manager.shellCheckOutput(['stop', 'b2g'])
-        self.marionette.client.close()
-        self.marionette.session = None
-        self.marionette.window = None
+        self.stop_b2g()
         time.sleep(2)
+        self.start_b2g()
+
+    def start_b2g(self):
         self.manager.shellCheckOutput(['start', 'b2g'])
         self.marionette.wait_for_port()
         self.marionette.start_session()
@@ -293,6 +294,12 @@ window.addEventListener('mozbrowserloadend', function mozbrowserloadend(aEvent) 
   window.removeEventListener('mozbrowserloadend', mozbrowserloadend);
   marionetteScriptFinished();
 });""")
+
+    def stop_b2g(self):
+        self.manager.shellCheckOutput(['stop', 'b2g'])
+        self.marionette.client.close()
+        self.marionette.session = None
+        self.marionette.window = None
 
 
 class GaiaTestCase(MarionetteTestCase):
@@ -358,7 +365,7 @@ class GaiaTestCase(MarionetteTestCase):
         self.marionette.execute_script("window.wrappedJSObject.dispatchEvent(new Event('home'));")
 
     def push_resource(self, filename, count=1, destination=''):
-        self.device.push_file(self.resource(filename), count, destination)
+        self.device.push_file(self.resource(filename), count, '/'.join(['sdcard', destination]))
 
     def resource(self, filename):
         return os.path.abspath(os.path.join(os.path.dirname(__file__), 'resources', filename))
