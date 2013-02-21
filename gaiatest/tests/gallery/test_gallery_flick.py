@@ -63,11 +63,7 @@ class TestGallery(GaiaTestCase):
 
             previous_image_source = current_image_source
 
-            if i != len(gallery_items) - 1:
-                self.flick_to_image('next')
-
-        # try to flick next image (No image should be available)
-        self.flick_to_image('next')
+            self.flick_to_image('next')
 
         current_image_source = self.marionette.find_element(*self._current_image_locator).get_attribute('src')
         print 'current image is: 4'
@@ -109,7 +105,7 @@ class TestGallery(GaiaTestCase):
         self.assertTrue(direction in ['previous', 'next'])
         current_image = self.marionette.find_element(*self._current_image_locator)
         self.marionette.flick(current_image,  # target element
-                            '50%', '50%',  # start from middle of the target element
-                            '%s50%%' % (direction == 'previous' and '+' or direction == 'next' and '-'), 0,  # move 50% of width to the left/right
-                            800)  # gesture duration
+                              '50%', '50%',  # start from middle of the target element
+                              '%s50%%' % (direction == 'previous' and '+' or direction == 'next' and '-'), 0,  # move 50% of width to the left/right
+                              800)  # gesture duration
         self.wait_for_element_displayed(*self._current_image_locator)
