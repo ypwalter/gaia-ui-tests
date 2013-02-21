@@ -22,7 +22,6 @@ class TestDialer(GaiaTestCase):
         # Assert that the number was entered correctly.
         self.assertEqual(phone.keypad.phone_number, test_phone_number)
 
-        # Tap the call button
         phone.keypad.tap_call_button()
 
         # Wait for call screen to be dialing
