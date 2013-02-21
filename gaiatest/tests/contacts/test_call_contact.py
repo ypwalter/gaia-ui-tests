@@ -39,7 +39,7 @@ class TestContacts(GaiaTestCase):
         self.wait_for_element_not_displayed(*self._loading_overlay)
 
     def create_contact_locator(self, contact):
-        return ('xpath', "//a[descendant::strong[text()='%s']]" % contact)
+        return ('css selector', '.contact-item p[data-search^=%s]' % contact)
 
     def test_call_contact(self):
         # NB This is not a listed smoke test
@@ -75,6 +75,8 @@ class TestContacts(GaiaTestCase):
         # hang up before the person answers ;)
         hangup_bar = self.marionette.find_element(*self._hangup_bar_locator)
         self.marionette.tap(hangup_bar)
+        # Switch back to main frame before Marionette loses track bug #840931
+        self.marionette.switch_to_frame()
 
     def tearDown(self):
 
