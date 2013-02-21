@@ -188,35 +188,27 @@ var GaiaApps = {
       if (app) {
         let runningApps = window.wrappedJSObject.WindowManager.getRunningApps();
         let origin = GaiaApps.getRunningAppOrigin(appName);
-        let alreadyRunning = !!origin;
 
-        app.launch(entryPoint || null);
-
-        waitFor(
-          function() {
-            let app = runningApps[origin];
-            let result = {frame: app.frame.firstChild,
-                          src: app.iframe.src,
-                          name: app.name,
-                          origin: origin};
-
-            if (alreadyRunning) {
-              // return the app's frame id
+        window.addEventListener('apploadtime', function apploadtime() {
+          window.removeEventListener('apploadtime', apploadtime);
+          waitFor(
+            function() {
+              console.log("app with origin '" + origin + "' has launched");
+              let app = runningApps[origin];
+              let result = {frame: app.frame.firstChild,
+                src: app.iframe.src,
+                name: app.name,
+                origin: origin};
               marionetteScriptFinished(result);
+            },
+            function() {
+              origin = GaiaApps.getRunningAppOrigin(appName);
+              return !!origin;
             }
-            else {
-              window.addEventListener('apploadtime', function apploadtime() {
-                window.removeEventListener('apploadtime', apploadtime);
-                  marionetteScriptFinished(result);
-              });
-            }
-          },
-          // wait until the app is found in the running apps list
-          function() {
-            origin = GaiaApps.getRunningAppOrigin(appName);
-            return !!origin;
-          }
-        );
+          );
+        });
+        console.log("launching app with origin '" + origin + "'");
+        app.launch(entryPoint || null);
       } else {
         marionetteScriptFinished(false);
       }
