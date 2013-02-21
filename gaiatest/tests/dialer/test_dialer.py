@@ -17,12 +17,7 @@ class TestDialer(GaiaTestCase):
         phone = Phone(self.marionette)
         phone.launch()
 
-        phone.keypad.dial_number(test_phone_number)
-
-        # Assert that the number was entered correctly.
-        self.assertEqual(phone.keypad.phone_number, test_phone_number)
-
-        phone.keypad.tap_call_button()
+        phone.keypad.call_number(test_phone_number)
 
         # Wait for call screen to be dialing
         phone.call_screen.wait_for_outgoing_call()

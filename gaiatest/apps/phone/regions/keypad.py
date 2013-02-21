@@ -17,11 +17,13 @@ class Keypad(Phone):
         Phone.__init__(self, marionette)
         self.wait_for_element_displayed(*self._keyboard_container_locator)
 
-    def dial_number(self, phone_number):
-        """
-        Dial a number using the keypad
-        """
-        for i in phone_number:
+    @property
+    def phone_number(self):
+        return self.marionette.find_element(*self._phone_number_view_locator).get_attribute('value')
+
+    @phone_number.setter
+    def phone_number(self, value):
+        for i in value:
             if i == "+":
                 zero_button = self.marionette.find_element('css selector', 'div.keypad-key[data-value="0"]')
                 self.marionette.long_press(zero_button, 1200)
@@ -32,10 +34,10 @@ class Keypad(Phone):
                 self.marionette.tap(self.marionette.find_element('css selector', 'div.keypad-key[data-value="%s"]' % i))
                 time.sleep(0.25)
 
+    def call_number(self, value):
+        self.phone_number = value
+        self.tap_call_button()
+
     def tap_call_button(self):
         call_button = self.marionette.find_element(*self._call_bar_locator)
         self.marionette.tap(call_button)
-
-    @property
-    def phone_number(self):
-        return self.marionette.find_element(*self._phone_number_view_locator).get_attribute('value')
