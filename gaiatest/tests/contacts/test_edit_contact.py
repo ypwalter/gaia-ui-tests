@@ -13,7 +13,6 @@ from marionette.errors import NoSuchElementException
 class TestContacts(GaiaTestCase):
 
     _loading_overlay = ('id', 'loading-overlay')
-    _contacts_frame_locator = ('css selector', "iframe[src='app://communications.gaiamobile.org/contacts/index.html']")
 
     # Header buttons
     _done_button_locator = ('id', 'save-button')
@@ -28,15 +27,6 @@ class TestContacts(GaiaTestCase):
     _given_name_field_locator = ('id', 'givenName')
     _family_name_field_locator = ('id', 'familyName')
     _phone_field_locator = ('id', "number_0")
-    _add_picture_link_locator = ('id', 'thumbnail-photo')
-
-    # Select from: dialog
-    _gallery_button_locator = ('css selector', "a[data-value='0']")
-
-    # Gallery
-    _gallery_frame_locator = ('css selector', "iframe[src='app://gallery.gaiamobile.org/index.html#pick']")
-    _gallery_items_locator = ('css selector', 'li.thumbnail')
-    _gallery_crop_done_button_locator = ('id', 'crop-done-button')
 
     def setUp(self):
         GaiaTestCase.setUp(self)
@@ -109,57 +99,10 @@ class TestContacts(GaiaTestCase):
         # Now assert that the values have updated
         full_name = self.contact['givenName'] + " " + self.contact['familyName']
 
+        # Need an extra wait as this is failing intermittently
+        self.wait_for_condition(lambda m: m.find_element(*self._contact_name_title).text == full_name)
+
         self.assertEqual(self.marionette.find_element(*self._contact_name_title).text,
                          full_name)
         self.assertEqual(self.marionette.find_element(*self._call_phone_number_button_locator).text,
                          self.contact['tel']['value'])
-
-    def test_add_photo_from_gallery_to_contact(self):
-        # https://moztrap.mozilla.org/manage/case/5551/
-
-        # add photo to storage
-        self.push_resource('IMG_0001.jpg', destination='DCIM/100MZLLA')
-
-        contact_locator = self.create_contact_locator(self.contact['givenName'])
-        self.wait_for_element_displayed(*contact_locator)
-
-        contact_listing = self.marionette.find_element(*contact_locator)
-        self.marionette.tap(contact_listing)
-
-        self.wait_for_element_displayed(*self._edit_contact_button_locator)
-        edit_contact = self.marionette.find_element(*self._edit_contact_button_locator)
-        self.marionette.tap(edit_contact)
-
-        self.wait_for_element_displayed(*self._add_picture_link_locator)
-        picture_link = self.marionette.find_element(*self._add_picture_link_locator)
-        saved_picture_style = picture_link.get_attribute('style')
-        self.marionette.tap(picture_link)
-
-        # switch to the system app
-        self.marionette.switch_to_frame()
-
-        # choose the source as gallery app
-        self.wait_for_element_displayed(*self._gallery_button_locator)
-        self.marionette.tap(self.marionette.find_element(*self._gallery_button_locator))
-
-        # switch to the gallery app
-        self.wait_for_element_displayed(*self._gallery_frame_locator)
-        self.marionette.switch_to_frame(self.marionette.find_element(*self._gallery_frame_locator))
-
-        self.wait_for_element_displayed(*self._gallery_items_locator)
-        gallery_items = self.marionette.find_elements(*self._gallery_items_locator)
-        self.assertGreater(len(gallery_items), 0, 'No photos were found in the gallery.')
-        self.marionette.tap(gallery_items[0])
-
-        self.wait_for_element_displayed(*self._gallery_crop_done_button_locator)
-        self.marionette.tap(self.marionette.find_element(*self._gallery_crop_done_button_locator))
-
-        # switch back to the contacts app
-        self.marionette.switch_to_frame()
-        self.wait_for_element_displayed(*self._contacts_frame_locator)
-        self.marionette.switch_to_frame(self.marionette.find_element(*self._contacts_frame_locator))
-        self.wait_for_element_displayed(*self._add_picture_link_locator)
-
-        new_picture_style = self.marionette.find_element(*self._add_picture_link_locator).get_attribute('style')
-        self.assertNotEqual(new_picture_style, saved_picture_style,
-                            'The picture associated with the contact was not changed.')
