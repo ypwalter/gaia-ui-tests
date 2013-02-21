@@ -11,10 +11,11 @@ class Phone(Base):
     name = "Phone"
 
     @property
-    def dialer(self):
-        from gaiatest.apps.phone.regions.dialer import Dialer
-        return Dialer(self.marionette)
+    def keypad(self):
+        from gaiatest.apps.phone.regions.keypad import Keypad
+        return Keypad(self.marionette)
 
-    def call_screen(self, dialing_app):
+    @property
+    def call_screen(self):
         from gaiatest.apps.phone.regions.call_screen import CallScreen
-        return CallScreen(self.marionette, dialing_app)
+        return CallScreen(self.marionette)

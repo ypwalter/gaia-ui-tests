@@ -17,23 +17,22 @@ class TestDialer(GaiaTestCase):
         phone = Phone(self.marionette)
         phone.launch()
 
-        phone.dialer.dial_number(test_phone_number)
+        phone.keypad.dial_number(test_phone_number)
 
         # Assert that the number was entered correctly.
-        self.assertEqual(phone.dialer.phone_number_view, test_phone_number)
+        self.assertEqual(phone.keypad.phone_number, test_phone_number)
 
-        # Click the call button
-        phone.dialer.tap_call_button()
+        # Tap the call button
+        phone.keypad.tap_call_button()
 
-        call_screen = phone.call_screen(dialing_app=phone.dialer)
         # Wait for call screen to be dialing
-        call_screen.wait_for_outgoing_call()
+        phone.call_screen.wait_for_outgoing_call()
 
         # Wait for the state to get to 'alerting' which means connection made
-        call_screen.wait_for_condition(lambda m: self.data_layer.active_telephony_state == "alerting", timeout=30)
+        phone.call_screen.wait_for_condition(lambda m: self.data_layer.active_telephony_state == "alerting", timeout=30)
 
         # Check the number displayed is the one we dialed
-        self.assertEqual(test_phone_number, call_screen.outgoing_calling_number)
+        self.assertEqual(test_phone_number, phone.call_screen.outgoing_calling_number)
 
     def tearDown(self):
 

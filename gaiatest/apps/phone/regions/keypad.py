@@ -6,7 +6,7 @@ import time
 from gaiatest.apps.phone.app import Phone
 
 
-class Dialer(Phone):
+class Keypad(Phone):
 
     #locators
     _keyboard_container_locator = ('id', 'keyboard-container')
@@ -37,5 +37,5 @@ class Dialer(Phone):
         self.marionette.tap(call_button)
 
     @property
-    def phone_number_view(self):
+    def phone_number(self):
         return self.marionette.find_element(*self._phone_number_view_locator).get_attribute('value')

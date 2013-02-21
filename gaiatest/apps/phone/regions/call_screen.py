@@ -13,9 +13,8 @@ class CallScreen(Phone):
     _outgoing_call_locator = ('css selector', 'div.direction.outgoing')
     _hangup_bar_locator = ('id', 'callbar-hang-up-action')
 
-    def __init__(self, marionette, dialing_app):
+    def __init__(self, marionette):
         Phone.__init__(self, marionette)
-        self.dialing_app = dialing_app
 
         self.marionette.switch_to_frame()
 
@@ -39,5 +38,5 @@ class CallScreen(Phone):
         self.tap_hang_up()
         self.marionette.switch_to_frame()
         self.wait_for_condition(lambda m:
-                                self.marionette.execute_script("return window.navigator.mozTelephony.active;") is None,
+                                not self.marionette.execute_script('return window.navigator.mozTelephony.active;'),
                                 timeout=30)
