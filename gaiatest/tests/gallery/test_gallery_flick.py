@@ -64,10 +64,10 @@ class TestGallery(GaiaTestCase):
             previous_image_source = current_image_source
 
             if i != len(gallery_items) - 1:
-                self.flick_to_image('left')
+                self.flick_to_image('next')
 
         # try to flick next image (No image should be available)
-        self.flick_to_image('left')
+        self.flick_to_image('next')
 
         current_image_source = self.marionette.find_element(*self._current_image_locator).get_attribute('src')
         print 'current image is: 4'
@@ -82,7 +82,7 @@ class TestGallery(GaiaTestCase):
         # check the prev flick
         for i in range(len(gallery_items) - 1):
 
-            self.flick_to_image('right')
+            self.flick_to_image('previous')
 
             current_image_source = self.marionette.find_element(*self._current_image_locator).get_attribute('src')
             print 'current image is: %s' % (len(gallery_items) - i)
@@ -95,7 +95,7 @@ class TestGallery(GaiaTestCase):
             previous_image_source = current_image_source
 
         # try to flick prev image (No image should be available)
-        self.flick_to_image('right')
+        self.flick_to_image('previous')
 
         current_image_source = self.marionette.find_element(*self._current_image_locator).get_attribute('src')
         print 'current image is: 1'
@@ -106,23 +106,10 @@ class TestGallery(GaiaTestCase):
         self.assertTrue(self.is_element_displayed(*self._photos_toolbar_locator))
 
     def flick_to_image(self, direction):
-
+        self.assertTrue(direction in ['previous', 'next'])
         current_image = self.marionette.find_element(*self._current_image_locator)
-
-        if direction == 'left':
-            # Flick to next image
-            self.marionette.flick(current_image,  # target element
-                                  '50%', '50%',  # start from middle of the target element
-                                  '-50%', 0,  # move 50% of width to the left
-                                  800)  # gesture duration
-        elif direction == 'right':
-            # Flick to previous image
-            self.marionette.flick(current_image,  # target element
-                                  '50%', '50%',  # start from middle of the target element
-                                  '+50%', 0,  # move 50% of width to the right
-                                  800)  # gesture duration
-        else:
-            self.fail('Provided argument is invalid.\n Expected: "left" or "right"\n Actual: "%s"' % direction)
-
-        # Wait for next image to be available
+        self.marionette.flick(current_image,  # target element
+                            '50%', '50%',  # start from middle of the target element
+                            '%s50%%' % (direction == 'previous' and '+' or direction == 'next' and '-'), 0,  # move 50% of width to the left/right
+                            800)  # gesture duration
         self.wait_for_element_displayed(*self._current_image_locator)
