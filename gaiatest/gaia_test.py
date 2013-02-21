@@ -308,7 +308,8 @@ class GaiaTestCase(MarionetteTestCase):
         self.marionette.__class__ = type('Marionette', (Marionette, MarionetteTouchMixin), {})
 
         self.device = GaiaDevice(self.marionette)
-        self.device.restart_b2g()
+        if self.device.is_android_build:
+            self.device.restart_b2g()
 
         self.marionette.setup_touch()
 
