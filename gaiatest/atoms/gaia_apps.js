@@ -186,29 +186,40 @@ var GaiaApps = {
   launchWithName: function(name) {
     GaiaApps.locateWithName(name, function(app, appName, entryPoint) {
       if (app) {
-        let runningApps = window.wrappedJSObject.WindowManager.getRunningApps();
+        let windowManager = window.wrappedJSObject.WindowManager;
+        let runningApps = windowManager.getRunningApps();
         let origin = GaiaApps.getRunningAppOrigin(appName);
 
-        window.addEventListener('apploadtime', function apploadtime() {
-          window.removeEventListener('apploadtime', apploadtime);
-          waitFor(
-            function() {
-              console.log("app with origin '" + origin + "' has launched");
-              let app = runningApps[origin];
-              let result = {frame: app.frame.firstChild,
-                src: app.iframe.src,
-                name: app.name,
-                origin: origin};
-              marionetteScriptFinished(result);
-            },
-            function() {
-              origin = GaiaApps.getRunningAppOrigin(appName);
-              return !!origin;
-            }
-          );
-        });
-        console.log("launching app with origin '" + origin + "'");
-        app.launch(entryPoint || null);
+        let sendResponse = function() {
+          let app = runningApps[origin];
+          let result = {frame: app.frame.firstChild,
+            src: app.iframe.src,
+            name: app.name,
+            origin: origin};
+          marionetteScriptFinished(result);
+        };
+
+        if (windowManager.getDisplayedApp() == origin) {
+          console.log("app with origin '" + origin + "' is already running");
+          sendResponse();
+        }
+        else {
+          window.addEventListener('apploadtime', function apploadtime() {
+            window.removeEventListener('apploadtime', apploadtime);
+            waitFor(
+              function() {
+                console.log("app with origin '" + origin + "' has launched");
+                sendResponse();
+              },
+              function() {
+                origin = GaiaApps.getRunningAppOrigin(appName);
+                return !!origin;
+              }
+            );
+          });
+          console.log("launching app with name '" + appName + "'");
+          app.launch(entryPoint || null);
+        }
       } else {
         marionetteScriptFinished(false);
       }

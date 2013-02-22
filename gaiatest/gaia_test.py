@@ -49,6 +49,9 @@ class GaiaApp(object):
         self.name = name
         self.origin = origin
 
+    def __eq__(self, other):
+        return self.__dict__ == other.__dict__
+
 
 class GaiaApps(object):
 
