@@ -36,7 +36,7 @@ class TestContacts(GaiaTestCase):
         self.contact = MockContact()
 
     def create_contact_locator(self, contact):
-        return ('css selector', '.contact-item p[data-search^=%s]' % contact)
+        return ('xpath', "//a[descendant::strong[text()='%s']]" % contact)
 
     def test_add_new_contact(self):
         # https://moztrap.mozilla.org/manage/case/1309/
