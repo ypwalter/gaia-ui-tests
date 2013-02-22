@@ -92,17 +92,15 @@ class TestEverythingMeInstallApp(GaiaTestCase):
         return pageHelper.getCurrentPageNumber() < (pageHelper.getTotalPagesNumber() - 1);""")
 
     def delete_bookmark(self, bookmark_name):
-        self.marionette.execute_script("deleteBookmark('%s');\
-                                        function deleteBookmark(aName) {\
-                                          let apps = window.wrappedJSObject.GridManager.getApps();\
-                                          apps.forEach(function(aApp) {\
-                                            if (aApp.isBookmark) {\
-                                              if (aApp.manifest.name == aName) {\
-                                                console.log('uninstalling app with name ' + aApp.manifest.name);\
-                                                aApp.uninstall();\
-                                                return;\
-                                              };\
-                                            };\
-                                          });\
-                                          console.error('failed to uninstall app with name ' + aName + ' - not found');\
-                                        }" % bookmark_name)
+        self.marionette.execute_script("""
+                                          name = arguments[0];
+                                          let apps = window.wrappedJSObject.GridManager.getApps();
+                                          apps.forEach (function(aApp) {
+                                            if (aApp.isBookmark) {
+                                              if (aApp.manifest.name == name) {
+                                                console.log('uninstalling app with name ' + aApp.manifest.name);
+                                                aApp.uninstall();
+                                              };
+                                            };
+                                          });
+                                        """ , script_args=[bookmark_name])
