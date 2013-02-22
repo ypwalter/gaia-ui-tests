@@ -24,7 +24,7 @@ class TestVideoPlayer(GaiaTestCase):
         GaiaTestCase.setUp(self)
 
         # add video to storage
-        self.push_resource('VID_0001.3gp', 'DCIM/100MZLLA')
+        self.push_resource('VID_0001.3gp', destination='DCIM/100MZLLA')
 
         # launch the Video app
         self.app = self.apps.launch('Video')
