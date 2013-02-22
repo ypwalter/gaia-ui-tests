@@ -13,8 +13,14 @@ class TestContacts(GaiaTestCase):
 
     # Header buttons
     _edit_contact_button_locator = ('id', 'edit-contact-button')
+    _done_button_locator = ('id', 'save-button')
+
+    # Contact details panel
+    _contact_name_title = ('id', 'contact-name-title')
+    _contact_image = ('id', 'cover-img')
 
     # New/Edit contact fields
+    _contact_form_title = ('id', 'contact-form-title')
     _add_picture_link_locator = ('id', 'thumbnail-photo')
 
     # Select from: dialog
@@ -39,7 +45,7 @@ class TestContacts(GaiaTestCase):
         self.wait_for_element_not_displayed(*self._loading_overlay)
 
     def create_contact_locator(self, contact):
-        return ('css selector', '.contact-item p[data-search^=%s]' % contact)
+        return ('xpath', "//li[@class='contact-item']/a[p[contains(@data-search, '%s')]]" % contact)
 
     def test_add_photo_from_gallery_to_contact(self):
         # https://moztrap.mozilla.org/manage/case/5551/
@@ -50,9 +56,16 @@ class TestContacts(GaiaTestCase):
         contact_listing = self.marionette.find_element(*contact_locator)
         self.marionette.tap(contact_listing)
 
-        self.wait_for_element_displayed(*self._edit_contact_button_locator)
+        self.wait_for_element_displayed(*self._contact_name_title)
+        full_name = self.contact['givenName'] + " " + self.contact['familyName']
+        self.assertEqual(full_name, self.marionette.find_element(*self._contact_name_title).text)
+        contact_image = self.marionette.find_element(*self._contact_image)
+        saved_contact_image_style = contact_image.get_attribute('style')
+
         edit_contact = self.marionette.find_element(*self._edit_contact_button_locator)
         self.marionette.tap(edit_contact)
+        self.wait_for_element_displayed(*self._contact_form_title)
+        self.assertEqual('Edit contact', self.marionette.find_element(*self._contact_form_title).text)
 
         self.wait_for_element_displayed(*self._add_picture_link_locator)
         picture_link = self.marionette.find_element(*self._add_picture_link_locator)
@@ -82,8 +95,17 @@ class TestContacts(GaiaTestCase):
         self.marionette.switch_to_frame()
         self.wait_for_element_displayed(*self._contacts_frame_locator)
         self.marionette.switch_to_frame(self.marionette.find_element(*self._contacts_frame_locator))
-        self.wait_for_element_displayed(*self._add_picture_link_locator)
+        self.wait_for_element_displayed(*self._contact_form_title)
+        self.assertEqual('Edit contact', self.marionette.find_element(*self._contact_form_title).text)
 
         new_picture_style = self.marionette.find_element(*self._add_picture_link_locator).get_attribute('style')
         self.assertNotEqual(new_picture_style, saved_picture_style,
+                            'The picture associated with the contact was not changed.')
+
+        done_button = self.marionette.find_element(*self._done_button_locator)
+        self.marionette.tap(done_button)
+        self.wait_for_element_displayed(*self._contact_name_title)
+        self.assertEqual(full_name, self.marionette.find_element(*self._contact_name_title).text)
+        new_contact_image_style = self.marionette.find_element(*self._contact_image)
+        self.assertNotEqual(new_picture_style, saved_contact_image_style,
                             'The picture associated with the contact was not changed.')
