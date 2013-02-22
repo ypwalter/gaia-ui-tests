@@ -4,20 +4,20 @@
 
 from gaiatest import GaiaTestCase
 
+
 class TestEverythingMeInstallApp(GaiaTestCase):
 
     # Everything.Me locators
     _shortcut_items_locator = ('css selector', '#shortcuts-items li')
-    _facebook_icon_locator = ('xpath', "//div/b[text()='Facebook']")
+    _apps_icon_locator = ('css selector', '.evme-apps > ul > li.cloud > div')
 
     # Homescreen locators
     _homescreen_frame_locator = ('css selector', 'div.homescreen > iframe')
-    _homescreen_facebook_icon_locator = ('css selector', 'li.icon[aria-label="Facebook"]')
+    _homescreen_icon_locator = ('css selector', 'li.icon[aria-label="%s"]')
 
     # Modal dialog locators
-    _modal_dialog_message_locator = ('id','modal-dialog-confirm-message')
+    _modal_dialog_message_locator = ('id', 'modal-dialog-confirm-message')
     _modal_dialog_ok_locator = ('id', 'modal-dialog-confirm-ok')
-
 
     def setUp(self):
 
@@ -51,19 +51,20 @@ class TestEverythingMeInstallApp(GaiaTestCase):
         # Tap on the first category of shortcuts
         self.marionette.tap(shortcuts[0])
 
-        self.wait_for_element_displayed(*self._facebook_icon_locator)
+        self.wait_for_element_displayed(*self._apps_icon_locator)
 
-        fb_icon = self.marionette.find_element(*self._facebook_icon_locator)
-        self.marionette.long_press(fb_icon)
+        first_app_icon = self.marionette.find_element(*self._apps_icon_locator)
+        self.first_app_name = first_app_icon.text
+        self.marionette.long_press(first_app_icon)
 
         self.marionette.switch_to_frame()
 
-        self.wait_for_element_displayed(*self._modal_dialog_ok_locator) # wait for the modal dialog
+        self.wait_for_element_displayed(*self._modal_dialog_ok_locator)  # wait for the modal dialog
 
         modal_dialog_message = self.marionette.find_element(*self._modal_dialog_message_locator).text
-        self.assertIn("Facebook", modal_dialog_message)
+        self.assertIn(self.first_app_name, modal_dialog_message)
 
-        modal_dialog_ok_button  = self.marionette.find_element(*self._modal_dialog_ok_locator)
+        modal_dialog_ok_button = self.marionette.find_element(*self._modal_dialog_ok_locator)
         self.marionette.tap(modal_dialog_ok_button)
 
         # return to home screen
@@ -71,16 +72,37 @@ class TestEverythingMeInstallApp(GaiaTestCase):
 
         self.marionette.switch_to_frame(hs_frame)
 
-        while not self.is_element_displayed(*self._homescreen_facebook_icon_locator):
+        while self._homescreen_has_more_pages:
+            if self.is_element_displayed(self._homescreen_icon_locator[0], self._homescreen_icon_locator[1] % self.first_app_name):
+                break
             self._go_to_next_page()
 
-        self.assertTrue(self.marionette.find_element(*self._homescreen_facebook_icon_locator).is_displayed())
-
     def tearDown(self):
-        # self.data_layer.delete_bookmark("Facebook")
-        self.apps.uninstall("Facebook")
+        self.delete_bookmark(self.first_app_name)
 
         GaiaTestCase.tearDown(self)
 
     def _go_to_next_page(self):
         self.marionette.execute_script('window.wrappedJSObject.GridManager.goToNextPage()')
+
+    def _homescreen_has_more_pages(self):
+        # the naming of this could be more concise when it's in an app object!
+        return self.marionette.execute_script("""
+        var pageHelper = window.wrappedJSObject.GridManager.pageHelper;
+        return pageHelper.getCurrentPageNumber() < (pageHelper.getTotalPagesNumber() - 1);""")
+
+    def delete_bookmark(self, bookmark_name):
+        self.marionette.execute_script("deleteBookmark('%s');\
+                                        function deleteBookmark(aName) {\
+                                          let apps = window.wrappedJSObject.GridManager.getApps();\
+                                          apps.forEach(function(aApp) {\
+                                            if (aApp.isBookmark) {\
+                                              if (aApp.manifest.name == aName) {\
+                                                console.log('uninstalling app with name ' + aApp.manifest.name);\
+                                                aApp.uninstall();\
+                                                return;\
+                                              };\
+                                            };\
+                                          });\
+                                          console.error('failed to uninstall app with name ' + aName + ' - not found');\
+                                        }" % bookmark_name)

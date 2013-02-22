@@ -79,8 +79,8 @@ class GaiaApps(object):
         return app
 
     def uninstall(self, name):
-        # self.marionette.switch_to_frame()
-        self.marionette.execute_async_script("return GaiaApps.uninstallWithName('%s')" % name)
+        self.marionette.switch_to_frame()
+        self.marionette.execute_async_script("GaiaApps.uninstallWithName('%s')" % name)
 
     def kill(self, app):
         self.marionette.switch_to_frame()
@@ -230,9 +230,6 @@ class GaiaData(object):
 
     def delete_all_alarms(self):
         self.marionette.execute_script('GaiaDataLayer.deleteAllAlarms();')
-
-    def delete_bookmark(self, bookmark_name):
-        self.marionette.execute_script("GaiaDataLayer.deleteBookmark('%s');" % bookmark_name)
 
     def kill_active_call(self):
         self.marionette.execute_script("var telephony = window.navigator.mozTelephony; " +
