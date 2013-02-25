@@ -29,7 +29,7 @@ class TestLaunchApp(GaiaTestCase):
         # click yes on the installation dialog and wait for icon displayed
         self.wait_for_element_displayed(*self._yes_button_locator)
         yes = self.marionette.find_element(*self._yes_button_locator)
-        yes.click()
+        self.marionette.tap(yes)
 
         self.marionette.switch_to_frame(self.homescreen.frame)
 

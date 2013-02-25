@@ -39,7 +39,7 @@ class TestContacts(GaiaTestCase):
         self.wait_for_element_not_displayed(*self._loading_overlay)
 
     def create_contact_locator(self, contact):
-        return ('css selector', '.contact-item p[data-search^=%s]' % contact)
+        return ('xpath', "//a[descendant::strong[text()='%s']]" % contact)
 
     def test_edit_contact(self):
         # https://moztrap.mozilla.org/manage/case/1310/
@@ -98,6 +98,9 @@ class TestContacts(GaiaTestCase):
 
         # Now assert that the values have updated
         full_name = self.contact['givenName'] + " " + self.contact['familyName']
+
+        # Need an extra wait as this is failing intermittently
+        self.wait_for_condition(lambda m: m.find_element(*self._contact_name_title).text == full_name)
 
         self.assertEqual(self.marionette.find_element(*self._contact_name_title).text,
                          full_name)
