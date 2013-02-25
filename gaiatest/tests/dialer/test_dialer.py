@@ -29,6 +29,8 @@ class TestDialer(GaiaTestCase):
         self.assertEqual(test_phone_number, phone.call_screen.outgoing_calling_contact)
 
     def tearDown(self):
+        # Switch back to main frame before Marionette loses track bug #840931
+        self.marionette.switch_to_frame()
 
         # In case the assertion fails this will still kill the call
         # An open call creates problems for future tests
