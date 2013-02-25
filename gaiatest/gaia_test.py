@@ -49,6 +49,9 @@ class GaiaApp(object):
         self.name = name
         self.origin = origin
 
+    def __eq__(self, other):
+        return self.__dict__ == other.__dict__
+
 
 class GaiaApps(object):
 
@@ -315,7 +318,8 @@ class GaiaTestCase(MarionetteTestCase):
         self.marionette.__class__ = type('Marionette', (Marionette, MarionetteTouchMixin), {})
 
         self.device = GaiaDevice(self.marionette)
-        self.device.restart_b2g()
+        if self.device.is_android_build:
+            self.device.restart_b2g()
 
         self.marionette.setup_touch()
 
