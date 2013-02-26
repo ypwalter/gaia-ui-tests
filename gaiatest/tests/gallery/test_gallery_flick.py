@@ -8,6 +8,7 @@ import time
 
 class TestGallery(GaiaTestCase):
 
+    _progress_bar_locator = ('id', 'progress')
     _gallery_items_locator = ('css selector', 'li.thumbnail')
     _current_image_locator = ('css selector', '#frames > div.frame[style ~= "translateX(0px);"] > img')
     _photos_toolbar_locator = ('id', 'fullscreen-toolbar')
@@ -31,22 +32,20 @@ class TestGallery(GaiaTestCase):
         # https://moztrap.mozilla.org/manage/case/1326/
 
         #wait for gallery to be available
-        self.wait_for_element_displayed(*self._gallery_items_locator)
-        time.sleep(2)
-        gallery_items = self.marionette.execute_script("return window.wrappedJSObject.files;")
+        self.wait_for_element_not_displayed(*self._progress_bar_locator)
 
-        self.assertEqual(len(gallery_items), self.image_count)
+        first_gallery_items = self.marionette.find_elements(*self._gallery_items_locator)
 
-        first_gallery_item = self.marionette.find_element(*self._gallery_items_locator)
+        self.assertEqual(len(first_gallery_items), self.image_count)
 
         # tap first image to open full screen view
-        self.marionette.tap(first_gallery_item)
+        self.marionette.tap(first_gallery_items[0])
         self.wait_for_element_displayed(*self._current_image_locator)
 
         previous_image_source = None
 
         # Check the next flicks
-        for i in range(len(gallery_items)):
+        for i in range(len(first_gallery_items)):
 
             current_image_source = self.marionette.find_element(*self._current_image_locator).get_attribute('src')
             print 'current image is: %s' % (i + 1)
@@ -71,12 +70,12 @@ class TestGallery(GaiaTestCase):
         previous_image_source = current_image_source
 
         # check the prev flick
-        for i in range(len(gallery_items) - 1):
+        for i in range(len(first_gallery_items) - 1):
 
             self.flick_to_image('previous')
 
             current_image_source = self.marionette.find_element(*self._current_image_locator).get_attribute('src')
-            print 'current image is: %s' % (len(gallery_items) - i)
+            print 'current image is: %s' % (len(first_gallery_items) - i)
 
             self.assertIsNotNone(current_image_source)
             self.assertNotEqual(current_image_source, previous_image_source)
@@ -104,3 +103,4 @@ class TestGallery(GaiaTestCase):
                               '%s50%%' % (direction == 'previous' and '+' or direction == 'next' and '-'), 0,  # move 50% of width to the left/right
                               800)  # gesture duration
         self.wait_for_element_displayed(*self._current_image_locator)
+        time.sleep(1)
