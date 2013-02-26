@@ -31,10 +31,9 @@ class TestContacts(GaiaTestCase):
 
         # tap on the created contact
         contact_details = self.contacts.contact(self.contact['givenName']).tap()
-        contact_details.wait_for_contact_details_to_load()
 
         # tap the phone number and switch to call screen frame
-        call_screen =  contact_details.tap_phone_number()
+        call_screen = contact_details.tap_phone_number()
 
         # Wait for call screen then switch to it
         call_screen.wait_for_outgoing_call()
@@ -46,6 +45,7 @@ class TestContacts(GaiaTestCase):
 
         self.assertIn(self.contact['givenName'],
                       call_screen.outgoing_calling_contact[:-1])
+
         # hang up before the person answers ;)
         call_screen.hang_up()
         # Switch back to main frame before Marionette loses track bug #840931

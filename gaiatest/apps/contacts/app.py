@@ -19,7 +19,6 @@ class Contacts(Base):
     def launch(self):
         Base.launch(self)
         self.wait_for_element_not_displayed(*self._loading_overlay)
-        # self.wait_for_element_displayed(*self._contact_locator)
 
     @property
     def contact_details(self):
@@ -47,5 +46,9 @@ class Contacts(Base):
 
         def tap(self):
             self.marionette.tap(self.root_element.find_element(*self._tap_locator))
+
             from gaiatest.apps.contacts.regions.contact_details import ContactDetails
-            return ContactDetails(self.marionette)
+
+            contact_details = ContactDetails(self.marionette)
+            contact_details.wait_for_contact_details_to_load()
+            return contact_details
