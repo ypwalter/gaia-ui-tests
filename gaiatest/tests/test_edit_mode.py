@@ -4,6 +4,8 @@
 
 from gaiatest import GaiaTestCase
 
+from marionette.errors import NoSuchElementException
+
 
 class TestEditMode(GaiaTestCase):
 
@@ -26,9 +28,11 @@ class TestEditMode(GaiaTestCase):
         delete_app_icon = self.marionette.find_element(*self._delete_app_locator)
         self.assertTrue(delete_app_icon.is_displayed())
 
-        #tap home button and verify that delete app icons are no longor visible
+        #tap home button and verify that delete app icons are no longer visible
         self.marionette.switch_to_frame()
         self._touch_home_button()
+        self.assertRaises(NoSuchElementException,
+                          self.marionette.find_element, self._delete_app_locator[0], self._delete_app_locator[1])
 
     def _touch_home_button(self):
         self.marionette.execute_script("window.wrappedJSObject.dispatchEvent(new Event('home'));")
