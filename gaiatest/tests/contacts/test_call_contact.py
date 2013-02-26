@@ -6,23 +6,10 @@ from gaiatest import GaiaTestCase
 from gaiatest.mocks.mock_contact import MockContact
 
 from gaiatest.apps.contacts.app import Contacts
-from gaiatest.apps.phone.regions.call_screen import CallScreen
+
 
 
 class TestContacts(GaiaTestCase):
-
-    # Contact details panel
-    _contact_name_title = ('id', 'contact-name-title')
-    _call_phone_number_button_locator = ('id', 'call-or-pick-0')
-
-    # Call Screen app
-    # TODO if this step fails bug 817291 may have been fixed
-    # Change this locator for the one commented below
-    _calling_number_locator = ('css selector', "div.additionalContactInfo")
-    #_calling_number_locator = ('css selector', "div.number")
-    _outgoing_call_locator = ('css selector', 'div.direction.outgoing')
-    _hangup_bar_locator = ('id', 'callbar-hang-up-action')
-    _call_app_locator = ('css selector', "iframe[name='call_screen']")
 
     def setUp(self):
         GaiaTestCase.setUp(self)
@@ -33,22 +20,21 @@ class TestContacts(GaiaTestCase):
             'value': "%s" % self.testvars['remote_phone_number']})
         self.data_layer.insert_contact(self.contact)
 
+        self.contacts = Contacts(self.marionette)
+
     def test_call_contact(self):
         # NB This is not a listed smoke test
         # Call phone from a contact
         # https://moztrap.mozilla.org/manage/case/5679/
-        contacts = Contacts(self.marionette)
-        contacts.launch()
+
+        self.contacts.launch()
 
         # tap on the created contact
-        contacts.contact(self.contact['givenName']).tap()
-        contacts.contact_details.wait_for_contact_details_to_load
+        contact_details = self.contacts.contact(self.contact['givenName']).tap()
+        contact_details.wait_for_contact_details_to_load()
 
-        # tap the phone number
-        contacts.contact_details.tap_phone_number()
-
-        # Switch to call screen frame
-        call_screen = CallScreen(self.marionette)
+        # tap the phone number and switch to call screen frame
+        call_screen =  contact_details.tap_phone_number()
 
         # Wait for call screen then switch to it
         call_screen.wait_for_outgoing_call()

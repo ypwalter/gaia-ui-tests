@@ -9,9 +9,10 @@ class ContactDetails(Contacts):
     _contact_name_title = ('id', 'contact-name-title')
     _call_phone_number_button_locator = ('id', 'call-or-pick-0')
 
-    @property
     def wait_for_contact_details_to_load(self):
         self.wait_for_element_displayed(*self._call_phone_number_button_locator)
 
     def tap_phone_number(self):
         self.marionette.tap(self.marionette.find_element(*self._call_phone_number_button_locator))
+        from gaiatest.apps.phone.regions.call_screen import CallScreen
+        return  CallScreen(self.marionette)
