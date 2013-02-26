@@ -11,7 +11,7 @@ class TestVideoPlayer(GaiaTestCase):
 
     # Video list/summary view
     _video_items_locator = ('css selector', 'ul#thumbnails li[data-name]')
-    _video_name_locator = ('css selector', 'p.name')
+    _video_name_locator = ('css selector', 'div.details')
 
     # Video player fullscreen
     _video_frame_locator = ('id', 'videoFrame')
@@ -39,7 +39,7 @@ class TestVideoPlayer(GaiaTestCase):
         self.assertGreater(all_videos, 0)
 
         first_video = all_videos[0]
-        first_video_name = first_video.find_element(*self._video_name_locator).text
+        first_video_name = first_video.find_element(*self._video_name_locator).get_attribute('data-raw')
 
         # click on the first video
         self.marionette.tap(first_video)
