@@ -37,12 +37,7 @@ class TestGallery(GaiaTestCase):
 
         self.assertEqual(len(gallery_items), self.image_count)
 
-        # check that the first image is not a video
-        for index, item in enumerate(gallery_items):
-            # If the current item is not a video, set it as the gallery item to tap.
-            if 'video' not in item['metadata']:
-                first_gallery_item = self.marionette.find_elements(*self._gallery_items_locator)[index]
-                break
+        first_gallery_item = self.marionette.find_element(*self._gallery_items_locator)
 
         # tap first image to open full screen view
         self.marionette.tap(first_gallery_item)
