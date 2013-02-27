@@ -34,6 +34,9 @@ class TestEverythingMe(GaiaTestCase):
     def test_launch_everything_me_app(self):
         # https://github.com/mozilla/gaia-ui-tests/issues/69
 
+        # I have requested a HTML enhancement for more reliable testing:
+        # https://bugzilla.mozilla.org/show_bug.cgi?id=845828
+
         # swipe to Everything.Me
         hs_frame = self.marionette.find_element(*self._homescreen_frame_locator)
         self.marionette.switch_to_frame(hs_frame)
