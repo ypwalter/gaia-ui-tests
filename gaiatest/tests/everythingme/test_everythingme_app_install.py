@@ -9,7 +9,7 @@ class TestEverythingMeInstallApp(GaiaTestCase):
 
     # Everything.Me locators
     _shortcut_items_locator = ('css selector', '#shortcuts-items li')
-    _apps_icon_locator = ('css selector', '.evme-apps > ul > li.cloud > div')
+    _apps_icon_locator = ('css selector', 'div.evme-apps li.cloud')
 
     # Homescreen locators
     _homescreen_frame_locator = ('css selector', 'div.homescreen > iframe')
