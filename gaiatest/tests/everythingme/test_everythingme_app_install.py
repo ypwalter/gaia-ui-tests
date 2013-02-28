@@ -62,7 +62,8 @@ class TestEverythingMeInstallApp(GaiaTestCase):
         self.wait_for_element_displayed(*self._modal_dialog_ok_locator)  # wait for the modal dialog
 
         modal_dialog_message = self.marionette.find_element(*self._modal_dialog_message_locator).text
-        self.assertIn(self.first_app_name, modal_dialog_message)
+
+        self.first_app_name = modal_dialog_message.rstrip('to Home Screen?').lstrip(' Add')
 
         modal_dialog_ok_button = self.marionette.find_element(*self._modal_dialog_ok_locator)
         self.marionette.tap(modal_dialog_ok_button)
