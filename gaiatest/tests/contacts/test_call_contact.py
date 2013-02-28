@@ -23,7 +23,7 @@ class TestContacts(GaiaTestCase):
     #_calling_number_locator = ('css selector', "div.number")
     _outgoing_call_locator = ('css selector', 'div.direction.outgoing')
     _hangup_bar_locator = ('id', 'callbar-hang-up-action')
-    _call_app_locator = ('css selector', "iframe[name='call_screen']")
+    _call_app_locator = ('css selector', "iframe[name='call_screen0']")
 
     def setUp(self):
         GaiaTestCase.setUp(self)
