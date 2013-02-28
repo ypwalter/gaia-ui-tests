@@ -65,8 +65,10 @@ class TestClockCreateNewAlarm(GaiaTestCase):
         time.sleep(1)
 
         # set label
+        alarm_label_text = "test4321"
+
         alarm_label = self.marionette.find_element(*clock_object._new_alarm_label)
-        alarm_label.send_keys("\b\b\b\b\btest4321")
+        alarm_label.send_keys("\b\b\b\b\b%s" % alarm_label_text)
 
         # save the alarm
         alarm_save = self.marionette.find_element(*clock_object._alarm_save_locator)
@@ -75,7 +77,7 @@ class TestClockCreateNewAlarm(GaiaTestCase):
         # verify the label of alarm
         self.wait_for_element_displayed(*clock_object._alarm_label)
         alarm_label = self.marionette.find_element(*clock_object._alarm_label).text
-        self.assertTrue("test4321" == alarm_label, 'Actual label was: "' + alarm_label + '", not "test4321".')
+        self.assertTrue(alarm_label_text == alarm_label, 'Actual label was: "' + alarm_label + '", not "test4321".')
 
     def tearDown(self):
         # delete any existing alarms
