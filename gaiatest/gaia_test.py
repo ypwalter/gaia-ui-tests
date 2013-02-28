@@ -454,7 +454,7 @@ class GaiaTestCase(MarionetteTestCase):
     def is_element_displayed(self, by, locator):
         try:
             return self.marionette.find_element(by, locator).is_displayed()
-        except (ElementNotVisibleException, NoSuchElementException):
+        except (NoSuchElementException, ElementNotVisibleException):
             return False
 
     def tearDown(self):
