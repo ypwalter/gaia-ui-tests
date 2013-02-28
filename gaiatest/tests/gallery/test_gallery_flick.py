@@ -19,9 +19,6 @@ class TestGallery(GaiaTestCase):
     def setUp(self):
         GaiaTestCase.setUp(self)
 
-        # unlock the lockscreen if it's locked
-        # self.lockscreen.unlock()
-
         # add photos to storage
         self.push_resource(self.images, self.image_count, 'DCIM/100MZLLA')
 
@@ -34,21 +31,20 @@ class TestGallery(GaiaTestCase):
         #wait for gallery to be available
         self.wait_for_element_not_displayed(*self._progress_bar_locator)
 
-        first_gallery_items = self.marionette.find_elements(*self._gallery_items_locator)
+        all_gallery_items = self.marionette.find_elements(*self._gallery_items_locator)
 
-        self.assertEqual(len(first_gallery_items), self.image_count)
+        self.assertEqual(len(all_gallery_items), self.image_count)
 
         # tap first image to open full screen view
-        self.marionette.tap(first_gallery_items[0])
+        self.marionette.tap(all_gallery_items[0])
         self.wait_for_element_displayed(*self._current_image_locator)
 
         previous_image_source = None
 
         # Check the next flicks
-        for i in range(len(first_gallery_items)):
+        for i in range(len(all_gallery_items)):
 
             current_image_source = self.marionette.find_element(*self._current_image_locator).get_attribute('src')
-            print 'current image is: %s' % (i + 1)
 
             self.assertIsNotNone(current_image_source)
             self.assertNotEqual(current_image_source, previous_image_source)
@@ -60,7 +56,6 @@ class TestGallery(GaiaTestCase):
             self.flick_to_image('next')
 
         current_image_source = self.marionette.find_element(*self._current_image_locator).get_attribute('src')
-        print 'current image is: 4'
 
         self.assertIsNotNone(current_image_source)
         self.assertEqual(current_image_source, previous_image_source)
@@ -70,12 +65,11 @@ class TestGallery(GaiaTestCase):
         previous_image_source = current_image_source
 
         # check the prev flick
-        for i in range(len(first_gallery_items) - 1):
+        for i in range(len(all_gallery_items) - 1):
 
             self.flick_to_image('previous')
 
             current_image_source = self.marionette.find_element(*self._current_image_locator).get_attribute('src')
-            print 'current image is: %s' % (len(first_gallery_items) - i)
 
             self.assertIsNotNone(current_image_source)
             self.assertNotEqual(current_image_source, previous_image_source)
@@ -88,7 +82,6 @@ class TestGallery(GaiaTestCase):
         self.flick_to_image('previous')
 
         current_image_source = self.marionette.find_element(*self._current_image_locator).get_attribute('src')
-        print 'current image is: 1'
 
         self.assertIsNotNone(current_image_source)
         self.assertEqual(current_image_source, previous_image_source)
