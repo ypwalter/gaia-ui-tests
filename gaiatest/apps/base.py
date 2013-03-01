@@ -5,17 +5,19 @@
 import time
 
 from marionette.errors import NoSuchElementException
+from marionette.errors import ElementNotVisibleException
 from marionette.errors import TimeoutException
 
 from gaiatest import GaiaApps
 
 
 class Base(object):
+    # deafult timeout in seconds for the wait_for methods
+    _default_timeout = 30
 
-    def __init__(self, marionette, name=None):
+    def __init__(self, marionette):
         self.marionette = marionette
         self.apps = GaiaApps(self.marionette)
-        self.name = name or self.name
 
     def launch(self):
         self.app = self.apps.launch(self.name)
@@ -33,6 +35,19 @@ class Base(object):
             raise TimeoutException(
                 'Element %s not found before timeout' % locator)
 
+    def wait_for_element_not_present(self, by, locator, timeout=_default_timeout):
+        timeout = float(timeout) + time.time()
+
+        while time.time() < timeout:
+            time.sleep(0.5)
+            try:
+                self.marionette.find_element(by, locator)
+            except NoSuchElementException:
+                break
+        else:
+            raise TimeoutException(
+                'Element %s still present after timeout' % locator)
+
     def wait_for_element_displayed(self, by, locator, timeout=10):
         timeout = float(timeout) + time.time()
 
@@ -47,6 +62,20 @@ class Base(object):
             raise TimeoutException(
                 'Element %s not visible before timeout' % locator)
 
+    def wait_for_element_not_displayed(self, by, locator, timeout=_default_timeout):
+        timeout = float(timeout) + time.time()
+
+        while time.time() < timeout:
+            time.sleep(0.5)
+            try:
+                if not self.marionette.find_element(by, locator).is_displayed():
+                    break
+            except NoSuchElementException:
+                break
+        else:
+            raise TimeoutException(
+                'Element %s still visible after timeout' % locator)
+
     def wait_for_condition(self, method, timeout=10, message="Condition timed out"):
         """Calls the method provided with the driver as an argument until the return value is not False."""
         end_time = time.time() + timeout
@@ -60,3 +89,22 @@ class Base(object):
             time.sleep(0.5)
         else:
             raise TimeoutException(message)
+
+    def is_element_present(self, by, locator):
+        try:
+            self.marionette.find_element(by, locator)
+            return True
+        except:
+            return False
+
+    def is_element_displayed(self, by, locator):
+        try:
+            return self.marionette.find_element(by, locator).is_displayed()
+        except (NoSuchElementException, ElementNotVisibleException):
+            return False
+
+
+class PageRegion(Base):
+    def __init__(self, marionette, element):
+        self.root_element = element
+        Base.__init__(self, marionette)
