@@ -48,7 +48,4 @@ class Contacts(Base):
             self.marionette.tap(self.root_element)
 
             from gaiatest.apps.contacts.regions.contact_details import ContactDetails
-
-            contact_details = ContactDetails(self.marionette)
-            contact_details.wait_for_contact_details_to_load()
-            return contact_details
+            return ContactDetails(self.marionette)

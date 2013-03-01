@@ -14,10 +14,9 @@ class Base(object):
     # deafult timeout in seconds for the wait_for methods
     _default_timeout = 30
 
-    def __init__(self, marionette, name=None):
+    def __init__(self, marionette):
         self.marionette = marionette
         self.apps = GaiaApps(self.marionette)
-        self.name = name or self.name
 
     def launch(self):
         self.app = self.apps.launch(self.name)
@@ -78,8 +77,7 @@ class Base(object):
             raise TimeoutException(message)
 
 
-class PageRegion(object):
-    # added marionette as a workaround for bug 844868
+class PageRegion(Base):
     def __init__(self, marionette, element):
         self.root_element = element
-        self.marionette = marionette
+        Base.__init__(self, marionette)

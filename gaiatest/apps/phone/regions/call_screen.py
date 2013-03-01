@@ -9,8 +9,8 @@ class CallScreen(Phone):
 
     _call_screen_locator = ('css selector', "iframe[name='call_screen0']")
 
-    _calling_contact_locator = ('css selector', "div.number")
-    _calling_contact_information_locator = ('css selector', "div.additionalContactInfo")
+    _calling_contact_locator = ('css selector', 'div.number')
+    _calling_contact_information_locator = ('css selector', 'div.additionalContactInfo')
     _outgoing_call_locator = ('css selector', 'div.direction.outgoing')
     _hangup_bar_locator = ('id', 'callbar-hang-up-action')
 
