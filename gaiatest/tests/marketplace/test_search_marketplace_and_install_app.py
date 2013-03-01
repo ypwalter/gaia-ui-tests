@@ -5,15 +5,15 @@
 from gaiatest import GaiaTestCase
 from marionette.keys import Keys
 
-
 class TestSearchMarketplaceAndInstallApp(GaiaTestCase):
 
-    APP_NAME = 'Lanyrd Mobile'
+    APP_NAME = 'Lanyrd'
     APP_DEVELOPER = 'Lanyrd'
     APP_INSTALLED = False
 
+    _loading_fragment_locator = ('css selector', 'div.loading-fragment')
+
     # Marketplace search on home page
-    _search_button = ('css selector', '.header-button.icon.search.right')
     _search = ('id', 'search-q')
 
     # Marketplace search results area and a specific result item
@@ -42,15 +42,19 @@ class TestSearchMarketplaceAndInstallApp(GaiaTestCase):
         # launch the app
         self.app = self.apps.launch('Marketplace')
 
+
     def test_search_and_install_app(self):
         # select to search for an app
-        self.wait_for_element_displayed(*self._search_button)
-        search_button = self.marionette.find_element(*self._search_button)
-        self.marionette.tap(search_button)
+
+        self.wait_for_element_not_displayed(*self._loading_fragment_locator)
+
+        search_box = self.marionette.find_element(*self._search)
+
+        if not search_box.is_displayed():
+            # Scroll a little to make the search box appear
+            self.marionette.execute_script('window.scrollTo(0, 10)')
 
         # search for the lanyrd mobile app
-        self.wait_for_element_displayed(*self._search)
-        search_box = self.marionette.find_element(*self._search)
         search_box.send_keys(self.APP_NAME)
         search_box.send_keys(Keys.RETURN)
 
