@@ -43,3 +43,11 @@ class TestFMRadioTurnOnOff(GaiaTestCase):
         # check the radio is on
         self.assertEqual(power_button.get_attribute('data-enabled'), 'true')
         self.assertTrue(self.data_layer.is_fm_radio_enabled)
+
+    def tearDown(self):
+        power_button = self.marionette.find_element(*self._power_button_locator)
+
+        if power_button.get_attribute('data-enabled') == 'true':
+            self.marionette.tap(power_button)
+
+        GaiaTestCase.tearDown(self)
