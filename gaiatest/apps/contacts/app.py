@@ -38,14 +38,14 @@ class Contacts(Base):
     class Contact(PageRegion):
 
         _name_locator = ('css selector', 'p > strong')
-        _tap_locator = ('css selector', 'a')
+        _tap_locator = ('css selector', 'p > span.org')
 
         @property
         def name(self):
             return self.root_element.find_element(*self._name_locator).text
 
         def tap(self):
-            self.marionette.tap(self.root_element.find_element(*self._tap_locator))
+            self.marionette.tap(self.root_element)
 
             from gaiatest.apps.contacts.regions.contact_details import ContactDetails
 
