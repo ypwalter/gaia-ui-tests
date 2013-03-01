@@ -7,7 +7,7 @@ from gaiatest.apps.phone.app import Phone
 
 class CallScreen(Phone):
 
-    _call_screen_locator = ('css selector', "iframe[name='call_screen']")
+    _call_screen_locator = ('css selector', "iframe[name='call_screen0']")
 
     _calling_contact_locator = ('css selector', "div.number")
     _calling_contact_information_locator = ('css selector', "div.additionalContactInfo")

@@ -8,7 +8,6 @@ from gaiatest.mocks.mock_contact import MockContact
 from gaiatest.apps.contacts.app import Contacts
 
 
-
 class TestContacts(GaiaTestCase):
 
     def setUp(self):

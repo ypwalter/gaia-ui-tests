@@ -26,6 +26,8 @@ class TestFtu(GaiaTestCase):
     _section_wifi_locator = ('id', 'wifi')
     _found_wifi_networks_locator = ('css selector', 'ul#networks li')
     _network_state_locator = ('xpath', 'p[2]')
+    _password_input_locator = ('id', 'wifi_password')
+    _join_network_locator = ('id', 'wifi-join-button')
 
     # Step Date & Time
     _section_date_time_locator = ('id', 'date_and_time')
@@ -109,6 +111,15 @@ class TestFtu(GaiaTestCase):
         # TODO This will only work on Mozilla Guest or unsecure network
         wifi_network = self.marionette.find_element('id', self.testvars['wifi']['ssid'])
         wifi_network.click()
+
+        # This is in the event we are using a Wifi Network that requires a password
+        # We cannot be sure of this thus need the logic
+        if self.testvars['wifi'].get('keyManagement'):
+
+            self.wait_for_element_displayed(*self._password_input_locator)
+            password = self.marionette.find_element(*self._password_input_locator)
+            password.send_keys(self.testvars['wifi'].get('psk') or self.testvars['wifi'].get('wep'))
+            self.marionette.find_element(*self._join_network_locator).click()
 
         self.wait_for_condition(
             lambda m: wifi_network.find_element(*self._network_state_locator).text == "Connected")
