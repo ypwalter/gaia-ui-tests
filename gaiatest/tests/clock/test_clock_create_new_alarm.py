@@ -61,6 +61,7 @@ class TestClockCreateNewAlarm(GaiaTestCase):
         alarm_create_new = self.marionette.find_element(*clock_object._alarm_create_new_locator)
         self.marionette.tap(alarm_create_new)
 
+        self.wait_for_element_displayed(*clock_object._new_alarm_label)
         self.wait_for_condition(lambda m:
                 m.find_element(*clock_object._new_alarm_label).text == "Alarm")
 
@@ -76,7 +77,7 @@ class TestClockCreateNewAlarm(GaiaTestCase):
         self.marionette.tap(alarm_save)
 
         # Wait to return to the main page
-        self.wait_for_element_present(*clock_object._alarm_label)
+        self.wait_for_element_displayed(*clock_object._alarm_label)
 
         # verify the label of alarm
         alarm_label = self.marionette.find_element(*clock_object._alarm_label).text
