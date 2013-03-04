@@ -9,7 +9,6 @@ _alarm_sound_menu= ('id','sound-menu')
 _alarm_sound_select=('id','sound-select')
 _alarm_sound_smooth_strings=('css selector','#sound-select option[data-l10n-id="ac_soft_smooth_strings_opus"]')
 
-
 class TestClockSetAlarmSound(GaiaTestCase):
     def setUp(self):
         GaiaTestCase.setUp(self)
@@ -40,24 +39,23 @@ class TestClockSetAlarmSound(GaiaTestCase):
         alarm_label = self.marionette.find_element(*clock_object._new_alarm_label)
         alarm_label.send_keys("\b\b\b\b\btestsound")
 
-	#select sound
+        #select sound
 
-	self.wait_for_element_displayed(*_alarm_sound_menu)
-	alarm_sound_menu=self.marionette.find_element(*_alarm_sound_menu)	
-	self.marionette.tap(alarm_sound_menu)
+        self.wait_for_element_displayed(*_alarm_sound_menu)
+        alarm_sound_menu=self.marionette.find_element(*_alarm_sound_menu)	
+        self.marionette.tap(alarm_sound_menu)
 
-	alarm_sound_smooth_strings=self.marionette.find_element(*_alarm_sound_smooth_strings)
-	alarm_sound_smooth_strings.click()
+        alarm_sound_smooth_strings=self.marionette.find_element(*_alarm_sound_smooth_strings)
+        alarm_sound_smooth_strings.click()
 
-	#save alarm
+        #save alarm
         alarm_save = self.marionette.find_element(*clock_object._alarm_save_locator)
         self.marionette.tap(alarm_save)
 
-	#TBD to verify the select list. Need more investigation.
-	self.wait_for_element_displayed(*_alarm_sound_menu)
-	alarm_sound_menu=self.marionette.find_element(*_alarm_sound_menu)
-	self.assertTrue("Smooth Strings" == alarm_sound_menu.text, 'Actual alarm sound was: "' + alarm_sound_menu.text + '", not "Smooth Strings".')
-
+        #To verify the select list.
+        self.wait_for_element_displayed(*_alarm_sound_menu)
+        alarm_sound_menu=self.marionette.find_element(*_alarm_sound_menu)
+        self.assertTrue("Smooth Strings" == alarm_sound_menu.text, 'Actual alarm sound was: "' + alarm_sound_menu.text + '", not "Smooth Strings".')
 
     def tearDown(self):
         # delete any existing alarms

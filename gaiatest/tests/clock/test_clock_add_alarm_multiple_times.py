@@ -6,7 +6,6 @@ from gaiatest import GaiaTestCase
 from gaiatest.tests.clock import clock_object
 import time
 
-
 class TestClockAddAlarmMultipleTimes(GaiaTestCase):
 
     def setUp(self):
@@ -23,8 +22,8 @@ class TestClockAddAlarmMultipleTimes(GaiaTestCase):
         https://moztrap.mozilla.org/manage/case/1773/
 
         """
-	
-	"Add first alarm"
+
+        "Add first alarm"
         self.wait_for_element_displayed(*clock_object._alarm_create_new_locator)
 
         # Get the number of alarms set, before adding the new alarm
@@ -50,8 +49,8 @@ class TestClockAddAlarmMultipleTimes(GaiaTestCase):
         self.assertTrue(initial_alarms_count < new_alarms_count,
                         'Alarms count did not increment')
 
-	"Add second alarm"
-	# create a new alarm with the default values that are available
+        "Add second alarm"
+        # create a new alarm with the default values that are available
         alarm_create_new = self.marionette.find_element(*clock_object._alarm_create_new_locator)
         self.marionette.tap(alarm_create_new)
 

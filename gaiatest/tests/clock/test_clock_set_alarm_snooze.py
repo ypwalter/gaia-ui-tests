@@ -23,7 +23,7 @@ class TestClockSetAlarmSnooze(GaiaTestCase):
     def test_clock_set_alarm_snooze(self):
         """ Modify the alarm snooze
 	
-	Test that [Clock][Alarm] Change the snooze time
+        Test that [Clock][Alarm] Change the snooze time
 
         https://moztrap.mozilla.org/manage/case/1788/
 
@@ -41,33 +41,29 @@ class TestClockSetAlarmSnooze(GaiaTestCase):
         alarm_label = self.marionette.find_element(*clock_object._new_alarm_label)
         alarm_label.send_keys("\b\b\b\b\btestsnooze")
 
-	#select snooze
+        #select snooze
 
-	self.wait_for_element_displayed(*_alarm_snooze_menu)
-	alarm_snooze_menu=self.marionette.find_element(*_alarm_snooze_menu)	
-	self.marionette.tap(alarm_snooze_menu)
+        self.wait_for_element_displayed(*_alarm_snooze_menu)
+        alarm_snooze_menu=self.marionette.find_element(*_alarm_snooze_menu)	
+        self.marionette.tap(alarm_snooze_menu)
 
-	#find all options
-	#alarm_snoozes=self.marionette.find_elements(*_alarm_snoozes)
-	#print len(alarm_snoozes)
+        #find all options
+        #alarm_snoozes=self.marionette.find_elements(*_alarm_snoozes)
+        #print len(alarm_snoozes)
 	
-	#alarm_snooze_15min=alarm_snoozes[1]
-	#print alarm_snooze_15min.text
-	alarm_snooze_15min=self.marionette.find_element(*_alarm_snooze_15min)
-	alarm_snooze_15min.click()
+        #alarm_snooze_15min=alarm_snoozes[1]
+        #print alarm_snooze_15min.text
+        alarm_snooze_15min=self.marionette.find_element(*_alarm_snooze_15min)
+        alarm_snooze_15min.click()
 
-
-	
-
-	#save alarm
+        #save alarm
         alarm_save = self.marionette.find_element(*clock_object._alarm_save_locator)
         self.marionette.tap(alarm_save)
 
-	#TBD to verify the select list. Need more investigation.
-	self.wait_for_element_displayed(*_alarm_snooze_menu)
-	alarm_snooze_menu=self.marionette.find_element(*_alarm_snooze_menu)
-	self.assertTrue("15 minutes" == alarm_snooze_menu.text, 'Actual alarm snooze was: "' + alarm_snooze_menu.text + '", not "15 minutes".')
-
+        #TBD to verify the select list. Need more investigation.
+        self.wait_for_element_displayed(*_alarm_snooze_menu)
+        alarm_snooze_menu=self.marionette.find_element(*_alarm_snooze_menu)
+        self.assertTrue("15 minutes" == alarm_snooze_menu.text, 'Actual alarm snooze was: "' + alarm_snooze_menu.text + '", not "15 minutes".')
 
     def tearDown(self):
         # delete any existing alarms
