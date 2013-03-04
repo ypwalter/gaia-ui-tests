@@ -45,7 +45,7 @@ class TestContacts(GaiaTestCase):
         self.wait_for_element_not_displayed(*self._loading_overlay)
 
     def create_contact_locator(self, contact):
-        return ('xpath', "//li[@class='contact-item']/a[p[contains(@data-search, '%s')]]" % contact)
+        return ('css selector', '.contact-item p[data-order^=%s]' % contact)
 
     def test_add_photo_from_gallery_to_contact(self):
         # https://moztrap.mozilla.org/manage/case/5551/
