@@ -63,7 +63,7 @@ class TestEverythingMeInstallApp(GaiaTestCase):
 
         modal_dialog_message = self.marionette.find_element(*self._modal_dialog_message_locator).text
 
-        self.first_app_name = modal_dialog_message.rstrip('to Home Screen?').lstrip(' Add')
+        self.first_app_name = modal_dialog_message.rstrip('to Home Screen?').lstrip(' Add') # TODO remove hack after Bug 845828 lands in V1-train
 
         modal_dialog_ok_button = self.marionette.find_element(*self._modal_dialog_ok_locator)
         self.marionette.tap(modal_dialog_ok_button)
