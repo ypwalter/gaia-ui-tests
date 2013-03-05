@@ -22,11 +22,9 @@ class TestContacts(GaiaTestCase):
         # https://moztrap.mozilla.org/manage/case/1310/
         # First insert a new contact to edit
 
-        # launch the Contacts app
         contacts_app = Contacts(self.marionette)
         contacts_app.launch()
 
-        # tap on the created contact
         contact_details = contacts_app.contact(self.contact['givenName']).tap()
 
         edit_contact = contact_details.tap_edit()
@@ -44,7 +42,7 @@ class TestContacts(GaiaTestCase):
 
         contact_details = edit_contact.tap_update()
 
-        contacts_app = contact_details.tap_back()
+        contact_details.tap_back()
 
         self.assertEqual(len(contacts_app.contacts), 1)
         self.assertEqual(contacts_app.contacts[0].name, self.contact['givenName'])

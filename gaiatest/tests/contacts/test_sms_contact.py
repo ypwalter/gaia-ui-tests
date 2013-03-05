@@ -26,7 +26,6 @@ class TestContacts(GaiaTestCase):
         # https://moztrap.mozilla.org/manage/case/1314/
         # Setup a text message from a contact
 
-        # launch the Contacts app
         contacts = Contacts(self.marionette)
         contacts.launch()
 

@@ -11,7 +11,7 @@ class Contacts(Base):
 
     name = "Contacts"
 
-    _loading_overlay = ('id', 'loading-overlay')
+    _loading_overlay_locator = ('id', 'loading-overlay')
     _new_contact_button_locator = ('id', 'add-contact-button')
 
     #  contacts
@@ -19,7 +19,7 @@ class Contacts(Base):
 
     def launch(self):
         Base.launch(self)
-        self.wait_for_element_not_displayed(*self._loading_overlay)
+        self.wait_for_element_not_displayed(*self._loading_overlay_locator)
 
     @property
     def contacts(self):
@@ -33,7 +33,7 @@ class Contacts(Base):
 
     def tap_new_contact(self):
         self.marionette.tap(self.marionette.find_element(*self._new_contact_button_locator))
-        from gaiatest.apps.contacts.regions.add_edit_contact import NewContact
+        from gaiatest.apps.contacts.regions.contact_form import NewContact
         return NewContact(self.marionette)
 
     class Contact(PageRegion):

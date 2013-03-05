@@ -19,7 +19,6 @@ class TestContacts(GaiaTestCase):
         # https://moztrap.mozilla.org/manage/case/1309/
         #click Create new contact
 
-        # launch the Contacts app
         contacts_app = Contacts(self.marionette)
         contacts_app.launch()
 
@@ -37,7 +36,7 @@ class TestContacts(GaiaTestCase):
         new_contact_form.country_field = self.contact['country']
         new_contact_form.comment_field = self.contact['comment']
 
-        contacts_app = new_contact_form.tap_done()
+        new_contact_form.tap_done()
         self.wait_for_condition(lambda m: len(contacts_app.contacts) == 1)
 
         self.assertEqual(contacts_app.contacts[0].name, self.contact['givenName'])

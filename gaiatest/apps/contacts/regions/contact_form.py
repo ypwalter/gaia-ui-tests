@@ -5,10 +5,10 @@
 from gaiatest.apps.base import Base
 
 
-class ContactTemplate(Base):
+class ContactForm(Base):
 
-    _contact_form = ('id', 'contact-form')
-    _contact_form_title = ('id', 'contact-form-title')
+    _contact_form_locator = ('id', 'contact-form')
+    _contact_form_title_locator = ('id', 'contact-form-title')
 
     _given_name_field_locator = ('id', 'givenName')
     _family_name_field_locator = ('id', 'familyName')
@@ -25,11 +25,11 @@ class ContactTemplate(Base):
 
     def __init__(self, marionette):
         Base.__init__(self, marionette)
-        self.wait_for_element_displayed(*self._contact_form)
+        self.wait_for_element_displayed(*self._contact_form_locator)
 
     @property
     def title(self):
-        return self.marionette.find_element(*self._contact_form_title).text
+        return self.marionette.find_element(*self._contact_form_title_locator).text
 
     @property
     def given_name(self):
@@ -122,10 +122,10 @@ class ContactTemplate(Base):
         element.send_keys(value)
 
     @property
-    def picture(self):
+    def picture_style(self):
         return self.marionette.find_element(*self._add_picture_link_locator).get_attribute('style')
 
-    def tap_picture(self):
+    def tap_add_edit_picture_button(self):
         self.marionette.tap(self.marionette.find_element(*self._add_picture_link_locator))
         # TODO return the appropriate class
 
@@ -133,12 +133,12 @@ class ContactTemplate(Base):
         self.wait_for_element_displayed(*self._picture_loaded_locator)
 
 
-class EditContact(ContactTemplate):
+class EditContact(ContactForm):
 
     _update_locator = ('id', 'save-button')
 
     def __init__(self, marionette):
-        ContactTemplate.__init__(self, marionette)
+        ContactForm.__init__(self, marionette)
         self.wait_for_element_displayed(*self._update_locator)
 
     def tap_update(self):
@@ -147,12 +147,12 @@ class EditContact(ContactTemplate):
         return ContactDetails(self.marionette)
 
 
-class NewContact(ContactTemplate):
+class NewContact(ContactForm):
 
     _done_button_locator = ('id', 'save-button')
 
     def __init__(self, marionette):
-        ContactTemplate.__init__(self, marionette)
+        ContactForm.__init__(self, marionette)
         self.wait_for_element_displayed(*self._done_button_locator)
 
     def tap_done(self):

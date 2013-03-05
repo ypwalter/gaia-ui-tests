@@ -9,20 +9,6 @@ from gaiatest.apps.contacts.app import Contacts
 
 class TestContacts(GaiaTestCase):
 
-    _loading_overlay = ('id', 'loading-overlay')
-    _contacts_frame_locator = ('css selector', "iframe[src='app://communications.gaiamobile.org/contacts/index.html']")
-
-    # Header buttons
-    _edit_contact_button_locator = ('id', 'edit-contact-button')
-    _done_button_locator = ('id', 'save-button')
-
-    # Contact details panel
-    _contact_name_title = ('id', 'contact-name-title')
-
-    # New/Edit contact fields
-    _contact_form_title = ('id', 'contact-form-title')
-    _add_picture_link_locator = ('id', 'thumbnail-photo')
-
     # Select from: dialog
     _gallery_button_locator = ('xpath', "//a[text()='Gallery']")
 
@@ -43,13 +29,13 @@ class TestContacts(GaiaTestCase):
     def test_add_photo_from_gallery_to_contact(self):
         # https://moztrap.mozilla.org/manage/case/5551/
 
-        # launch the Contacts app
         contacts_app = Contacts(self.marionette)
         contacts_app.launch()
 
         contact_details = contacts_app.contact(self.contact['givenName']).tap()
 
-        full_name = self.contact['givenName'] + " " + self.contact['familyName']
+        full_name = ' '.join([self.contact['givenName'], self.contact['familyName']])
+
         self.assertEqual(full_name, contact_details.full_name)
 
         saved_contact_image_style = contact_details.image_style
@@ -58,9 +44,9 @@ class TestContacts(GaiaTestCase):
 
         self.assertEqual('Edit contact', edit_contact.title)
 
-        saved_picture_style = edit_contact.picture
+        saved_picture_style = edit_contact.picture_style
 
-        edit_contact.tap_picture()
+        edit_contact.tap_add_edit_picture_button()
 
         # switch to the system app
         self.marionette.switch_to_frame()
@@ -82,13 +68,13 @@ class TestContacts(GaiaTestCase):
         self.marionette.tap(self.marionette.find_element(*self._gallery_crop_done_button_locator))
 
         # switch back to the contacts app
-        contacts_app.switch_to_app()
+        contacts_app.launch()
 
         self.assertEqual('Edit contact', edit_contact.title)
 
         edit_contact.wait_for_image_to_load()
 
-        new_picture_style = edit_contact.picture
+        new_picture_style = edit_contact.picture_style
         self.assertNotEqual(new_picture_style, saved_picture_style,
                             'The picture associated with the contact was not changed.')
 

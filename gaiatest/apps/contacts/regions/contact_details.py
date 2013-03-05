@@ -7,8 +7,8 @@ from gaiatest.apps.base import Base
 
 class ContactDetails(Base):
 
-    _contact_name_title = ('id', 'contact-name-title')
-    _contact_image = ('id', 'cover-img')
+    _contact_name_title_locator = ('id', 'contact-name-title')
+    _contact_image_locator = ('id', 'cover-img')
     _call_phone_number_button_locator = ('id', 'call-or-pick-0')
     _send_sms_button_locator = ('id', 'send-sms-button-0')
     _edit_contact_button_locator = ('id', 'edit-contact-button')
@@ -20,7 +20,7 @@ class ContactDetails(Base):
 
     @property
     def full_name(self):
-        return self.marionette.find_element(*self._contact_name_title).text
+        return self.marionette.find_element(*self._contact_name_title_locator).text
 
     @property
     def phone_number(self):
@@ -28,7 +28,7 @@ class ContactDetails(Base):
 
     @property
     def image_style(self):
-        return self.marionette.find_element(*self._contact_image).get_attribute('style')
+        return self.marionette.find_element(*self._contact_image_locator).get_attribute('style')
 
     def wait_for_contact_details_to_load(self):
         self.wait_for_element_displayed(*self._call_phone_number_button_locator)
@@ -44,7 +44,7 @@ class ContactDetails(Base):
 
     def tap_edit(self):
         self.marionette.tap(self.marionette.find_element(*self._edit_contact_button_locator))
-        from gaiatest.apps.contacts.regions.add_edit_contact import EditContact
+        from gaiatest.apps.contacts.regions.contact_form import EditContact
         return EditContact(self.marionette)
 
     def tap_back(self):
