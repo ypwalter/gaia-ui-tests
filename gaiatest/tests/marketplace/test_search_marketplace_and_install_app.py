@@ -14,11 +14,11 @@ class TestSearchMarketplaceAndInstallApp(GaiaTestCase):
     _loading_fragment_locator = ('css selector', 'div.loading-fragment')
 
     # Marketplace search on home page
-    _search = ('id', 'search-q')
+    _search_locator = ('id', 'search-q')
 
     # Marketplace search results area and a specific result item
-    _search_results_area = ('id', 'search-results')
-    _search_result = ('css selector', '#search-results li.item')
+    _search_results_area_locator = ('id', 'search-results')
+    _search_result_locator = ('css selector', '#search-results li.item')
 
     # Marketplace result app name, author, and install button
     _app_name_locator = ('xpath', '//h3')
@@ -48,7 +48,7 @@ class TestSearchMarketplaceAndInstallApp(GaiaTestCase):
 
         self.wait_for_element_not_displayed(*self._loading_fragment_locator)
 
-        search_box = self.marionette.find_element(*self._search)
+        search_box = self.marionette.find_element(*self._search_locator)
 
         if not search_box.is_displayed():
             # Scroll a little to make the search box appear
@@ -59,8 +59,8 @@ class TestSearchMarketplaceAndInstallApp(GaiaTestCase):
         search_box.send_keys(Keys.RETURN)
 
         # validate the first result is the official lanyrd mobile app
-        self.wait_for_element_displayed(*self._search_results_area)
-        results = self.marionette.find_elements(*self._search_result)
+        self.wait_for_element_displayed(*self._search_results_area_locator)
+        results = self.marionette.find_elements(*self._search_result_locator)
         self.assertGreater(len(results), 0, 'no results found')
         app_name = results[0].find_element(*self._app_name_locator)
         author = results[0].find_element(*self._author_locator)
