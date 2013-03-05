@@ -21,7 +21,7 @@ class TestEditMode(GaiaTestCase):
         self._go_to_next_page()
 
         # go to edit mode.
-        # TODO: activate edit mode using HOME button https://bugzilla.mozilla.org/show_bug.cgi?id=814425
+        # TODO: activate edit mode using javascript, instead of long_press due to https://bugzilla.mozilla.org/show_bug.cgi?id=814425
         self._activate_edit_mode()
 
         #verify that the delete app icons appear
