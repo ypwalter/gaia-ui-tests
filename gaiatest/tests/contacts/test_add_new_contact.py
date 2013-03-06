@@ -25,16 +25,16 @@ class TestContacts(GaiaTestCase):
         new_contact_form = contacts_app.tap_new_contact()
 
         # Enter data into fields
-        new_contact_form.given_name = self.contact['givenName']
-        new_contact_form.family_name = self.contact['familyName']
+        new_contact_form.type_given_name(self.contact['givenName'])
+        new_contact_form.type_family_name(self.contact['familyName'])
 
-        new_contact_form.phone_field = self.contact['tel']['value']
-        new_contact_form.email_field = self.contact['email']
-        new_contact_form.street_field = self.contact['street']
-        new_contact_form.zip_code_field = self.contact['zip']
-        new_contact_form.city_field = self.contact['city']
-        new_contact_form.country_field = self.contact['country']
-        new_contact_form.comment_field = self.contact['comment']
+        new_contact_form.type_phone(self.contact['tel']['value'])
+        new_contact_form.type_email(self.contact['email'])
+        new_contact_form.type_street(self.contact['street'])
+        new_contact_form.type_zip_code(self.contact['zip'])
+        new_contact_form.type_city(self.contact['city'])
+        new_contact_form.type_country(self.contact['country'])
+        new_contact_form.type_comment(self.contact['comment'])
 
         new_contact_form.tap_done()
         self.wait_for_condition(lambda m: len(contacts_app.contacts) == 1)

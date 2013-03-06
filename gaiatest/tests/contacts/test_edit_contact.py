@@ -34,11 +34,11 @@ class TestContacts(GaiaTestCase):
         self.contact['familyName'] = "testedit"
         self.contact['tel']['value'] = "02011111111"
 
-        # self.wait_for_element_displayed(*self._given_name_field_locator)
+        # self.(*self._given_name_locator)
 
-        edit_contact.given_name = self.contact['givenName']
-        edit_contact.family_name = self.contact['familyName']
-        edit_contact.phone_field = self.contact['tel']['value']
+        edit_contact.type_given_name(self.contact['givenName'])
+        edit_contact.type_family_name(self.contact['familyName'])
+        edit_contact.type_phone(self.contact['tel']['value'])
 
         contact_details = edit_contact.tap_update()
 

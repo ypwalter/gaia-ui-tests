@@ -21,12 +21,6 @@ class Base(object):
     def launch(self):
         self.app = self.apps.launch(self.name)
 
-    def switch_to_app(self):
-        self.marionette.switch_to_frame()
-        self.wait_for_condition(lambda m: self.app.frame.is_displayed() is True)
-
-        self.marionette.switch_to_frame(self.app.frame)
-
     def wait_for_element_present(self, by, locator, timeout=_default_timeout):
         timeout = float(timeout) + time.time()
 

@@ -10,15 +10,15 @@ class ContactForm(Base):
     _contact_form_locator = ('id', 'contact-form')
     _contact_form_title_locator = ('id', 'contact-form-title')
 
-    _given_name_field_locator = ('id', 'givenName')
-    _family_name_field_locator = ('id', 'familyName')
-    _phone_field_locator = ('id', "number_0")
-    _email_field_locator = ('id', "email_0")
-    _street_field_locator = ('id', "streetAddress_0")
-    _zip_code_field_locator = ('id', "postalCode_0")
-    _city_field_locator = ('id', 'locality_0')
-    _country_field_locator = ('id', 'countryName_0')
-    _comment_field_locator = ('id', 'note_0')
+    _given_name_locator = ('id', 'givenName')
+    _family_name_locator = ('id', 'familyName')
+    _phone_locator = ('id', "number_0")
+    _email_locator = ('id', "email_0")
+    _street_locator = ('id', "streetAddress_0")
+    _zip_code_locator = ('id', "postalCode_0")
+    _city_locator = ('id', 'locality_0')
+    _country_locator = ('id', 'countryName_0')
+    _comment_locator = ('id', 'note_0')
 
     _add_picture_link_locator = ('id', 'thumbnail-photo')
     _picture_loaded_locator = ('css selector', '#thumbnail-photo[style*="background-image"] ')
@@ -33,91 +33,82 @@ class ContactForm(Base):
 
     @property
     def given_name(self):
-        return self.marionette.find_element(*self._given_name_field_locator).text
+        return self.marionette.find_element(*self._given_name_locator).text
 
-    @given_name.setter
-    def given_name(self, value):
-        element = self.marionette.find_element(*self._given_name_field_locator)
+    def type_given_name(self, value):
+        element = self.marionette.find_element(*self._given_name_locator)
         element.clear()
         element.send_keys(value)
 
     @property
     def family_name(self):
-        return self.marionette.find_element(*self._family_name_field_locator).text
+        return self.marionette.find_element(*self._family_name_locator).text
 
-    @family_name.setter
-    def family_name(self, value):
-        element = self.marionette.find_element(*self._family_name_field_locator)
+    def type_family_name(self, value):
+        element = self.marionette.find_element(*self._family_name_locator)
         element.clear()
         element.send_keys(value)
 
     @property
-    def phone_field(self):
-        return self.marionette.find_element(*self._phone_field_locator).text
+    def phone(self):
+        return self.marionette.find_element(*self._phone_locator).text
 
-    @phone_field.setter
-    def phone_field(self, value):
-        element = self.marionette.find_element(*self._phone_field_locator)
+    def type_phone(self, value):
+        element = self.marionette.find_element(*self._phone_locator)
         element.clear()
         element.send_keys(value)
 
     @property
-    def email_field(self):
-        return self.marionette.find_element(*self._email_field_locator).text
+    def email(self):
+        return self.marionette.find_element(*self._email_locator).text
 
-    @email_field.setter
-    def email_field(self, value):
-        element = self.marionette.find_element(*self._email_field_locator)
+    def type_email(self, value):
+        element = self.marionette.find_element(*self._email_locator)
         element.clear()
         element.send_keys(value)
 
     @property
-    def street_field(self):
-        return self.marionette.find_element(*self._street_field_locator).text
+    def street(self):
+        return self.marionette.find_element(*self._street_locator).text
 
-    @street_field.setter
-    def street_field(self, value):
-        element = self.marionette.find_element(*self._street_field_locator)
+    def type_street(self, value):
+        element = self.marionette.find_element(*self._street_locator)
         element.clear()
         element.send_keys(value)
 
     @property
-    def zip_code_field(self):
-        return self.marionette.find_element(*self._zip_code_field_locator).text
+    def zip_code(self):
+        return self.marionette.find_element(*self._zip_code_locator).text
 
-    @zip_code_field.setter
-    def zip_code_field(self, value):
-        element = self.marionette.find_element(*self._zip_code_field_locator)
+    def type_zip_code(self, value):
+        element = self.marionette.find_element(*self._zip_code_locator)
         element.clear()
         element.send_keys(value)
 
     @property
-    def city_field(self):
-        return self.marionette.find_element(*self._city_field_locator).text
+    def city(self):
+        return self.marionette.find_element(*self._city_locator).text
 
-    @city_field.setter
-    def city_field(self, value):
-        element = self.marionette.find_element(*self._city_field_locator)
+    def type_city(self, value):
+        element = self.marionette.find_element(*self._city_locator)
         element.clear()
         element.send_keys(value)
 
     @property
-    def country_field(self):
-        return self.marionette.find_element(*self._country_field_locator).text
+    def country(self):
+        return self.marionette.find_element(*self._country_locator).text
 
-    @country_field.setter
-    def country_field(self, value):
-        element = self.marionette.find_element(*self._country_field_locator)
+    def type_country(self, value):
+        element = self.marionette.find_element(*self._country_locator)
         element.clear()
         element.send_keys(value)
 
     @property
-    def comment_field(self):
-        return self.marionette.find_element(*self._country_field_locator).text
+    def comment(self):
+        return self.marionette.find_element(*self._country_locator).text
 
-    @comment_field.setter
-    def comment_field(self, value):
-        element = self.marionette.find_element(*self._comment_field_locator)
+    def type_comment(self, value):
+        element = self.marionette.find_element(*self._comment_locator)
         element.clear()
         element.send_keys(value)
 
