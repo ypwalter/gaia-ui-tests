@@ -14,9 +14,9 @@ class TestEverythingMe(GaiaTestCase):
     _homescreen_frame_locator = ('css selector', 'div.homescreen > iframe')
     _homescreen_landing_locator = ('id', 'landing-page')
 
-    # Facebook app locator
-    _facebook_iframe_locator = ('css selector', "iframe[data-url='http://touch.facebook.com/']")
-    _facebook_title_locator = ('tag name', 'title')
+    # Linkedin app locator
+    _linkedIn_iframe_locator = ('css selector', "iframe[data-url='https://touch.www.linkedin.com/']")
+    _linkedIn_title_locator = ('tag name', 'title')
 
     def setUp(self):
 
@@ -61,15 +61,15 @@ class TestEverythingMe(GaiaTestCase):
         # ... so we'll just get the first one.
         self.marionette.tap(app_icons[0])
 
-        # Switch to top level frame then we'll look for the Facebook app
+        # Switch to top level frame then we'll look for the LinkedIn app
         self.marionette.switch_to_frame()
 
         # Find the frame and switch to it
-        fb_iframe = self.wait_for_element_present(*self._facebook_iframe_locator)
-        self.marionette.switch_to_frame(fb_iframe)
+        li_iframe = self.wait_for_element_present(*self._linkedIn_iframe_locator)
+        self.marionette.switch_to_frame(li_iframe)
 
-        fb_title = self.marionette.find_element(*self._facebook_title_locator)
-        self.assertIn("Facebook", fb_title.text)
+        li_title = self.marionette.find_element(*self._linkedIn_title_locator)
+        self.assertIn("LinkedIn", li_title.text)
 
     def tearDown(self):
         # this will take us back to everything.me Social page, from whence cleanUp can return to the home page
