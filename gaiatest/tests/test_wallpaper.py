@@ -36,6 +36,9 @@ class TestWallpaper(GaiaTestCase):
 
         self.wait_for_element_displayed(*self._display_locator)
         display_item = self.marionette.find_element(*self._display_locator)
+
+        # TODO Bug 847946 - scrollIntoView() or scrollIntoView(true) scrolls to the element next to the giving one
+        self.marionette.execute_script("arguments[0].scrollIntoView(false);", [display_item])
         self.marionette.tap(display_item)
 
         #  Wait for the display menu to be visible
