@@ -32,6 +32,9 @@ class TestClockTurnOnOffAlarm(GaiaTestCase):
         # turn on the alarm
         origin_alarm_checked = self.marionette.find_element(*clock_object._alarm_checked_status).get_attribute('checked')
         alarm_checked_status = self.marionette.find_element(*clock_object._alarm_checked_status_button)
+
+        # wait notification not displayed before tapping
+        self.wait_for_element_not_displayed(*clock_object._banner_countdown_notification_locator)
         self.marionette.tap(alarm_checked_status)
         time.sleep(2)
         new_alarm_checked = self.marionette.find_element(*clock_object._alarm_checked_status).get_attribute('checked')
@@ -40,6 +43,9 @@ class TestClockTurnOnOffAlarm(GaiaTestCase):
         # turn off the alarm
         origin_alarm_checked = self.marionette.find_element(*clock_object._alarm_checked_status).get_attribute('checked')
         alarm_checked_status = self.marionette.find_element(*clock_object._alarm_checked_status_button)
+
+        # wait notification not displayed before tapping
+        self.wait_for_element_not_displayed(*clock_object._banner_countdown_notification_locator)
         self.marionette.tap(alarm_checked_status)
         time.sleep(2)
         new_alarm_checked = self.marionette.find_element(*clock_object._alarm_checked_status).get_attribute('checked')
