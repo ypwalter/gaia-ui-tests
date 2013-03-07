@@ -25,7 +25,7 @@ class ContactForm(Base):
 
     def __init__(self, marionette):
         Base.__init__(self, marionette)
-        self.wait_for_element_displayed(*self._contact_form_locator)
+        self.wait_for_add_edit_contact_to_load()
 
     @property
     def title(self):
@@ -123,6 +123,8 @@ class ContactForm(Base):
     def wait_for_image_to_load(self):
         self.wait_for_element_displayed(*self._picture_loaded_locator)
 
+    def wait_for_add_edit_contact_to_load(self):
+        self.wait_for_element_displayed(*self._contact_form_locator)
 
 class EditContact(ContactForm):
 
