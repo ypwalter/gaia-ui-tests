@@ -40,7 +40,7 @@ class TestClockAddAlarmMultipleTimes(GaiaTestCase):
         # verify the banner-countdown message appears
         self.wait_for_element_displayed(*clock_object._banner_countdown_notification_locator)
         alarm_msg = self.marionette.find_element(*clock_object._banner_countdown_notification_locator).text
-        self.assertTrue('The alarm is set for' in alarm_msg, 'Actual banner message was: "' + alarm_msg + '"')
+        self.assertIn('The alarm is set for',alarm_msg)
 
         # Get the number of alarms set after the new alarm was added
         new_alarms_count = len(self.marionette.find_elements(*clock_object._all_alarms))
@@ -61,7 +61,7 @@ class TestClockAddAlarmMultipleTimes(GaiaTestCase):
         # verify the banner-countdown message appears
         self.wait_for_element_displayed(*clock_object._banner_countdown_notification_locator)
         alarm_msg = self.marionette.find_element(*clock_object._banner_countdown_notification_locator).text
-        self.assertTrue('The alarm is set for' in alarm_msg, 'Actual banner message was: "' + alarm_msg + '"')
+        self.assertIn('The alarm is set for',alarm_msg)
 
         # Get the number of alarms set after the new alarm was added
         new_alarms_count = len(self.marionette.find_elements(*clock_object._all_alarms))

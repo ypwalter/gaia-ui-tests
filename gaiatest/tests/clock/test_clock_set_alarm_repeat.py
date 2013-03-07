@@ -6,13 +6,7 @@ from gaiatest.tests.clock import clock_object
 import time
 
 _alarm_repeat_menu = ('id','repeat-menu')
-_alarm_repeat_select = ('id','repeat-select')
-_alarm_repeat_mon = ('css selector','#repeat-select option[data-l10n-id="weekday-1-long"]')
-_alarm_repeat_tue = ('css selector','#repeat-select option[data-l10n-id="weekday-2-long"]')
-_alarm_repeat_wed = ('css selector','#repeat-select option[data-l10n-id="weekday-3-long"]')
-_alarm_repeat_thu = ('css selector','#repeat-select option[data-l10n-id="weekday-4-long"]')
-_alarm_repeat_fri = ('css selector','#repeat-select option[data-l10n-id="weekday-5-long"]')
-_alarm_repeat_sat = ('css selector','#repeat-select option[data-l10n-id="weekday-6-long"]')
+_alarm_repeat_select = ('css selector','#value-selector-container li')
 
 class TestClockSetAlarmRepeat(GaiaTestCase):
     def setUp(self):
@@ -40,46 +34,40 @@ class TestClockSetAlarmRepeat(GaiaTestCase):
         # Hack job on this, track Bug 830197
         time.sleep(1)
 
-        # set label
+        # Set label
         alarm_label = self.marionette.find_element(*clock_object._new_alarm_label)
-        alarm_label.send_keys("\b\b\b\b\btestrepeat")
+        alarm_label.clear()
+        alarm_label.send_keys("\b\b\b\b\bTestSetAlarmRepeat")
 
-        #set alarm repeat
+        # Set alarm repeat
         self.wait_for_element_displayed(*_alarm_repeat_menu)
         alarm_repeat_menu=self.marionette.find_element(*_alarm_repeat_menu)	
         self.marionette.tap(alarm_repeat_menu)
-	
-        #add monday
-        alarm_repeat_mon=self.marionette.find_element(*_alarm_repeat_mon)
-        #self.marionette.tap(alarm_repeat_mon)
-        alarm_repeat_mon.click()
-        time.sleep(1)
 
-        #add tuesday
-        alarm_repeat_tue=self.marionette.find_element(*_alarm_repeat_tue)
-        alarm_repeat_tue.click()
-        #print alarm_repeat_tue.text
-	
-        #add wednesday
-        alarm_repeat_wed=self.marionette.find_element(*_alarm_repeat_wed)
-        alarm_repeat_wed.click()
-        #print alarm_repeat_wed.text
+        # Go back to top level to get B2G select box wrapper
+        self.marionette.switch_to_frame()
 
-        #add thuesday
-        alarm_repeat_thu=self.marionette.find_element(*_alarm_repeat_thu)
-        alarm_repeat_thu.click()
+        # get the list of repeat options
+        repeat_options=self.marionette.find_elements(*_alarm_repeat_select)
 
-        #add friday
-        alarm_repeat_fri=self.marionette.find_element(*_alarm_repeat_fri)
-        alarm_repeat_fri.click()
+        # loop the options and select the ones in match list
+        match_list = 'Monday Tuesday Wednesday Thursday Friday'
+        for ro in repeat_options:
+            if ro.text in match_list:
+               self.marionette.tap(ro)
+        # test click twice
+            if ro.text=='Saturday':
+               self.marionette.tap(ro)
+               self.marionette.tap(ro)
 
-        #Test click twice on one element
-        alarm_repeat_sat=self.marionette.find_element(*_alarm_repeat_sat)
-        alarm_repeat_sat.click()
-        time.sleep(1)
-        alarm_repeat_sat.click()
+        # Click OK
+        ok_button=self.marionette.find_element('css selector','button.value-option-confirm')
+        self.marionette.tap(ok_button)
 
-        # save the alarm
+        # Switch back to app
+        self.marionette.switch_to_frame(self.app.frame)
+        
+        # Save the alarm
         alarm_save = self.marionette.find_element(*clock_object._alarm_save_locator)
         self.marionette.tap(alarm_save)
 
@@ -87,14 +75,13 @@ class TestClockSetAlarmRepeat(GaiaTestCase):
         self.wait_for_element_displayed(*clock_object._alarm_label)
 
         alarm_label = self.marionette.find_element(*clock_object._alarm_label).text
-        self.assertTrue("testrepeat" == alarm_label, 'Actual alarm label was: "' + alarm_label + '", not "testrepeat".')
+        self.assertEqual("TestSetAlarmRepeat" , alarm_label)
 
-        #TBD to verify the select list. Need more investigation.
+        # To verify the select list. 
         self.wait_for_element_displayed(*_alarm_repeat_menu)
         alarm_repeat_menu=self.marionette.find_element(*_alarm_repeat_menu)
-        self.assertTrue("Weekdays" == alarm_repeat_menu.text, 'Actual alarm repeat was: "' + alarm_repeat_menu.text + '", not "Weekdays".')
-        #print alarm_repeat_menu.text
-        #self.assertTrue(alarm_repeat_fri.enabled(),'Friday not selected')
+        self.assertEqual("Weekdays" , alarm_repeat_menu.text)
+
 
     def tearDown(self):
         # delete any existing alarms

@@ -7,7 +7,7 @@ import time
 
 _alarm_sound_menu= ('id','sound-menu')
 _alarm_sound_select=('id','sound-select')
-_alarm_sound_smooth_strings=('css selector','#sound-select option[data-l10n-id="ac_soft_smooth_strings_opus"]')
+_alarm_sounds=('css selector','#value-selector-container li')
 
 class TestClockSetAlarmSound(GaiaTestCase):
     def setUp(self):
@@ -37,25 +37,39 @@ class TestClockSetAlarmSound(GaiaTestCase):
 
         # set label
         alarm_label = self.marionette.find_element(*clock_object._new_alarm_label)
-        alarm_label.send_keys("\b\b\b\b\btestsound")
+        alarm_label.clear()
+        alarm_label.send_keys("\b\b\b\b\bTestSetAlarmSound")
 
         #select sound
-
         self.wait_for_element_displayed(*_alarm_sound_menu)
         alarm_sound_menu=self.marionette.find_element(*_alarm_sound_menu)	
         self.marionette.tap(alarm_sound_menu)
 
-        alarm_sound_smooth_strings=self.marionette.find_element(*_alarm_sound_smooth_strings)
-        alarm_sound_smooth_strings.click()
+        # Go back to top level to get B2G select box wrapper
+        self.marionette.switch_to_frame()
+        alarm_sounds=self.marionette.find_elements(*_alarm_sounds)
 
-        #save alarm
+        # loop the options and select "Gem Echoes"
+        for ro in alarm_sounds:
+            if ro.text=='Gem Echoes':
+               self.marionette.tap(ro)
+               break
+
+        # Click OK
+        ok_button=self.marionette.find_element('css selector','button.value-option-confirm')
+        self.marionette.tap(ok_button)
+
+        # Switch back to app
+        self.marionette.switch_to_frame(self.app.frame)
+
+        # Save alarm
         alarm_save = self.marionette.find_element(*clock_object._alarm_save_locator)
         self.marionette.tap(alarm_save)
 
         #To verify the select list.
         self.wait_for_element_displayed(*_alarm_sound_menu)
         alarm_sound_menu=self.marionette.find_element(*_alarm_sound_menu)
-        self.assertTrue("Smooth Strings" == alarm_sound_menu.text, 'Actual alarm sound was: "' + alarm_sound_menu.text + '", not "Smooth Strings".')
+        self.assertEqual("Gem Echoes",alarm_sound_menu.text)
 
     def tearDown(self):
         # delete any existing alarms

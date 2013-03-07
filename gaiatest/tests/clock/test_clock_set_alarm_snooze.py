@@ -6,9 +6,7 @@ from gaiatest.tests.clock import clock_object
 import time
 
 _alarm_snooze_menu= ('id','snooze-menu')
-_alarm_snooze_select=('id','snooze-select')
-_alarm_snooze_15min=('css selector','#snooze-select option[value="15"]')
-_alarm_snoozes=('css selector','#snooze-select option[data-l10n-id="nMinutes"]')
+_alarm_snoozes=('css selector','#value-selector-container li')
 
 class TestClockSetAlarmSnooze(GaiaTestCase):
     def setUp(self):
@@ -39,31 +37,38 @@ class TestClockSetAlarmSnooze(GaiaTestCase):
 
         # set label
         alarm_label = self.marionette.find_element(*clock_object._new_alarm_label)
-        alarm_label.send_keys("\b\b\b\b\btestsnooze")
+        alarm_label.clear()
+        alarm_label.send_keys("\b\b\b\b\bTestSetAlarmSnooze")
 
         #select snooze
-
         self.wait_for_element_displayed(*_alarm_snooze_menu)
         alarm_snooze_menu=self.marionette.find_element(*_alarm_snooze_menu)	
         self.marionette.tap(alarm_snooze_menu)
 
-        #find all options
-        #alarm_snoozes=self.marionette.find_elements(*_alarm_snoozes)
-        #print len(alarm_snoozes)
-	
-        #alarm_snooze_15min=alarm_snoozes[1]
-        #print alarm_snooze_15min.text
-        alarm_snooze_15min=self.marionette.find_element(*_alarm_snooze_15min)
-        alarm_snooze_15min.click()
+        # Go back to top level to get B2G select box wrapper
+        self.marionette.switch_to_frame()
+        alarm_snoozes=self.marionette.find_elements(*_alarm_snoozes)
 
-        #save alarm
+        # loop the options and set to 15 minutes
+        for ro in alarm_snoozes:
+            if ro.text=='15 minutes':
+               self.marionette.tap(ro)
+               break
+        # Click OK
+        ok_button=self.marionette.find_element('css selector','button.value-option-confirm')
+        self.marionette.tap(ok_button)
+
+        # Switch back to app
+        self.marionette.switch_to_frame(self.app.frame)
+
+        # save alarm
         alarm_save = self.marionette.find_element(*clock_object._alarm_save_locator)
         self.marionette.tap(alarm_save)
 
-        #TBD to verify the select list. Need more investigation.
+        # to verify the select list.
         self.wait_for_element_displayed(*_alarm_snooze_menu)
         alarm_snooze_menu=self.marionette.find_element(*_alarm_snooze_menu)
-        self.assertTrue("15 minutes" == alarm_snooze_menu.text, 'Actual alarm snooze was: "' + alarm_snooze_menu.text + '", not "15 minutes".')
+        self.assertEqual("15 minutes", alarm_snooze_menu.text)
 
     def tearDown(self):
         # delete any existing alarms
