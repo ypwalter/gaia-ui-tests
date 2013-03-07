@@ -116,7 +116,7 @@ class ContactForm(Base):
     def picture_style(self):
         return self.marionette.find_element(*self._add_picture_link_locator).get_attribute('style')
 
-    def tap_add_edit_picture_button(self):
+    def tap_picture(self):
         self.marionette.tap(self.marionette.find_element(*self._add_picture_link_locator))
         # TODO return the appropriate class
 

@@ -46,7 +46,7 @@ class TestContacts(GaiaTestCase):
 
         saved_picture_style = edit_contact.picture_style
 
-        edit_contact.tap_add_edit_picture_button()
+        edit_contact.tap_picture()
 
         # switch to the system app
         self.marionette.switch_to_frame()
