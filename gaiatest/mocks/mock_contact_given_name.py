@@ -13,10 +13,10 @@ class MockContactGivenName(dict):
     so that the json output of this mock can be inserted directly into db
     '''
 
-    def __init__(self, givenName="gaia", familyName="test", **kwargs):
+    def __init__(self, firstName="gaia", lastName="test", **kwargs):
         # set your default values
-        self.givenName = givenName
-        self.familyName = familyName
+        self.givenName = firstName
+        self.familyName = lastName
         
         import time
         curr_time = repr(time.time()).replace('.', '')
