@@ -36,6 +36,13 @@ class TestFtu(GaiaTestCase):
     # Section Tutorial Finish
     _section_tutorial_finish_locator = ('id', 'tutorialFinish')
     _lets_go_button_locator = ('id', 'tutorialFinished')
+
+    def setUp(self):
+        GaiaTestCase.setUp(self)
+
+        # launch the First Time User app
+        self.app = self.apps.launch('FTU')
+
     def test_ftu_with_tour(self):
 
         self.wait_for_element_displayed(*self._section_languages_locator)
