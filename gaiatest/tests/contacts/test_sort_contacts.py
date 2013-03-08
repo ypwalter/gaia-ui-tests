@@ -10,7 +10,7 @@ from gaiatest.mocks.mock_contact_given_name import MockContactGivenName
 class TestContacts(GaiaTestCase):
 
     _loading_overlay = ('id', 'loading-overlay')
-    _contacts_frame_locator = ('css selector', 'iframe[src="app://communications.gaiamobile.org/contacts/index.html""]')
+    _contacts_frame_locator = ('css selector', 'iframe[src="app://communications.gaiamobile.org/contacts/index.html"]')
 
     _settings_button_locator = ('id', 'settings-button')
     _settings_close_button_locator = ('id', 'settings-close')
