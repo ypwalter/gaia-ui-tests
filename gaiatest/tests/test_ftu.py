@@ -74,7 +74,7 @@ class TestFtu(GaiaTestCase):
     _pattern_contacts = re.compile("^No contacts detected on SIM to import$|^Imported one contact$|^Imported [0-9]+ contacts$")
     _pattern_contacts_0 = re.compile("^No contacts detected on SIM to import$")
     _pattern_contacts_1 = re.compile("^Imported one contact$")
-    _pattern_contacts_N = re.compile("^Imported [0-9]+ contacts$")
+    _pattern_contacts_N = re.compile("^Imported ([0-9]+) contacts$")
 
     def setUp(self):
         GaiaTestCase.setUp(self)
@@ -175,7 +175,7 @@ class TestFtu(GaiaTestCase):
         elif self._pattern_contacts_1.match(import_sim_message) is not None:
             import_sim_count = 1
         elif self._pattern_contacts_N.match(import_sim_message) is not None:
-            count = pattern_contacts_N.match(import_sim_message).group(0).replace("Imported ", "").replace(" contacts", "")
+            count = self._pattern_contacts_N.match(import_sim_message).group(1)
             import_sim_count = int(count)
 
         # Click next
