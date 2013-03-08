@@ -15,7 +15,7 @@ class TestEverythingMe(GaiaTestCase):
     _homescreen_landing_locator = ('id', 'landing-page')
 
     # Linkedin app locator
-    _linkedIn_iframe_locator = ('css selector', "iframe[data-url='https://touch.www.linkedin.com/']")
+    _linkedIn_iframe_locator = ('css selector', "iframe[data-url*='touch.www.linkedin.com']")
     _linkedIn_title_locator = ('tag name', 'title')
 
     def setUp(self):
