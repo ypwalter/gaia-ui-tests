@@ -15,11 +15,12 @@ class TestYouTube(GaiaTestCase):
     # Video player fullscreen
     _video_frame_locator = ('css selector', "iframe[src='app://video.gaiamobile.org/view.html']")
     _video_spinner_locator = ('id', 'spinner-overlay')
+    _video_player_locator = ('id', 'player')
     _video_player_frame_locator = ('id', 'videoFrame')
     _video_loaded_locator = ('css selector', 'video[style]')
 
     # YouTube
-    _video_container_locator = ('id', 'koya_elem_11_3')
+    _video_container_locator = ('id', 'koya_elem_12_4')
     _video_URL = 'http://m.youtube.com/watch?v=5MzuGWFIfio'
 
     _network_timeout = 20
@@ -71,16 +72,14 @@ class TestYouTube(GaiaTestCase):
         self.wait_for_element_displayed(*self._video_loaded_locator)
 
         # Wait for the video to play, check for playback
-        #self.wait_for_condition(lambda m: m.execute_script("return window.wrappedJSObject.playing;"))
-        #self.assertTrue(self.marionette.execute_script("return window.wrappedJSObject.playing;"))
-
-    def tearDown(self):
-        if self.wifi:
-            self.data_layer.disable_wifi()
-        GaiaTestCase.tearDown(self)
+        self.assertTrue(self.is_video_playing())
+        self.wait_for_condition(lambda m: self.is_video_playing(), timeout=self._network_timeout)
 
     def is_browser_throbber_visible(self):
         return self.marionette.find_element(*self._throbber_locator).get_attribute('class') == 'loading'
 
     def is_video_throbber_not_visible(self):
         return self.marionette.find_element(*self._video_spinner_locator).get_attribute('class') == 'hidden'
+
+    def is_video_playing(self):
+        return self.marionette.find_element(*self._video_player_locator).get_attribute('paused') == 'false'
