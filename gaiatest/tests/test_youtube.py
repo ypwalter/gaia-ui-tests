@@ -71,9 +71,8 @@ class TestYouTube(GaiaTestCase):
         self.wait_for_element_displayed(*self._video_player_frame_locator)
         self.wait_for_element_displayed(*self._video_loaded_locator)
 
-        # Wait for the video to play, check for playback
+        # Check for playback
         self.assertTrue(self.is_video_playing())
-        self.wait_for_condition(lambda m: self.is_video_playing(), timeout=self._network_timeout)
 
     def is_browser_throbber_visible(self):
         return self.marionette.find_element(*self._throbber_locator).get_attribute('class') == 'loading'
