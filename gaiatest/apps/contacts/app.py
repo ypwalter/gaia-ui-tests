@@ -46,6 +46,7 @@ class Contacts(Base):
     class Contact(PageRegion):
 
         _name_locator = ('css selector', 'p > strong')
+        _full_name_locator = ('css selector', 'p[data-order]')
 
         @property
         def name(self):
@@ -53,7 +54,7 @@ class Contacts(Base):
 
         @property
         def full_name(self):
-            return self.root_element.text
+            return self.root_element.find_element(*self._full_name_locator).text
 
         def tap(self):
             self.marionette.tap(self.root_element)
