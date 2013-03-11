@@ -4,13 +4,11 @@
 
 from gaiatest import GaiaTestCase
 from gaiatest.mocks.mock_contact import MockContact
-from gaiatest.mocks.mock_contact_given_name import MockContactGivenName
 
 
 class TestContacts(GaiaTestCase):
 
     _loading_overlay = ('id', 'loading-overlay')
-    _contacts_frame_locator = ('css selector', 'iframe[src="app://communications.gaiamobile.org/contacts/index.html"]')
 
     _settings_button_locator = ('id', 'settings-button')
     _settings_close_button_locator = ('id', 'settings-close')
@@ -19,14 +17,14 @@ class TestContacts(GaiaTestCase):
     _contacts_items_locator = ('css selector', '.contact-item p[data-order]')
 
     # contacts name list
-    _contacts_name_list = [('AA', 'Z'), ('BB', 'Y'), ('CC', 'X'), ('DD', 'H'), ('EE', 'G'), ('FF', 'F'), ('GG', 'E'), ('HH', 'D'), ('XX', 'C'), ('YY', 'B'), ('ZZ', 'A')]
+    _contacts_name_list = [('GG', 'E'), ('AA', 'Z'), ('XX', 'C'), ('CC', 'X'), ('EE', 'G'), ('FF', 'F'), ('HH', 'D'), ('BB', 'Y'), ('YY', 'B'), ('ZZ', 'A'), ('DD', 'H')]
 
     def setUp(self):
         GaiaTestCase.setUp(self)
 
         # insert contacts by given names
         for contact_name in self._contacts_name_list:
-            contact = MockContactGivenName(*contact_name)
+            contact = MockContact(givenName=contact_name[0], familyName=contact_name[1])
             self.data_layer.insert_contact(contact)
         # prepare the sorted-by-first-name and sorted-by-last-name lists
         self.sorted_contacts_name_by_first = sorted(self._contacts_name_list, key=lambda name: name[0])
