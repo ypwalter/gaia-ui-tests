@@ -23,8 +23,6 @@ class TestYouTube(GaiaTestCase):
     _video_container_locator = ('id', 'koya_elem_12_4')
     _video_URL = 'http://m.youtube.com/watch?v=5MzuGWFIfio'
 
-    _network_timeout = 20
-
     def setUp(self):
         GaiaTestCase.setUp(self)
 
@@ -49,7 +47,7 @@ class TestYouTube(GaiaTestCase):
         url_button = self.marionette.find_element(*self._url_button_locator)
         self.marionette.tap(url_button)
 
-        self.wait_for_condition(lambda m: not self.is_browser_throbber_visible(), timeout=self._network_timeout)
+        self.wait_for_condition(lambda m: not self.is_browser_throbber_visible())
 
         browser_frame = self.marionette.find_element(
             *self._browser_frame_locator)
@@ -57,17 +55,18 @@ class TestYouTube(GaiaTestCase):
         self.marionette.switch_to_frame(browser_frame)
 
         # Tap the video
-        self.wait_for_element_present(*self._video_container_locator, timeout=self._network_timeout)
+        self.wait_for_element_present(*self._video_container_locator)
         video = self.marionette.find_element(*self._video_container_locator)
 
         self.marionette.tap(video)
 
         # Switch to video player
         self.marionette.switch_to_frame()
+        self.wait_for_element_present(*self._video_frame_locator);
         self.marionette.switch_to_frame(self.marionette.find_element(*self._video_frame_locator))
 
         # Wait for the video and player to load
-        self.wait_for_condition(lambda m: self.is_video_throbber_not_visible(), timeout=self._network_timeout)
+        self.wait_for_condition(lambda m: self.is_video_throbber_not_visible())
         self.wait_for_element_displayed(*self._video_player_frame_locator)
         self.wait_for_element_displayed(*self._video_loaded_locator)
 
