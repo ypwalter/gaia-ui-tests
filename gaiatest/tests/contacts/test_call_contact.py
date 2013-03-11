@@ -19,17 +19,16 @@ class TestContacts(GaiaTestCase):
             'value': "%s" % self.testvars['remote_phone_number']})
         self.data_layer.insert_contact(self.contact)
 
-        self.contacts = Contacts(self.marionette)
-
     def test_call_contact(self):
         # NB This is not a listed smoke test
         # Call phone from a contact
         # https://moztrap.mozilla.org/manage/case/5679/
 
-        self.contacts.launch()
+        contacts = Contacts(self.marionette)
+        contacts.launch()
 
         # tap on the created contact
-        contact_details = self.contacts.contact(self.contact['givenName']).tap()
+        contact_details = contacts.contact(self.contact['givenName']).tap()
 
         # tap the phone number and switch to call screen frame
         call_screen = contact_details.tap_phone_number()
