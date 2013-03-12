@@ -5,11 +5,11 @@ from gaiatest import GaiaTestCase
 from gaiatest.tests.clock import clock_object
 import time
 
-_alarm_sound_menu= ('id','sound-menu')
-_alarm_sound_select=('id','sound-select')
-_alarm_sounds=('css selector','#value-selector-container li')
-
 class TestClockSetAlarmSound(GaiaTestCase):
+
+    _alarm_sound_menu_locator = ('id','sound-menu')
+    _alarm_sounds_locator = ('css selector','#value-selector-container li')
+
     def setUp(self):
         GaiaTestCase.setUp(self)
 
@@ -41,13 +41,13 @@ class TestClockSetAlarmSound(GaiaTestCase):
         alarm_label.send_keys("\b\b\b\b\bTestSetAlarmSound")
 
         #select sound
-        self.wait_for_element_displayed(*_alarm_sound_menu)
-        alarm_sound_menu=self.marionette.find_element(*_alarm_sound_menu)	
+        self.wait_for_element_displayed(*self._alarm_sound_menu_locator)
+        alarm_sound_menu=self.marionette.find_element(*self._alarm_sound_menu_locator)	
         self.marionette.tap(alarm_sound_menu)
 
         # Go back to top level to get B2G select box wrapper
         self.marionette.switch_to_frame()
-        alarm_sounds=self.marionette.find_elements(*_alarm_sounds)
+        alarm_sounds=self.marionette.find_elements(*self._alarm_sounds_locator)
 
         # loop the options and select "Gem Echoes"
         for ro in alarm_sounds:
@@ -67,8 +67,8 @@ class TestClockSetAlarmSound(GaiaTestCase):
         self.marionette.tap(alarm_save)
 
         #To verify the select list.
-        self.wait_for_element_displayed(*_alarm_sound_menu)
-        alarm_sound_menu=self.marionette.find_element(*_alarm_sound_menu)
+        self.wait_for_element_displayed(*self._alarm_sound_menu_locator)
+        alarm_sound_menu=self.marionette.find_element(*self._alarm_sound_menu_locator)
         self.assertEqual("Gem Echoes",alarm_sound_menu.text)
 
     def tearDown(self):

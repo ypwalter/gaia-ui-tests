@@ -5,10 +5,11 @@ from gaiatest import GaiaTestCase
 from gaiatest.tests.clock import clock_object
 import time
 
-_alarm_repeat_menu = ('id','repeat-menu')
-_alarm_repeat_select = ('css selector','#value-selector-container li')
-
 class TestClockSetAlarmRepeat(GaiaTestCase):
+
+    _alarm_repeat_menu_locator = ('id','repeat-menu')
+    _alarm_repeat_select_locator = ('css selector','#value-selector-container li')
+
     def setUp(self):
         GaiaTestCase.setUp(self)
 
@@ -40,15 +41,15 @@ class TestClockSetAlarmRepeat(GaiaTestCase):
         alarm_label.send_keys("\b\b\b\b\bTestSetAlarmRepeat")
 
         # Set alarm repeat
-        self.wait_for_element_displayed(*_alarm_repeat_menu)
-        alarm_repeat_menu=self.marionette.find_element(*_alarm_repeat_menu)	
+        self.wait_for_element_displayed(*self._alarm_repeat_menu_locator)
+        alarm_repeat_menu=self.marionette.find_element(*self._alarm_repeat_menu_locator)	
         self.marionette.tap(alarm_repeat_menu)
 
         # Go back to top level to get B2G select box wrapper
         self.marionette.switch_to_frame()
 
         # get the list of repeat options
-        repeat_options=self.marionette.find_elements(*_alarm_repeat_select)
+        repeat_options=self.marionette.find_elements(*self._alarm_repeat_select_locator)
 
         # loop the options and select the ones in match list
         match_list = 'Monday Tuesday Wednesday Thursday Friday'
@@ -78,8 +79,8 @@ class TestClockSetAlarmRepeat(GaiaTestCase):
         self.assertEqual("TestSetAlarmRepeat" , alarm_label)
 
         # To verify the select list. 
-        self.wait_for_element_displayed(*_alarm_repeat_menu)
-        alarm_repeat_menu=self.marionette.find_element(*_alarm_repeat_menu)
+        self.wait_for_element_displayed(*self._alarm_repeat_menu_locator)
+        alarm_repeat_menu=self.marionette.find_element(*self._alarm_repeat_menu_locator)
         self.assertEqual("Weekdays" , alarm_repeat_menu.text)
 
 
