@@ -22,7 +22,7 @@ class TestClockSetAlarmSound(GaiaTestCase):
     def test_clock_set_alarm_sound(self):
         """ Modify the alarm sound
 
-	[Clock][Alarm] Change the alarm sound
+        [Clock][Alarm] Change the alarm sound
         https://moztrap.mozilla.org/manage/case/1787/
 
         """
