@@ -8,15 +8,15 @@ class TestEverythingMe(GaiaTestCase):
 
     # Everything.Me locators
     _shortcut_items_locator = ('css selector', '#shortcuts-items li')
-    _facebook_icon_locator = ('xpath', "//div/b[text()='Facebook']")
+    _app_icon_locator = ('css selector', "div.evme-apps li.cloud")
 
     # Homescreen locators
     _homescreen_frame_locator = ('css selector', 'div.homescreen > iframe')
     _homescreen_landing_locator = ('id', 'landing-page')
 
-    # Facebook app locator
-    _facebook_iframe_locator = ('css selector', "iframe[data-url='http://touch.facebook.com/']")
-    _facebook_title_locator = ('tag name', 'title')
+    # Linkedin app locator
+    _linkedIn_iframe_locator = ('css selector', "iframe[data-url*='touch.www.linkedin.com']")
+    _linkedIn_title_locator = ('tag name', 'title')
 
     def setUp(self):
 
@@ -34,6 +34,9 @@ class TestEverythingMe(GaiaTestCase):
     def test_launch_everything_me_app(self):
         # https://github.com/mozilla/gaia-ui-tests/issues/69
 
+        # I have requested a HTML enhancement for more reliable testing:
+        # https://bugzilla.mozilla.org/show_bug.cgi?id=845828
+
         # swipe to Everything.Me
         hs_frame = self.marionette.find_element(*self._homescreen_frame_locator)
         self.marionette.switch_to_frame(hs_frame)
@@ -44,26 +47,29 @@ class TestEverythingMe(GaiaTestCase):
         # check for the available shortcut categories 
         self.wait_for_element_present(*self._shortcut_items_locator)
 
+        # We can't locate by name because they are stored as images
         shortcuts = self.marionette.find_elements(*self._shortcut_items_locator)
         self.assertGreater(len(shortcuts), 0, 'No shortcut categories found')
 
-        # Tap on the first category of shortcuts
+        # Instead, we tap on the first category of shortcuts
         self.marionette.tap(shortcuts[0])
 
-        self.wait_for_element_displayed(*self._facebook_icon_locator)
+        self.wait_for_element_displayed(*self._app_icon_locator)
 
-        fb_icon = self.marionette.find_element(*self._facebook_icon_locator)
-        self.marionette.tap(fb_icon)
+        # Due to everythingme HTML we cannot locate by the text...
+        app_icons = self.marionette.find_elements(*self._app_icon_locator)
+        # ... so we'll just get the first one.
+        self.marionette.tap(app_icons[0])
 
-        # Switch to top level frame then we'll look for the Facebook app
+        # Switch to top level frame then we'll look for the LinkedIn app
         self.marionette.switch_to_frame()
 
         # Find the frame and switch to it
-        fb_iframe = self.wait_for_element_present(*self._facebook_iframe_locator)
-        self.marionette.switch_to_frame(fb_iframe)
+        li_iframe = self.wait_for_element_present(*self._linkedIn_iframe_locator)
+        self.marionette.switch_to_frame(li_iframe)
 
-        fb_title = self.marionette.find_element(*self._facebook_title_locator)
-        self.assertIn("Facebook", fb_title.text)
+        li_title = self.marionette.find_element(*self._linkedIn_title_locator)
+        self.assertIn("LinkedIn", li_title.text)
 
     def tearDown(self):
         # this will take us back to everything.me Social page, from whence cleanUp can return to the home page

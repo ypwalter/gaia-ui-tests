@@ -30,11 +30,15 @@ class TestWallpaper(GaiaTestCase):
 
     def test_change_wallpaper(self):
         # https://moztrap.mozilla.org/manage/case/3449/
+
         # launch the Settings app
         self.app = self.apps.launch('Settings')
 
         self.wait_for_element_displayed(*self._display_locator)
         display_item = self.marionette.find_element(*self._display_locator)
+
+        # TODO Bug 847946 - scrollIntoView() or scrollIntoView(true) scrolls to the element next to the giving one
+        self.marionette.execute_script("arguments[0].scrollIntoView(false);", [display_item])
         self.marionette.tap(display_item)
 
         #  Wait for the display menu to be visible
@@ -81,7 +85,8 @@ class TestWallpaper(GaiaTestCase):
         self.assertFalse(new_wallpaper == self._default_wallpaper_src, 'Wallpaper has not changed from default.')
 
     def tearDown(self):
-        # reset to the default wallpaper
-        self.marionette.execute_script("navigator.mozSettings.createLock().set({'wallpaper.image' : arguments[0]});", [self._default_wallpaper_src])
+        # reset to the default wallpaper only if we have saved it
+        if self._default_wallpaper_src is not None:
+            self.marionette.execute_script("navigator.mozSettings.createLock().set({'wallpaper.image' : arguments[0]});", [self._default_wallpaper_src])
 
         GaiaTestCase.tearDown(self)

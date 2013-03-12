@@ -235,8 +235,8 @@ class GaiaData(object):
         self.marionette.execute_script('GaiaDataLayer.deleteAllAlarms();')
 
     def kill_active_call(self):
-        self.marionette.execute_script("var telephony = window.navigator.mozTelephony; " +\
-                                   "if(telephony.active) telephony.active.hangUp();")
+        self.marionette.execute_script("var telephony = window.navigator.mozTelephony; " +
+                                       "if(telephony.active) telephony.active.hangUp();")
 
 
 class GaiaDevice(object):
@@ -449,6 +449,12 @@ class GaiaTestCase(MarionetteTestCase):
             self.marionette.find_element(by, locator)
             return True
         except:
+            return False
+
+    def is_element_displayed(self, by, locator):
+        try:
+            return self.marionette.find_element(by, locator).is_displayed()
+        except (NoSuchElementException, ElementNotVisibleException):
             return False
 
     def tearDown(self):
