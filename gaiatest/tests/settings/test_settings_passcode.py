@@ -13,7 +13,7 @@ class TestSettingsWifi(GaiaTestCase):
     # Passcode Settings locators
     _phonelock_menu_item_locator = ('id', 'menuItem-phoneLock')
     _phonelock_section_locator = ('id', 'phoneLock')
-    _passcode_enable_locator = ('id', 'passcode-enable')
+    _passcode_enable_locator = ('css selector', 'li.lockscreen-enabled label')
     _phoneLock_passcode_section_locator = ('id', 'phoneLock-passcode')
     _passcode_input_locator = ('css selector', 'div#passcode-pseudo-input span.passcode-digit')
     _passcode_create_locator = ('id', 'passcode-create')
