@@ -4,7 +4,6 @@
 
 from gaiatest import GaiaTestCase
 
-
 class TestSettingsCellData(GaiaTestCase):
 
     # Cell Data Settings locators
@@ -25,14 +24,19 @@ class TestSettingsCellData(GaiaTestCase):
         # launch the Settings app
         self.app = self.apps.launch('Settings')
 
+        # This will make the warning prompt appear every time
+        self.marionette.execute_script("window.wrappedJSObject.asyncStorage.removeItem('ril.data.enabled.warningDialog.enabled');")
+
     def test_enable_cell_data_via_settings_app(self):
         """ Enable cell data via the Settings app
 
         https://moztrap.mozilla.org/manage/case/1373/
 
         """
+
         # navigate to cell data settings
         self.wait_for_element_displayed(*self._cell_data_menu_item_locator)
+
         cell_data_menu_item = self.marionette.find_element(*self._cell_data_menu_item_locator)
         self.marionette.tap(cell_data_menu_item)
 
@@ -48,9 +52,12 @@ class TestSettingsCellData(GaiaTestCase):
         self.marionette.tap(enabled_label)
 
         # deal with prompt that sometimes appears (on first setting)
+        self.wait_for_element_displayed(*self._cell_data_prompt_turn_on_button_locator)
         turn_on_prompt_button = self.marionette.find_element(*self._cell_data_prompt_turn_on_button_locator)
-        if turn_on_prompt_button.is_displayed and \
+
+        if turn_on_prompt_button.is_displayed() and \
            'current' in self.marionette.find_element(*self._cell_data_prompt_container_locator).get_attribute('class'):
+
             # the following two asserts will currently fail due to bug 837664, so xfailing the test for now
             # https://bugzilla.mozilla.org/show_bug.cgi?id=837664
             self.assertFalse(enabled_checkbox.get_attribute('checked'))
