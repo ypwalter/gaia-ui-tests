@@ -149,8 +149,27 @@ class EditContact(ContactForm):
 
     def tap_delete(self):
         self.marionette.tap(self.marionette.find_element(*self._delete_locator))
-        from gaiatest.apps.contacts.regions.remove_confirm import RemoveConfirm
         return RemoveConfirm(self.marionette)
+
+
+class RemoveConfirm(Base):
+
+    _form_locator = ('id', 'confirmation-message')
+    _cancel_locator = ('xpath', '//form[@id="confirmation-message"]//menu//button[text()="Cancel"]')
+    _remove_locator = ('xpath', '//form[@id="confirmation-message"]//menu//button[text()="Remove"]')
+
+    def __init__(self, marionette):
+        Base.__init__(self, marionette)
+        self.wait_for_element_displayed(*self._form_locator)
+
+    def tap_cancel(self):
+        self.marionette.tap(self.marionette.find_element(*self._cancel_locator))
+        return EditContact(self.marionette)
+
+    def tap_remove(self):
+        self.marionette.tap(self.marionette.find_element(*self._remove_locator))
+        from gaiatest.apps.contacts.app import Contacts
+        return Contacts(self.marionette)
 
 
 class NewContact(ContactForm):
