@@ -14,6 +14,7 @@ from marionette import MarionetteTouchMixin
 from marionette.errors import NoSuchElementException
 from marionette.errors import ElementNotVisibleException
 from marionette.errors import TimeoutException
+from marionette.marionette import Actions
 import mozdevice
 
 
@@ -529,7 +530,6 @@ class Keyboard(object):
         finally:
             # set the search timeout to the default value
             self.marionette.set_search_timeout(10000)
-
     def send(self, string):
         self._switch_to_keyboard()
 
@@ -614,3 +614,56 @@ class Keyboard(object):
             self.marionette.long_press(key_obj, timeout)
             time.sleep(timeout / 1000 + 1)
             self.marionette.switch_to_frame()
+
+    # This is for selecting special characters after long pressing
+    # "selection" is an integer for selecting nth special character in the list
+    # "movement" is when you don't like it to move toward list or when there is no list 
+    def choose_extended_character(self, long_press_key, selection, movement=True):
+        self._switch_to_keyboard()
+
+        action = Actions(self.marionette)
+        key = self._key_locator(long_press_key)
+        # alpha is in on keyboard
+        if long_press_key.isalpha():
+            if self.is_element_present(*self._key_locator(self._alpha_key)):
+                self._tap(self._alpha_key)
+            if not self.is_element_present(*key):
+                self._tap(self._upper_case_key)
+        # numbers and symbols are in another keyboard
+        else:
+            if self.is_element_present(*self._key_locator(self._numeric_sign_key)):
+                self._tap(self._numeric_sign_key)
+            if not self.is_element_present(*key):
+                self._tap(self._alt_key)
+
+        # after switching to correct keyboard, set long press if the key is there
+        if self.is_element_present(*key):
+            keyobj = self.marionette.find_element(*key)
+            action.press(keyobj).wait(1)
+        else:
+            assert False, 'Key %s not found on the keyboard' % val
+
+        # the list is -50 on y axis to original key
+        action.move_by_offset(0, -50)
+        # the gap between each element in the list is (+ or -)26 on x axis
+        # + or - depends on if it's on the left portion of right portion of the keyboard
+        # x axis of t&g is 128 and v is 144, using v as a standard
+        if keyobj.location['x'] > 144:
+            direction = -1
+        else:
+            direction = 1
+        if selection != 1 and movement == True:
+            action.move_by_offset(26*(selection-1)*(direction), 0)
+
+        action.release()
+
+        # perform the action chain
+        action.perform()
+        time.sleep(2)
+
+        # after long press space key, it might get screwed up due to timing issue. adding 0.7sec for it.
+        if ord(long_press_key) == int(self._space_key):
+            time.sleep(0.7)
+
+        self.marionette.switch_to_frame()
+

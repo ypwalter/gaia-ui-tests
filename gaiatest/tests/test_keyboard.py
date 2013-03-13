@@ -20,7 +20,7 @@ class TestKeyboard(GaiaTestCase):
 
     _test_string = "aG1D2s3~!=@.#$^"
     # Temporarily, long press work, but special characters selection fail
-    _final_string = "aG1D2s3~!=@.#$A"
+    _final_string = u'aG1D2s3~!=@.#$\xc6'
 
     def setUp(self):
         GaiaTestCase.setUp(self)
@@ -48,7 +48,7 @@ class TestKeyboard(GaiaTestCase):
         self.keyboard.send(self._test_string)
         self.keyboard.tap_backspace()
         self.keyboard.enable_caps_lock()
-        self.keyboard.long_press('A')
+        self.keyboard.choose_extended_character('A', 8)
 
         self.marionette.switch_to_frame(self.app.frame)
 
