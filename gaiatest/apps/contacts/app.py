@@ -23,6 +23,7 @@ class Contacts(Base):
 
     @property
     def contacts(self):
+        self.wait_for_element_displayed(*self._new_contact_button_locator)
         return [self.Contact(marionette=self.marionette, element=contact)
                 for contact in self.marionette.find_elements(*self._contact_locator)]
 

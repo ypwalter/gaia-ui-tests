@@ -126,9 +126,12 @@ class ContactForm(Base):
     def wait_for_add_edit_contact_to_load(self):
         self.wait_for_element_displayed(*self._contact_form_locator)
 
+
 class EditContact(ContactForm):
 
     _update_locator = ('id', 'save-button')
+    _cancel_locator = ('id', 'cancel-edit')
+    _delete_locator = ('id', 'delete-contact')
 
     def __init__(self, marionette):
         ContactForm.__init__(self, marionette)
@@ -138,6 +141,16 @@ class EditContact(ContactForm):
         self.marionette.tap(self.marionette.find_element(*self._update_locator))
         from gaiatest.apps.contacts.regions.contact_details import ContactDetails
         return ContactDetails(self.marionette)
+
+    def tap_cancel(self):
+        self.marionette.tap(self.marionette.find_element(*self._cancel_locator))
+        from gaiatest.apps.contacts.regions.contact_details import ContactDetails
+        return ContactDetails(self.marionette)
+
+    def tap_delete(self):
+        self.marionette.tap(self.marionette.find_element(*self._delete_locator))
+        from gaiatest.apps.contacts.regions.remove_confirm import RemoveConfirm
+        return RemoveConfirm(self.marionette)
 
 
 class NewContact(ContactForm):
