@@ -8,6 +8,7 @@ from gaiatest import GaiaTestCase
 IMEI_CODE = "*#06#"
 CALL_FORWARDING_CODE = "*#21#"
 
+
 class TestMMI(GaiaTestCase):
 
     # Dialer app

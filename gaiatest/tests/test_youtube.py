@@ -4,6 +4,7 @@
 
 from gaiatest import GaiaTestCase
 
+
 class TestYouTube(GaiaTestCase):
 
     # Firefox/chrome locators
@@ -38,7 +39,7 @@ class TestYouTube(GaiaTestCase):
         """ Confirm YouTube video playback
 
         https://moztrap.mozilla.org/manage/case/6073/
-        
+
         """
 
         awesome_bar = self.marionette.find_element(*self._awesome_bar_locator)
@@ -62,7 +63,7 @@ class TestYouTube(GaiaTestCase):
 
         # Switch to video player
         self.marionette.switch_to_frame()
-        self.wait_for_element_present(*self._video_frame_locator);
+        self.wait_for_element_present(*self._video_frame_locator)
         self.marionette.switch_to_frame(self.marionette.find_element(*self._video_frame_locator))
 
         # Wait for the video and player to load
