@@ -41,11 +41,7 @@ class TestNotificationBar(GaiaTestCase):
         # Expand the notification bar
         self.wait_for_element_displayed(*self._statusbar_notification_locator)
         statusbar_notification = self.marionette.find_element(*self._statusbar_notification_locator)
-        # TODO: Workaround, double_tap does not work. Should modify the code after double_tap fixed.
-        self.marionette.tap(statusbar_notification)
-        self.marionette.tap(statusbar_notification)
-        self.marionette.tap(statusbar_notification)
-        self.marionette.tap(statusbar_notification)
+        self.marionette.execute_script("window.wrappedJSObject.UtilityTray.show()")
 
         # Assert there is one notification is listed in notifications-container
         notifications_in_container = self.marionette.find_elements(*self._notifications_in_container_locator)
