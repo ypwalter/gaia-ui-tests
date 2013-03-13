@@ -4,6 +4,7 @@
 
 from gaiatest import GaiaTestCase
 
+
 class TestEverythingMe(GaiaTestCase):
 
     # Everything.Me locators
@@ -44,7 +45,7 @@ class TestEverythingMe(GaiaTestCase):
         # We'll use js to flick pages for reliability/Touch is unreliable
         self.marionette.execute_script("window.wrappedJSObject.GridManager.goToPreviousPage();")
 
-        # check for the available shortcut categories 
+        # check for the available shortcut categories
         self.wait_for_element_present(*self._shortcut_items_locator)
 
         # We can't locate by name because they are stored as images

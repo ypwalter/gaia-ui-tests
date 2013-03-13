@@ -5,6 +5,7 @@
 from gaiatest import GaiaTestCase
 from marionette.keys import Keys
 
+
 class TestSearchMarketplaceAndInstallApp(GaiaTestCase):
 
     APP_NAME = 'Lanyrd'
@@ -41,7 +42,6 @@ class TestSearchMarketplaceAndInstallApp(GaiaTestCase):
 
         # launch the app
         self.app = self.apps.launch('Marketplace')
-
 
     def test_search_and_install_app(self):
         # select to search for an app
