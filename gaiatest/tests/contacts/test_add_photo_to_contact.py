@@ -13,7 +13,7 @@ class TestContacts(GaiaTestCase):
     _gallery_button_locator = ('xpath', "//a[text()='Gallery']")
 
     # Gallery
-    _gallery_frame_locator = ('css selector', "iframe[src='app://gallery.gaiamobile.org/index.html#pick']")
+    _gallery_frame_locator = ('css selector', "iframe[src^='app://gallery'][src$='index.html#pick']")
     _gallery_items_locator = ('css selector', 'li.thumbnail')
     _gallery_crop_done_button_locator = ('id', 'crop-done-button')
 
