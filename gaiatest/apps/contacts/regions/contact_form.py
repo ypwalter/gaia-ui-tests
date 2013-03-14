@@ -155,8 +155,8 @@ class EditContact(ContactForm):
 class RemoveConfirm(Base):
 
     _form_locator = ('id', 'confirmation-message')
-    _cancel_locator = ('xpath', '//form[@id="confirmation-message"]//menu//button[text()="Cancel"]')
-    _remove_locator = ('xpath', '//form[@id="confirmation-message"]//menu//button[text()="Remove"]')
+    _cancel_locator = ('css selector', 'form#confirmation-message button:not(.danger)')
+    _remove_locator = ('css selector', 'form#confirmation-message button.danger')
 
     def __init__(self, marionette):
         Base.__init__(self, marionette)
