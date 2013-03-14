@@ -107,4 +107,3 @@ class TestCostControlFTU(GaiaTestCase):
 
         # Now back to app
         self.marionette.switch_to_frame(self.app.frame)
-
