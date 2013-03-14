@@ -9,7 +9,7 @@ from marionette.errors import NoSuchElementException
 
 class TestEditMode(GaiaTestCase):
 
-    _delete_app_locator = ('css selector', 'li.icon > span.options')
+    _edit_mode_locator = ('css selector', 'body[data-mode="edit"]')
 
     def setUp(self):
         GaiaTestCase.setUp(self)
@@ -25,12 +25,12 @@ class TestEditMode(GaiaTestCase):
         self._activate_edit_mode()
 
         #verify that the delete app icons appear
-        delete_app_icon = self.marionette.find_element(*self._delete_app_locator)
-        self.assertTrue(delete_app_icon.is_displayed())
+        self.assertTrue(self.is_element_present(*self._edit_mode_locator))
 
         #tap home button and verify that delete app icons are no longer visible
         self._touch_home_button()
-        self.assertEqual(len(self.marionette.find_elements(*self._delete_app_locator)), 0)
+
+        self.assertFalse(self.is_element_present(*self._edit_mode_locator))
 
     def _touch_home_button(self):
         self.marionette.switch_to_frame()
