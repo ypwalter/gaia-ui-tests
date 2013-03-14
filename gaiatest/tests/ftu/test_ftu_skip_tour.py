@@ -208,7 +208,6 @@ class TestFtu(GaiaTestCase):
         self.assertTrue(self.data_layer.get_setting("ril.data.enabled"), "Cell data was not enabled by FTU app")
         self.assertTrue(self.data_layer.is_wifi_connected(self.testvars['wifi']), "WiFi was not connected via FTU app")
 
-
     def tearDown(self):
 
         # TODO flush any settings set by the FTU app

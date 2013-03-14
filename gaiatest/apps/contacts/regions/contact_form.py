@@ -126,6 +126,7 @@ class ContactForm(Base):
     def wait_for_add_edit_contact_to_load(self):
         self.wait_for_element_displayed(*self._contact_form_locator)
 
+
 class EditContact(ContactForm):
 
     _update_locator = ('id', 'save-button')
