@@ -34,18 +34,15 @@ class TestNotificationBar(GaiaTestCase):
         # Assert the notification pops up and then collapses
         self.wait_for_element_displayed(*self._notification_toaster_locator)
         notification_toaster = self.marionette.find_element(*self._notification_toaster_locator)
-        self.assertTrue(notification_toaster.is_displayed(), 'Should pops up the notification on screen.')
         self.wait_for_element_not_displayed(*self._notification_toaster_locator)
-        self.assertFalse(notification_toaster.is_displayed(), 'Should collapses the notification.')
 
         # Expand the notification bar
         self.wait_for_element_displayed(*self._statusbar_notification_locator)
-        statusbar_notification = self.marionette.find_element(*self._statusbar_notification_locator)
         self.marionette.execute_script("window.wrappedJSObject.UtilityTray.show()")
 
         # Assert there is one notification is listed in notifications-container
         notifications_in_container = self.marionette.find_elements(*self._notifications_in_container_locator)
-        self.assertEqual(1, len(notifications_in_container), 'Should has one notification.')
+        self.assertEqual(1, len(notifications_in_container), 'Expected one notification.')
         # Assert notification is listed in notifications-container
         notification_body_in_container = self.marionette.find_element(*self._notification_body_in_container_locator)
         self.assertEqual(self._notification_body, notification_body_in_container.text, 'The notification body should be "%s", not "%s".' % (self._notification_body, notification_body_in_container.text))
@@ -57,4 +54,4 @@ class TestNotificationBar(GaiaTestCase):
         # Assert there is no notification is listed in notifications-container
         time.sleep(1)
         notifications_in_container = self.marionette.find_elements(*self._notifications_in_container_locator)
-        self.assertEqual(0, len(notifications_in_container), 'Should has no notification.')
+        self.assertEqual(0, len(notifications_in_container), 'Expected 0 notifications.')
