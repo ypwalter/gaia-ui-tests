@@ -530,6 +530,7 @@ class Keyboard(object):
         finally:
             # set the search timeout to the default value
             self.marionette.set_search_timeout(10000)
+
     def send(self, string):
         self._switch_to_keyboard()
 
@@ -616,8 +617,8 @@ class Keyboard(object):
             self.marionette.switch_to_frame()
 
     # This is for selecting special characters after long pressing
-    # "selection" is an integer for selecting nth special character in the list
-    # "movement" is when you don't like it to move toward list or when there is no list 
+    # "selection" is the nth special element you want to select
+    # "movement" is when you don't like it to move toward list or when there is no list
     def choose_extended_character(self, long_press_key, selection, movement=True):
         self._switch_to_keyboard()
 
@@ -643,17 +644,30 @@ class Keyboard(object):
         else:
             assert False, 'Key %s not found on the keyboard' % val
 
-        # the list is -50 on y axis to original key
-        action.move_by_offset(0, -50)
-        # the gap between each element in the list is (+ or -)26 on x axis
-        # + or - depends on if it's on the left portion of right portion of the keyboard
-        # x axis of t&g is 128 and v is 144, using v as a standard
-        if keyobj.location['x'] > 144:
-            direction = -1
+        if self.marionette.find_element('id', 'keyboard').get_attribute('class') == u'portrait':
+            # the list is -50 on y axis to original key
+            action.move_by_offset(0, -50)
+            # the gap between each element in the list is (+ or -)26 on x axis
+            # + or - depends on if it's on the left portion of right portion of the keyboard
+            # x axis of t&g is 128 and v is 144, using v as a standard
+            if keyobj.location['x'] > 144:
+                direction = -1
+            else:
+                direction = 1
+            if selection != 1 and movement == True:
+                action.move_by_offset(26 * (selection - 1) * direction, 0)
         else:
-            direction = 1
-        if selection != 1 and movement == True:
-            action.move_by_offset(26*(selection-1)*(direction), 0)
+            # the list is -51 on y axis to original key
+            action.move_by_offset(0, -51)
+            # the gap between each element in the list is (+ or -)36 on x axis
+            # + or - depends on if it's on the left portion of right portion of the keyboard
+            # x axis of v is 216, using v as a standard
+            if keyobj.location['x'] > 216:
+                direction = -1
+            else:
+                direction = 1
+            if selection != 1 and movement == True:
+                action.move_by_offset(36 * (selection - 1) * direction, 0)
 
         action.release()
 
@@ -666,4 +680,3 @@ class Keyboard(object):
             time.sleep(0.7)
 
         self.marionette.switch_to_frame()
-

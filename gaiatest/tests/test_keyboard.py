@@ -45,6 +45,7 @@ class TestKeyboard(GaiaTestCase):
         self.wait_for_element_displayed(*self._text_input_locator)
         self.marionette.find_element(*self._text_input_locator).click()
 
+        import pdb; pdb.set_trace()
         self.keyboard.send(self._test_string)
         self.keyboard.tap_backspace()
         self.keyboard.enable_caps_lock()
