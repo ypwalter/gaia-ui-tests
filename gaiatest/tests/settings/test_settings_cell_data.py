@@ -4,6 +4,7 @@
 
 from gaiatest import GaiaTestCase
 
+
 class TestSettingsCellData(GaiaTestCase):
 
     # Cell Data Settings locators

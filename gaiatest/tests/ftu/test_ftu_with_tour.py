@@ -11,7 +11,6 @@ class TestFtu(GaiaTestCase):
 
     _next_button_locator = ('id', 'forward')
 
-
     _section_languages_locator = ('id', 'languages')
     _section_cell_data_locator = ('id', 'data_3g')
     _section_wifi_locator = ('id', 'wifi')
@@ -103,7 +102,6 @@ class TestFtu(GaiaTestCase):
 
         # Switch back to top level now that FTU app is gone
         self.marionette.switch_to_frame()
-
 
     def tearDown(self):
 
