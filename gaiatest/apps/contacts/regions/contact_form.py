@@ -132,6 +132,9 @@ class EditContact(ContactForm):
     _update_locator = ('id', 'save-button')
     _cancel_locator = ('id', 'cancel-edit')
     _delete_locator = ('id', 'delete-contact')
+    _delete_form_locator = ('id', 'confirmation-message')
+    _cancel_delete_locator = ('css selector', 'form#confirmation-message button:not(.danger)')
+    _confirm_delete_locator = ('css selector', 'form#confirmation-message button.danger')
 
     def __init__(self, marionette):
         ContactForm.__init__(self, marionette)
@@ -149,25 +152,14 @@ class EditContact(ContactForm):
 
     def tap_delete(self):
         self.marionette.tap(self.marionette.find_element(*self._delete_locator))
-        return RemoveConfirm(self.marionette)
 
+    def tap_cancel_delete(self):
+        self.wait_for_element_displayed(*self._delete_form_locator)
+        self.marionette.tap(self.marionette.find_element(*self._cancel_delete_locator))
 
-class RemoveConfirm(Base):
-
-    _form_locator = ('id', 'confirmation-message')
-    _cancel_locator = ('css selector', 'form#confirmation-message button:not(.danger)')
-    _remove_locator = ('css selector', 'form#confirmation-message button.danger')
-
-    def __init__(self, marionette):
-        Base.__init__(self, marionette)
-        self.wait_for_element_displayed(*self._form_locator)
-
-    def tap_cancel(self):
-        self.marionette.tap(self.marionette.find_element(*self._cancel_locator))
-        return EditContact(self.marionette)
-
-    def tap_remove(self):
-        self.marionette.tap(self.marionette.find_element(*self._remove_locator))
+    def tap_confirm_delete(self):
+        self.wait_for_element_displayed(*self._delete_form_locator)
+        self.marionette.tap(self.marionette.find_element(*self._confirm_delete_locator))
         from gaiatest.apps.contacts.app import Contacts
         return Contacts(self.marionette)
 

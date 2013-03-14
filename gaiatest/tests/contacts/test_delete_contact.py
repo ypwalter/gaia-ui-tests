@@ -32,8 +32,8 @@ class TestContacts(GaiaTestCase):
         contact_item = contacts_app.contact(self.contact['givenName'])
         contact_item_detail = contact_item.tap()
         contact_item_edit = contact_item_detail.tap_edit()
-        contact_item_delete = contact_item_edit.tap_delete()
-        contact_item_delete.tap_remove()
+        contact_item_edit.tap_delete()
+        contact_item_edit.tap_confirm_delete()
 
         post_contacts_count = len(contacts_app.contacts)
         self.assertEqual(post_contacts_count, 0, "Should have no contact after run this test.")
