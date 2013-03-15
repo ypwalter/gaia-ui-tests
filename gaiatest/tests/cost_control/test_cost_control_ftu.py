@@ -19,7 +19,8 @@ class TestCostControlFTU(GaiaTestCase):
     # 3rd step screen locators
     _data_alert_title_locator = ('css selector', 'section#non-vivo-step-2 h1[data-l10n-id="fte-onlydata3-title"]')
     _ftu_usage_locator = ('css selector', 'section#non-vivo-step-2 span.tag')
-    _ftu_data_alert_switch_locator = ('css selector', 'section#non-vivo-step-2 input')
+    _ftu_data_alert_switch_locator = ('css selector', 'section#non-vivo-step-2 label.end input')
+    _ftu_data_alert_label_locator = ('css selector', 'section#non-vivo-step-2 label.end')
     _capacity_button_locator = ('css selector', 'section#data-limit-dialog form button')
     _size_input_locator = ('css selector', 'section#data-limit-dialog form input')
     _usage_done_button_locator = ('css selector', '#data-usage-done-button')
@@ -29,10 +30,6 @@ class TestCostControlFTU(GaiaTestCase):
 
     def setUp(self):
         GaiaTestCase.setUp(self)
-
-        if self.wifi:
-            self.data_layer.enable_wifi()
-            self.data_layer.connect_to_wifi(self.testvars['wifi'])
 
         # launch the Gallery app
         self.app = self.apps.launch('Usage')
@@ -47,7 +44,8 @@ class TestCostControlFTU(GaiaTestCase):
             self.marionette.execute_script("return window.wrappedJSObject.ConfigManager.setOption({ fte: true });")
             self.marionette.refresh()
 
-        # click 'next' to exit welcome screen
+        # wait for welcome screen again and click 'next' to exit welcome screen
+        self.wait_for_element_displayed(*self._welcome_title_locator)
         nt = self.marionette.find_element(*self._next_button_locator_1)
         self.marionette.tap(nt)
 
@@ -66,7 +64,8 @@ class TestCostControlFTU(GaiaTestCase):
         self.wait_for_element_displayed(*self._data_alert_title_locator)
         switch = self.marionette.find_element(*self._ftu_data_alert_switch_locator)
         if not switch.is_selected():
-            self.marionette.tap(obj)
+            label = self.marionette.find_element(*self._ftu_data_alert_label_locator)
+            self.marionette.tap(label)
 
         # change the data alert from whatever the setting is to 0.1MB
         usage = self.marionette.find_element(*self._ftu_usage_locator)
