@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from gaiatest import GaiaTestCase
+import time
 
 class TestSettingsCellData(GaiaTestCase):
 
@@ -24,19 +25,14 @@ class TestSettingsCellData(GaiaTestCase):
         # launch the Settings app
         self.app = self.apps.launch('Settings')
 
-        # This will make the warning prompt appear every time
-        self.marionette.execute_script("window.wrappedJSObject.asyncStorage.removeItem('ril.data.enabled.warningDialog.enabled');")
-
     def test_enable_cell_data_via_settings_app(self):
         """ Enable cell data via the Settings app
 
         https://moztrap.mozilla.org/manage/case/1373/
 
         """
-
         # navigate to cell data settings
         self.wait_for_element_displayed(*self._cell_data_menu_item_locator)
-
         cell_data_menu_item = self.marionette.find_element(*self._cell_data_menu_item_locator)
         self.marionette.tap(cell_data_menu_item)
 
@@ -47,17 +43,21 @@ class TestSettingsCellData(GaiaTestCase):
         # enable cell data
         enabled_checkbox = self.marionette.find_element(*self._cell_data_enabled_input_locator)
         self.assertFalse(enabled_checkbox.get_attribute('checked'))
+
         # we have to tap on the label rather than the input
         enabled_label = self.marionette.find_element(*self._cell_data_enabled_label_locator)
         self.marionette.tap(enabled_label)
 
-        # deal with prompt that sometimes appears (on first setting)
-        self.wait_for_element_displayed(*self._cell_data_prompt_turn_on_button_locator)
-        turn_on_prompt_button = self.marionette.find_element(*self._cell_data_prompt_turn_on_button_locator)
+        # Sleep a little after the tap. It's cleaner than an if/waiting/except block
+        time.sleep(1)
 
-        self.assertFalse(enabled_checkbox.get_attribute('checked'))
-        self.assertFalse(self.data_layer.get_setting('ril.data.enabled'), "Cell data was enabled before responding to the prompt")
-        self.marionette.tap(turn_on_prompt_button)
+        # deal with prompt that sometimes appears (on first setting)
+        # The prompt container and its contents return True is_displayed erroneously
+        if 'current' in self.marionette.find_element(*self._cell_data_prompt_container_locator).get_attribute('class'):
+            self.assertFalse(enabled_checkbox.get_attribute('checked'))
+            self.assertFalse(self.data_layer.get_setting('ril.data.enabled'), "Cell data was enabled before responding to the prompt")
+            turn_on_prompt_button = self.marionette.find_element(*self._cell_data_prompt_turn_on_button_locator)
+            self.marionette.tap(turn_on_prompt_button)
 
         self.wait_for_condition(lambda m: enabled_checkbox.get_attribute('checked') == 'true')
 
