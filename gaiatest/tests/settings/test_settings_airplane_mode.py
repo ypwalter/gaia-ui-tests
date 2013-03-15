@@ -34,17 +34,17 @@ class TestAirplaneMode(GaiaTestCase):
         # Switch on Airplane mode
         self.marionette.tap(self.marionette.find_element(*self._airplane_switch_locator))
 
-        # wait for Cell Data to be disabled, this takes the longest when ariplane mode is switched on
+        # wait for Cell Data to be disabled, this takes the longest when airplane mode is switched on
         self.wait_for_condition(lambda s: 'No SIM card' in self.marionette.find_element(*self._data_text_locator).text)
 
         # check Wifi is disabled
-        self.assertFalse(self.data_layer.is_wifi_connected(self.testvars['wifi']), "WiFi was connected via Settings app")
+        self.assertFalse(self.data_layer.is_wifi_connected(self.testvars['wifi']), "WiFi was still connected after switching on Airplane mode")
 
         # check that Cell Data is disabled
-        self.assertFalse(self.data_layer.get_setting('ril.data.enabled'), "Cell data was connected via Settings app")
+        self.assertFalse(self.data_layer.get_setting('ril.data.enabled'), "Cell Data was still connected after switching on Airplane mode")
 
         # check GPS is disabled
-        self.assertFalse(self.data_layer.get_setting('geolocation.enabled'), "GPS was enabled via Settings app")
+        self.assertFalse(self.data_layer.get_setting('geolocation.enabled'), "GPS was still connected after switching on Airplane mode")
 
         # switch back to app frame
         self.marionette.switch_to_frame(self.app.frame)
@@ -56,13 +56,13 @@ class TestAirplaneMode(GaiaTestCase):
         self.wait_for_condition(lambda s: 'Connected' in self.marionette.find_element(*self._wifi_text_locator).text)
 
         # check Wifi is enabled
-        self.assertTrue(self.data_layer.is_wifi_connected(self.testvars['wifi']), "WiFi was not connected via Settings app")
+        self.assertTrue(self.data_layer.is_wifi_connected(self.testvars['wifi']), "WiFi was not connected after switching off Airplane mode")
 
         # check that Cell Data is enabled
-        self.assertTrue(self.data_layer.get_setting('ril.data.enabled'), "Cell data was not connected via Settings app")
+        self.assertTrue(self.data_layer.get_setting('ril.data.enabled'), "Cell data was not connected after switching off Airplane mode")
 
         # check GPS is enabled
-        self.assertTrue(self.data_layer.get_setting('geolocation.enabled'), "GPS was not disabled via Settings app")
+        self.assertTrue(self.data_layer.get_setting('geolocation.enabled'), "GPS was not disabled after switching off Airplane mode")
 
     def tearDown(self):
         self.data_layer.disable_cell_data()
