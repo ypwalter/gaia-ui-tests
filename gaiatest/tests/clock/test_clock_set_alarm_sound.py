@@ -63,7 +63,6 @@ class TestClockSetAlarmSound(GaiaTestCase):
         alarm_save = self.marionette.find_element(*clock_object._alarm_save_locator)
         self.marionette.tap(alarm_save)
 
-        time.sleep(1)
         # Go to details page again
         self.wait_for_element_displayed(*clock_object._alarm_label)
         alarm_list=self.marionette.find_elements(*clock_object._all_alarms)
@@ -81,11 +80,8 @@ class TestClockSetAlarmSound(GaiaTestCase):
         alarm_close = self.marionette.find_element('id','alarm-close')
         self.marionette.tap(alarm_close)
 
-
     def tearDown(self):
         # delete any existing alarms
         self.data_layer.delete_all_alarms()
 
         GaiaTestCase.tearDown(self)
-
-

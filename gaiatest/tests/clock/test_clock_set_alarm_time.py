@@ -53,11 +53,8 @@ class TestClockSetAlarmTime(GaiaTestCase):
 
         #Set alarm time
         self._change_hour()
-        time.sleep(1)
         self._change_minute()
-        time.sleep(1)
         self._change_hour24()
-        time.sleep(1)
 
         #Save the alarm
         alarm_save = self.marionette.find_element(*clock_object._alarm_save_locator)
@@ -87,6 +84,8 @@ class TestClockSetAlarmTime(GaiaTestCase):
             self.marionette.flick(active_hour, active_hour_x_centre, active_hour_y_centre,  active_hour_x_centre,0-end_animation_position , 800)
         else:
             self.marionette.flick(active_hour, active_hour_x_centre, active_hour_y_centre, active_hour_x_centre,  end_animation_position , 800)
+        # sleep for 1 second
+        time.sleep(1)
 
     def _change_minute(self):
         # Get currently active minute
@@ -101,6 +100,8 @@ class TestClockSetAlarmTime(GaiaTestCase):
             self.marionette.flick(active_minute, active_minute_x_centre, active_minute_y_centre,  active_minute_x_centre, 0-end_animation_position, 800)
         else:
             self.marionette.flick(active_minute, active_minute_x_centre, active_minute_y_centre,  active_minute_x_centre, end_animation_position, 800)
+        # sleep for 1 second
+        time.sleep(1)
 
     def _change_hour24(self):
         # Get currently active hour24
@@ -115,10 +116,11 @@ class TestClockSetAlarmTime(GaiaTestCase):
             self.marionette.flick(active_hour24, active_hour24_x_centre, active_hour24_y_centre,  active_hour24_x_centre , 0-end_animation_position,800)
         else:
             self.marionette.flick(active_hour24, active_hour24_x_centre, active_hour24_y_centre, active_hour24_x_centre, end_animation_position,  800)
+        # sleep for 1 second
+        time.sleep(1)
 
     def tearDown(self):
         # delete any existing alarms
         self.data_layer.delete_all_alarms()
 
         GaiaTestCase.tearDown(self)
-
