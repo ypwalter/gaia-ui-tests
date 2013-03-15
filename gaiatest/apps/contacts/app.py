@@ -13,6 +13,7 @@ class Contacts(Base):
 
     _loading_overlay_locator = ('id', 'loading-overlay')
     _new_contact_button_locator = ('id', 'add-contact-button')
+    _settings_button_locator = ('id', 'settings-button')
 
     #  contacts
     _contact_locator = ('css selector', 'li.contact-item')
@@ -23,6 +24,7 @@ class Contacts(Base):
 
     @property
     def contacts(self):
+        self.wait_for_element_displayed(*self._new_contact_button_locator)
         return [self.Contact(marionette=self.marionette, element=contact)
                 for contact in self.marionette.find_elements(*self._contact_locator)]
 
@@ -36,14 +38,23 @@ class Contacts(Base):
         from gaiatest.apps.contacts.regions.contact_form import NewContact
         return NewContact(self.marionette)
 
+    def tap_settings(self):
+        self.marionette.tap(self.marionette.find_element(*self._settings_button_locator))
+        from gaiatest.apps.contacts.regions.settings_form import SettingsForm
+        return SettingsForm(self.marionette)
+
     class Contact(PageRegion):
 
         _name_locator = ('css selector', 'p > strong')
-        _tap_locator = ('css selector', 'p > span.org')
+        _full_name_locator = ('css selector', 'p[data-order]')
 
         @property
         def name(self):
             return self.root_element.find_element(*self._name_locator).text
+
+        @property
+        def full_name(self):
+            return self.root_element.find_element(*self._full_name_locator).text
 
         def tap(self):
             self.marionette.tap(self.root_element)
