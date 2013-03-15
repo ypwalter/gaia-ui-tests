@@ -84,7 +84,7 @@ class TestClockSetAlarmRepeat(GaiaTestCase):
         self.assertEqual("Weekdays" , alarm_repeat_menu.text)
 
         # Close alarm
-        alarm_close = self.marionette.find_element('id','alarm-close')
+        alarm_close = self.marionette.find_element(*clock_object._alarm_close)
         self.marionette.tap(alarm_close)
 
     def tearDown(self):

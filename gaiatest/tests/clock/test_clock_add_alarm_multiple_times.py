@@ -26,9 +26,6 @@ class TestClockAddAlarmMultipleTimes(GaiaTestCase):
         for x in range(count):
             self.wait_for_element_displayed(*clock_object._alarm_create_new_locator)
 
-            # Get the number of alarms set, before adding the new alarm
-            initial_alarms_count = len(self.marionette.find_elements(*clock_object._all_alarms))
-
             # create a new alarm with the default values that are available
             alarm_create_new = self.marionette.find_element(*clock_object._alarm_create_new_locator)
             self.marionette.tap(alarm_create_new)
@@ -46,11 +43,9 @@ class TestClockAddAlarmMultipleTimes(GaiaTestCase):
             new_alarms_count = len(self.marionette.find_elements(*clock_object._all_alarms))
 
             # Ensure the new alarm has been added and is displayed
-            self.assertTrue(initial_alarms_count < new_alarms_count,'Alarms count did not increment')
-
+            self.assertEqual(x+1, new_alarms_count)
+            # sleep for a while until the alarm message disappear
             time.sleep(5)
-
-
 
     def tearDown(self):
         # delete any existing alarms

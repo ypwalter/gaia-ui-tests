@@ -26,6 +26,7 @@ _alarm_checked_status = ('css selector', 'li label.alarmList #input-enable')
 _alarm_checked_status_button = ('css selector', 'li label.alarmList')
 _alarm_item = ('id', 'alarm-item')
 _alarm_delete_button = ('id', 'alarm-delete')
+_alarm_close = ('id','alarm-close')
 
 
 def create_alarm(self):
