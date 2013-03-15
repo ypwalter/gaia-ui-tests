@@ -42,7 +42,6 @@ var GaiaDataLayer = {
   getSIMContacts: function(aCallback) {
     var callback = aCallback || marionetteScriptFinished;
     SpecialPowers.addPermission('contacts-read', true, document);
-    //var req = window.navigator.mozContacts.find({});
     var req = window.navigator.mozContacts.getSimContacts('ADN');
     req.onsuccess = function () {
       console.log('success finding contacts');
