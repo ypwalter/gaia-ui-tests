@@ -13,9 +13,6 @@ class TestClockSetAlarmRepeat(GaiaTestCase):
     def setUp(self):
         GaiaTestCase.setUp(self)
 
-        # unlock the lockscreen if it's locked
-        self.lockscreen.unlock()
-
         # launch the Clock app
         self.app = self.apps.launch('Clock')
 
@@ -38,7 +35,7 @@ class TestClockSetAlarmRepeat(GaiaTestCase):
         # Set label
         alarm_label = self.marionette.find_element(*clock_object._new_alarm_label)
         alarm_label.clear()
-        alarm_label.send_keys("\b\b\b\b\bTestSetAlarmRepeat")
+        alarm_label.send_keys("TestSetAlarmRepeat")
 
         # Set alarm repeat
         self.wait_for_element_displayed(*self._alarm_repeat_menu_locator)
@@ -72,17 +69,23 @@ class TestClockSetAlarmRepeat(GaiaTestCase):
         alarm_save = self.marionette.find_element(*clock_object._alarm_save_locator)
         self.marionette.tap(alarm_save)
 
-        # verify the label of alarm
+        time.sleep(1)
+        # Go to details page again
         self.wait_for_element_displayed(*clock_object._alarm_label)
+        alarm_list=self.marionette.find_elements(*clock_object._all_alarms)
 
-        alarm_label = self.marionette.find_element(*clock_object._alarm_label).text
-        self.assertEqual("TestSetAlarmRepeat" , alarm_label)
+        # Tap to Edit alarm
+        alarm_label = self.marionette.find_element(*clock_object._alarm_label)
+        self.marionette.tap(alarm_label)
 
         # To verify the select list. 
         self.wait_for_element_displayed(*self._alarm_repeat_menu_locator)
         alarm_repeat_menu=self.marionette.find_element(*self._alarm_repeat_menu_locator)
         self.assertEqual("Weekdays" , alarm_repeat_menu.text)
 
+        # Close alarm
+        alarm_close = self.marionette.find_element('id','alarm-close')
+        self.marionette.tap(alarm_close)
 
     def tearDown(self):
         # delete any existing alarms

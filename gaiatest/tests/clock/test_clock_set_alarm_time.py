@@ -9,9 +9,6 @@ class TestClockSetAlarmTime(GaiaTestCase):
     def setUp(self):
         GaiaTestCase.setUp(self)
 
-        # unlock the lockscreen if it's locked
-        self.lockscreen.unlock()
-
         # launch the Clock app
         self.app = self.apps.launch('Clock')
 
@@ -36,7 +33,8 @@ class TestClockSetAlarmTime(GaiaTestCase):
 
         # set label
         alarm_label = self.marionette.find_element(*clock_object._new_alarm_label)
-        alarm_label.send_keys("\b\b\b\b\bTestSetAlarmTime")
+        alarm_label.clear()
+        alarm_label.send_keys("TestSetAlarmTime")
 
         # save the alarm
         alarm_save = self.marionette.find_element(*clock_object._alarm_save_locator)
