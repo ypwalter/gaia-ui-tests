@@ -46,8 +46,7 @@ class TestSettingsWifi(GaiaTestCase):
         passcode_input_items = self.marionette.find_elements(*self._passcode_input_locator)
         self.keyboard._switch_to_keyboard()
         for times in range(2):
-            for idx in range(4):
-                self.keyboard.send(self._input_passcode[idx])
+            self.keyboard.send("".join(self._input_passcode))
 
         # switch to settings frame
         self.marionette.switch_to_frame()
