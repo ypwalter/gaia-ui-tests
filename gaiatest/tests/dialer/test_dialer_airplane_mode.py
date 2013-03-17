@@ -18,7 +18,7 @@ class TestDialerAirplaneMode(GaiaTestCase):
         # https://moztrap.mozilla.org/manage/case/2282/
         
         # Disable the device radio, enable Airplane mode
-        self.data_layer.set_setting('ril.radio.disabled', 'true')
+        self.data_layer.set_setting('ril.radio.disabled', True)
 
         # Check that we are in Airplane mode
         self.assertTrue(self.data_layer.get_setting('ril.radio.disabled'))
@@ -36,8 +36,5 @@ class TestDialerAirplaneMode(GaiaTestCase):
         self.wait_for_element_displayed(*self._dialog_title_locator)
 
     def tearDown(self):
-
-        # Enable the device radio, disable Airplane mode
-        self.data_layer.set_setting('ril.radio.disabled', 'false')
 
         GaiaTestCase.tearDown(self)

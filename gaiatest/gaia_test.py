@@ -356,6 +356,9 @@ class GaiaTestCase(MarionetteTestCase):
         # disable sound completely
         self.data_layer.set_volume(0)
 
+        # enable the device radio, disable Airplane mode
+        self.data_layer.set_setting('ril.radio.disabled', False)
+
         if self.wifi:
             # forget any known networks
             self.data_layer.enable_wifi()
