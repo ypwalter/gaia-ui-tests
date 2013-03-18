@@ -17,6 +17,9 @@ class Browser(Base):
     _url_button_locator = ("id", "url-button")
     _throbber_locator = ("id", "throbber")
 
+    _back_button_locator = ("id", "back-button")
+    _forward_button_locator = ("id", "forward-button")
+
     def launch(self):
         Base.launch(self)
         self.wait_for_condition(lambda m: m.execute_script("return window.wrappedJSObject.Browser.hasLoaded;"))
@@ -38,6 +41,12 @@ class Browser(Base):
 
     def tap_go_button(self):
         self.marionette.tap(self.marionette.find_element(*self._url_button_locator))
+
+    def tap_back_button(self):
+        self.marionette.tap(self.marionette.find_element(*self._back_button_locator))
+
+    def tap_forward_button(self):
+        self.marionette.tap(self.marionette.find_element(*self._forward_button_locator))
 
     def wait_for_throbber_not_visible(self):
         # TODO see if we can reduce this timeout in the future. >10 seconds is poor UX
