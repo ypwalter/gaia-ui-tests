@@ -17,9 +17,6 @@ class Browser(Base):
     _url_button_locator = ("id", "url-button")
     _throbber_locator = ("id", "throbber")
 
-    _title_locator = ("css selector", 'title')
-    _bing_search_input_locator = ("id", "q")
-
     def launch(self):
         Base.launch(self)
         self.wait_for_condition(lambda m: m.execute_script("return window.wrappedJSObject.Browser.hasLoaded;"))
@@ -49,13 +46,3 @@ class Browser(Base):
     @property
     def is_throbber_visible(self):
         return self.marionette.find_element(*self._throbber_locator).get_attribute('class') == 'loading'
-
-    @property
-    def page_title(self):
-        self.wait_for_element_present(*self._title_locator)
-        return self.marionette.find_element(*self._title_locator).text
-
-    @property
-    def bing_search_input(self):
-        self.wait_for_element_displayed(*self._bing_search_input_locator)
-        return self.marionette.find_element(*self._bing_search_input_locator).get_attribute('value')

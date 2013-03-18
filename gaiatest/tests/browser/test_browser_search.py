@@ -8,6 +8,9 @@ from gaiatest.apps.browser.app import Browser
 
 class TestBrowserSearch(GaiaTestCase):
 
+    _title_locator = ("css selector", 'title')
+    _bing_search_input_locator = ("id", "q")
+
     def setUp(self):
         GaiaTestCase.setUp(self)
 
@@ -25,10 +28,8 @@ class TestBrowserSearch(GaiaTestCase):
         browser.go_to_url(search_text)
 
         browser.switch_to_content()
-        self.assertEqual('Bing : %s' % search_text, browser.page_title)
-        self.assertEqual(search_text, browser.bing_search_input)
-
-    def tearDown(self):
-        if self.wifi:
-            self.data_layer.disable_wifi()
-        GaiaTestCase.tearDown(self)
+        self.wait_for_element_displayed(*self._bing_search_input_locator)
+        self.assertEqual('Bing : %s' % search_text,
+                         self.marionette.find_element(*self._title_locator).text)
+        self.assertEqual(search_text,
+                         self.marionette.find_element(*self._bing_search_input_locator).get_attribute('value'))
