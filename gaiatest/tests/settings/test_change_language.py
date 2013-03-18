@@ -10,16 +10,13 @@ class TestChangeLanguage(GaiaTestCase):
     # Language settings locators
     _settings_header_text_locator = ('css selector', '#root > header > h1')
     _language_settings_locator = ('id', 'menuItem-languageAndRegion')
-    _select_language_locator = ('css selector', 'li:nth-child(1) .fake-select')
-    _option_language_locator = ('css selector', '.fake-select>select>option[value="pt-BR"]')
-    _back_button_locator = ('css selector', '.icon.icon-back')
+    _select_language_locator = ('css selector', 'li:nth-child(1) .fake-select>select')
+    _option_language_locator = ('css selector', 'option[value="pt-BR"]')
+    _back_button_locator = ('css selector', '.icon-back')
 
     def setUp(self):
 
         GaiaTestCase.setUp(self)
-
-        # unlock the lockscreen if it's locked
-        self.lockscreen.unlock()
 
         # Launch the Settings app
         self.app = self.apps.launch('Settings')
@@ -37,13 +34,13 @@ class TestChangeLanguage(GaiaTestCase):
 
         self.wait_for_element_present(*self._select_language_locator)
 
-        select_language_option = self.marionette.find_element(*self._option_language_locator)
-
+        select_language_option = self.marionette.find_element(*self._select_language_locator)
         select_language_option.click()
+        self._select('Portugu'u"\u00ea"'s (do Brasil)')
 
         # Go back to Settings menu
         go_back = self.marionette.find_element(*self._back_button_locator)
-        go_back.click()
+        self.marionette.tap(go_back)
 
         after_language_change = self.marionette.find_element(*self._settings_header_text_locator).text
 
@@ -56,3 +53,20 @@ class TestChangeLanguage(GaiaTestCase):
         self.data_layer.set_setting("language.current", "en-US")
 
         GaiaTestCase.tearDown(self)
+
+    def _select(self, match_string):
+        # Cheeky Select wrapper until Marionette has its own
+        # Due to the way B2G wraps the app's select box we match on text
+
+        # Have to go back to top level to get the B2G select box wrapper
+        self.marionette.switch_to_frame()
+
+        options = self.marionette.find_elements('css selector', 'li:nth-child(1) select option')
+
+        # Loop options until we find the match
+        for option in options:
+            if option.text == match_string:
+                option.click()
+                break
+
+        self.marionette.switch_to_frame(self.app.frame)
