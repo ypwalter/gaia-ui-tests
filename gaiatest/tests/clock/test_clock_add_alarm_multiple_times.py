@@ -14,6 +14,9 @@ class TestClockAddAlarmMultipleTimes(GaiaTestCase):
         # launch the Clock app
         self.app = self.apps.launch('Clock')
 
+        # delete any existing alarms
+        self.data_layer.delete_all_alarms()
+
     def test_clock_add_alarm_multiple_times(self):
         """ Add multiple alarm
 

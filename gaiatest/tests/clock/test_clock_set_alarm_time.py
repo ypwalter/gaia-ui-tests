@@ -12,6 +12,7 @@ class TestClockSetAlarmTime(GaiaTestCase):
         # launch the Clock app
         self.app = self.apps.launch('Clock')
 
+        # delete any existing alarms
         self.data_layer.delete_all_alarms()
 
     def test_clock_set_alarm_time(self):
@@ -21,9 +22,6 @@ class TestClockSetAlarmTime(GaiaTestCase):
 
         """
         self.wait_for_element_displayed(*clock_object._alarm_create_new_locator)
-
-        # delete any existing alarms
-        self.data_layer.delete_all_alarms()
 
         # create a new alarm
         alarm_create_new = self.marionette.find_element(*clock_object._alarm_create_new_locator)
@@ -40,7 +38,7 @@ class TestClockSetAlarmTime(GaiaTestCase):
         alarm_save = self.marionette.find_element(*clock_object._alarm_save_locator)
         self.marionette.tap(alarm_save)
 
-        time.sleep(1)
+        time.sleep(2)
         # Get the old text for alarm
         self.wait_for_element_displayed(*clock_object._alarm_label)
 
@@ -48,8 +46,8 @@ class TestClockSetAlarmTime(GaiaTestCase):
         old_alarm_text = alarm_list[0].text
 
         # Tap to Edit alarm
-        alarm_label = self.marionette.find_element(*clock_object._alarm_label)
-        self.marionette.tap(alarm_label)
+        alarm_item = self.marionette.find_element(*clock_object._alarm_item)
+        self.marionette.tap(alarm_item)
 
         #Set alarm time
         self._change_hour()
@@ -61,11 +59,19 @@ class TestClockSetAlarmTime(GaiaTestCase):
         self.marionette.tap(alarm_save)
 
         # Verify Result
-        time.sleep(1)
+        time.sleep(2)
         self.wait_for_element_displayed(*clock_object._alarm_label)
+
+        # Get the number of alarms set after the new alarm was added
+        alarms_count = len(self.marionette.find_elements(*clock_object._all_alarms))
+
+        # Ensure that there is only one alarm
+        self.assertEqual(1, alarms_count)
+
         # Verify label
-        alarm_label_text = alarm_label.text
-        self.assertEqual("TestSetAlarmTime", alarm_label_text)
+        alarm_label = self.marionette.find_element(*clock_object._alarm_label)
+        self.assertEqual("TestSetAlarmTime", alarm_label.text)
+
         # Verify that alarm time has been changed
         alarm_list=self.marionette.find_elements(*clock_object._all_alarms)
         new_alarm_text = alarm_list[0].text
