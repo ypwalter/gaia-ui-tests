@@ -22,6 +22,9 @@ class Browser(Base):
     _add_bookmark_to_home_screen_dialog_button_locator = ("id", "button-bookmark-add")
     _bookmark_title_input_locator = ("id", "bookmark-title")
 
+    _back_button_locator = ("id", "back-button")
+    _forward_button_locator = ("id", "forward-button")
+
     def launch(self):
         Base.launch(self)
         self.wait_for_condition(lambda m: m.execute_script("return window.wrappedJSObject.Browser.hasLoaded;"))
@@ -43,6 +46,12 @@ class Browser(Base):
 
     def tap_go_button(self):
         self.marionette.tap(self.marionette.find_element(*self._url_button_locator))
+
+    def tap_back_button(self):
+        self.marionette.tap(self.marionette.find_element(*self._back_button_locator))
+
+    def tap_forward_button(self):
+        self.marionette.tap(self.marionette.find_element(*self._forward_button_locator))
 
     def tap_bookmark_button(self):
         self.wait_for_element_displayed(*self._bookmark_button_locator)
