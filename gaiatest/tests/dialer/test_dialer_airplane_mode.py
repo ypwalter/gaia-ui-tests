@@ -4,19 +4,14 @@
 
 from gaiatest import GaiaTestCase
 from gaiatest.apps.phone.app import Phone
+from marionette.errors import JavascriptException
+
 
 class TestDialerAirplaneMode(GaiaTestCase):
 
-    _dialog_locator = ('id', 'confirmation-message')
-    _dialog_title_locator = ('xpath', "//h1[text()='Airplane mode activated']")
-
-    def setUp(self):
-
-        GaiaTestCase.setUp(self)
-
     def test_dialer_airplane_mode(self):
         # https://moztrap.mozilla.org/manage/case/2282/
-        
+
         # Disable the device radio, enable Airplane mode
         self.data_layer.set_setting('ril.radio.disabled', True)
 
@@ -32,9 +27,11 @@ class TestDialerAirplaneMode(GaiaTestCase):
         phone.keypad.call_number(test_phone_number)
 
         # Check for the Airplane mode dialog
-        self.wait_for_element_displayed(*self._dialog_locator)
-        self.wait_for_element_displayed(*self._dialog_title_locator)
+        phone.wait_for_confirmation_dialog()
 
-    def tearDown(self):
+        # Verify the correct dialog text for the case
+        self.assertEqual("Airplane mode activated", phone.confirmation_dialog_text)
 
-        GaiaTestCase.tearDown(self)
+        # Verify that there is no active telephony state; window.navigator.mozTelephony.active is null
+        self.assertRaises(JavascriptException, self.marionette.execute_script, 
+            "return window.navigator.mozTelephony.active.state;")
