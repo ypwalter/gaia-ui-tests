@@ -6,7 +6,7 @@ from gaiatest import GaiaTestCase
 from gaiatest.apps.browser.app import Browser
 
 
-class TestBrowserBackButton(GaiaTestCase):
+class TestBrowserNavigation(GaiaTestCase):
 
     _community_link_locator = ('css selector', '#community a')
     _community_history_section_locator = ('id', 'history')
