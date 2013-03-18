@@ -41,11 +41,6 @@ class TestBrowserNavigation(GaiaTestCase):
         browser.switch_to_content()
         self.verify_community_page()
 
-    def tearDown(self):
-        if self.wifi:
-            self.data_layer.disable_wifi()
-        GaiaTestCase.tearDown(self)
-
     def verify_home_page(self):
         self.wait_for_element_present(*self._community_link_locator)
         community_link = self.marionette.find_element(*self._community_link_locator)
