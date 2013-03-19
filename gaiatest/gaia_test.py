@@ -338,7 +338,7 @@ class GaiaTestCase(MarionetteTestCase):
         self.lockscreen = LockScreen(self.marionette)
         self.apps = GaiaApps(self.marionette)
         self.data_layer = GaiaData(self.marionette)
-        self.keyboard = Keyboard(self.marionette)
+        self.keyboard = Keyboard(self.marionette, self)
 
         # wifi is true if testvars includes wifi details and wifi manager is defined
         self.wifi = self.testvars and \
@@ -537,7 +537,8 @@ class Keyboard(object):
 
     _button_locator = ('css selector', 'button.keyboard-key[data-keycode="%s"]')
 
-    def __init__(self, marionette):
+    def __init__(self, marionette, GaiaTestCase):
+        self.testcase = GaiaTestCase
         self.marionette = marionette
 
     def _switch_to_keyboard(self):
@@ -551,6 +552,7 @@ class Keyboard(object):
         return (self._button_locator[0], self._button_locator[1] % val)
 
     def _tap(self, val):
+        self.testcase.wait_for_element_displayed(*self._key_locator(val))
         key = self.marionette.find_element(*self._key_locator(val))
         self.marionette.tap(key)
 
