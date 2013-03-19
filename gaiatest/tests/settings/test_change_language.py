@@ -34,13 +34,13 @@ class TestChangeLanguage(GaiaTestCase):
 
         self.wait_for_element_present(*self._select_language_locator)
 
-        select_language_option = self.marionette.find_element(*self._select_language_locator)
+        # TODO Bug 833061 - tapping on a select box (or fake-select box) in the Settings app
+        select_language_option = self.marionette.find_element(*self._option_language_locator)
         select_language_option.click()
-        self._select('Portugu'u"\u00ea"'s (do Brasil)')
 
         # Go back to Settings menu
         go_back = self.marionette.find_element(*self._back_button_locator)
-        self.marionette.tap(go_back)
+        go_back.click()
 
         after_language_change = self.marionette.find_element(*self._settings_header_text_locator).text
 
@@ -53,20 +53,3 @@ class TestChangeLanguage(GaiaTestCase):
         self.data_layer.set_setting("language.current", "en-US")
 
         GaiaTestCase.tearDown(self)
-
-    def _select(self, match_string):
-        # Cheeky Select wrapper until Marionette has its own
-        # Due to the way B2G wraps the app's select box we match on text
-
-        # Have to go back to top level to get the B2G select box wrapper
-        self.marionette.switch_to_frame()
-
-        options = self.marionette.find_elements('css selector', 'li:nth-child(1) select option')
-
-        # Loop options until we find the match
-        for option in options:
-            if option.text == match_string:
-                option.click()
-                break
-
-        self.marionette.switch_to_frame(self.app.frame)
