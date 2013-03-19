@@ -46,8 +46,8 @@ class TestCostControlFTU(GaiaTestCase):
 
         # wait for welcome screen again and click 'next' to exit welcome screen
         self.wait_for_element_displayed(*self._welcome_title_locator)
-        nt = self.marionette.find_element(*self._next_button_locator_1)
-        self.marionette.tap(nt)
+        next = self.marionette.find_element(*self._next_button_locator_1)
+        self.marionette.tap(next)
 
         # change the reset report to weekly
         self.wait_for_element_displayed(*self._data_report_title_locator)
@@ -57,8 +57,8 @@ class TestCostControlFTU(GaiaTestCase):
         self._select('Weekly')
 
         # click 'next'
-        nt = self.marionette.find_element(*self._next_button_locator_2)
-        self.marionette.tap(nt)
+        next = self.marionette.find_element(*self._next_button_locator_2)
+        self.marionette.tap(next)
 
         # enable the switch for data alert
         self.wait_for_element_displayed(*self._data_alert_title_locator)
@@ -68,6 +68,7 @@ class TestCostControlFTU(GaiaTestCase):
             self.marionette.tap(label)
 
         # change the data alert from whatever the setting is to 0.1MB
+        self.wait_for_element_displayed(*self._ftu_usage_locator)
         usage = self.marionette.find_element(*self._ftu_usage_locator)
         self.marionette.tap(usage)
         capacity = self.marionette.find_element(*self._capacity_button_locator)
