@@ -20,7 +20,7 @@ class TestKeyboard(GaiaTestCase):
 
     _test_string = "aG1D2s3~!=@.#$^"
     # Temporarily, long press work, but special characters selection fail
-    _final_string = u'aG1D2s3~!=@.#$\xc6'
+    _final_string = "aG1D2s3~!=@.#$Æ"
 
     def setUp(self):
         GaiaTestCase.setUp(self)
@@ -45,7 +45,7 @@ class TestKeyboard(GaiaTestCase):
         self.wait_for_element_displayed(*self._text_input_locator)
         self.marionette.find_element(*self._text_input_locator).click()
 
-        import pdb; pdb.set_trace()
+	# send keys and try some special keys
         self.keyboard.send(self._test_string)
         self.keyboard.tap_backspace()
         self.keyboard.enable_caps_lock()
@@ -57,7 +57,7 @@ class TestKeyboard(GaiaTestCase):
         test_page_frame = self.marionette.find_element(*self._test_page_frame_locator)
         self.marionette.switch_to_frame(test_page_frame)
 
+        # confirm that the result is as expected
         self.wait_for_element_displayed(*self._text_input_locator)
         output_text = self.marionette.find_element(*self._text_input_locator).get_attribute("value")
-
-        self.assertEqual(self._final_string, output_text)
+        self.assertEqual(self._final_string.decode("utf-8"), output_text)
