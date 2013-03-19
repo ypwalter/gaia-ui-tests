@@ -6,8 +6,8 @@ from gaiatest import GaiaTestCase
 import time
 
 class TestCostControlReset(GaiaTestCase):
-
-    _welcome_title_locator = ('css selector', 'h1[data-l10n-id="fte-welcome-title"]')
+    
+    _usage_app_main_locator = ('id', 'datausage-tab')
     _usage_app_title_locator = ('css selector', 'h1[data-l10n-id="usage"]')
 
     _mobile_data_tracking_locator = ('id', 'mobileCheck')
@@ -42,9 +42,10 @@ class TestCostControlReset(GaiaTestCase):
         self.marionette.refresh()
 
         # wait for usage app main screen to come out
-        self.wait_for_element_displayed('id', 'datausage-tab')
+        self.wait_for_element_displayed(*self._usage_app_main_locator)
 
         # make sure wifi tracking is on and mobile data tracking is off
+        self.wait_for_element_displayed(*self._mobile_data_tracking_locator))
         mobileswitch = self.marionette.find_element(*self._mobile_data_tracking_locator)
         wifiswitch = self.marionette.find_element(*self._wifi_data_tracking_locator)
         if mobileswitch.is_selected():
@@ -91,8 +92,10 @@ class TestCostControlReset(GaiaTestCase):
         self.wait_for_element_displayed(*self._settings_title_locator)
         reset = self.marionette.find_element(*self._reset_button_locator)
         self.marionette.tap(reset)
+        self.wait_for_element_displayed(*self._reset_confirm_locator)
         confirm = self.marionette.find_element(*self._reset_confirm_locator)
         self.marionette.tap(confirm)
+        self.wait_for_element_displayed(*self._done_button_locator)
         done = self.marionette.find_element(*self._done_button_locator)
         self.marionette.tap(done)
 
