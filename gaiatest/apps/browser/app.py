@@ -2,6 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import re
 import time
 from gaiatest.apps.base import Base
 from gaiatest.apps.base import PageRegion
@@ -16,6 +17,10 @@ class Browser(Base):
     _awesome_bar_locator = ("id", "url-input")
     _url_button_locator = ("id", "url-button")
     _throbber_locator = ("id", "throbber")
+    _tab_badge_locator = ('id', 'tabs-badge')
+    _tabs_number_locator = ('css selector', '#toolbar-start > span')
+    _new_tab_button_locator = ('id', 'new-tab-button')
+    _tabs_list_locator = ('css selector', '#tabs-list > ul li a')
 
     def launch(self):
         Base.launch(self)
@@ -30,8 +35,10 @@ class Browser(Base):
         self.wait_for_throbber_not_visible()
 
     def switch_to_content(self):
-        web_frame = self.marionette.find_element(*self._browser_frame_locator)
-        self.marionette.switch_to_frame(web_frame)
+        web_frames = self.marionette.find_elements(*self._browser_frame_locator)
+        for web_frame in web_frames:
+            if web_frame.is_displayed():
+                self.marionette.switch_to_frame(web_frame)
 
     def switch_to_chrome(self):
         Base.launch(self)
@@ -46,3 +53,33 @@ class Browser(Base):
     @property
     def is_throbber_visible(self):
         return self.marionette.find_element(*self._throbber_locator).get_attribute('class') == 'loading'
+
+    @property
+    def is_awesome_bar_visible(self):
+        return self.marionette.find_element(*self._awesome_bar_locator).is_displayed()
+
+    def tap_tab_badge_button(self):
+        self.marionette.tap(self.marionette.find_element(*self._tab_badge_locator))
+
+    def tab_add_new_tab_button(self):
+        self.marionette.tap(self.marionette.find_element(*self._new_tab_button_locator))
+
+    @property
+    def displayed_tabs_number(self):
+        displayed_number = self.marionette.find_element(*self._tabs_number_locator).text
+        return int(re.match(r'\d+', displayed_number).group())
+
+    @property
+    def tabs_count(self):
+        return len(self.marionette.find_elements(*self._tabs_list_locator))
+
+    @property
+    def tabs(self):
+        return [self.Tab(marionette=self.marionette, element=tab)
+                for tab in self.marionette.find_elements(*self._tabs_list_locator)]
+
+    class Tab(PageRegion):
+
+        def tap_tab(self):
+            # TODO replace with self.marionette.tap(self.root_element)
+            self.root_element.click()
