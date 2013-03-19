@@ -14,7 +14,7 @@ class TestYouTube(GaiaTestCase):
     _browser_frame_locator = ('css selector', 'iframe[mozbrowser]')
 
     # Video player fullscreen
-    _video_frame_locator = ('css selector', "iframe[src='app://video.gaiamobile.org/view.html']")
+    _video_frame_locator = ('css selector', "iframe[src^='app://video'][src$='view.html']")
     _video_spinner_locator = ('id', 'spinner-overlay')
     _video_player_locator = ('id', 'player')
     _video_player_frame_locator = ('id', 'videoFrame')
