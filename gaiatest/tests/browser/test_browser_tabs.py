@@ -37,7 +37,7 @@ class TestBrowserLAN(GaiaTestCase):
         browser.tap_tab_badge_button()
 
         # Add a new tab and load a website.
-        browser.tab_add_new_tab_button()
+        browser.tap_add_new_tab_button()
         browser.go_to_url('http://mozqa.com/data/firefox/layout/mozilla.html')
         browser.switch_to_content()
         self.wait_for_element_present(*self._page_title_locator)
@@ -55,8 +55,3 @@ class TestBrowserLAN(GaiaTestCase):
         time.sleep(1)
         browser.tabs[0].tap_tab()
         self.assertTrue(browser.is_awesome_bar_visible)
-
-    def tearDown(self):
-        if self.wifi:
-            self.data_layer.disable_wifi()
-        GaiaTestCase.tearDown(self)

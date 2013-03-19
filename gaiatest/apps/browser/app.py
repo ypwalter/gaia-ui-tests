@@ -98,7 +98,7 @@ class Browser(Base):
     def tap_tab_badge_button(self):
         self.marionette.tap(self.marionette.find_element(*self._tab_badge_locator))
 
-    def tab_add_new_tab_button(self):
+    def tap_add_new_tab_button(self):
         self.marionette.tap(self.marionette.find_element(*self._new_tab_button_locator))
 
     @property
