@@ -10,7 +10,7 @@ from gaiatest.apps.contacts.app import Contacts
 
 class TestContacts(GaiaTestCase):
 
-    _sms_app_iframe_locator = ('css selector', 'iframe[src="app://sms.gaiamobile.org/index.html"]')
+    _sms_app_iframe_locator = ('css selector', 'iframe[src^="app://sms"][src$="index.html"]')
 
     #SMS app locators
     _sms_app_header_locator = ('id', 'header-text')

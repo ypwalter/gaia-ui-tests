@@ -25,9 +25,6 @@ class SettingsForm(Base):
     def order_by_last_name(self):
         return self.marionette.find_element(*self._order_by_last_name_switch_locator).is_selected()
 
-    def tap_order_by_last_name(self):
-        self.marionette.tap(self.marionette.find_element(*self._order_by_last_name_locator))
-
     def tap_done(self):
         self.marionette.tap(self.marionette.find_element(*self._settings_close_button_locator))
         from gaiatest.apps.contacts.app import Contacts

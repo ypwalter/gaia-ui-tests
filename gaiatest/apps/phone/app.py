@@ -10,6 +10,9 @@ class Phone(Base):
 
     name = "Phone"
 
+    _dialog_locator = ('id', 'confirmation-message')
+    _dialog_title_locator = ('xpath', "//*[@id='confirmation-message']/section/h1")
+
     @property
     def keypad(self):
         from gaiatest.apps.phone.regions.keypad import Keypad
@@ -19,3 +22,11 @@ class Phone(Base):
     def call_screen(self):
         from gaiatest.apps.phone.regions.call_screen import CallScreen
         return CallScreen(self.marionette)
+
+    @property
+    def confirmation_dialog_text(self):
+        return self.marionette.find_element(*self._dialog_title_locator).text
+
+    def wait_for_confirmation_dialog(self):
+        self.wait_for_element_displayed(*self._dialog_locator)
+
