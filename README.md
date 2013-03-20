@@ -59,6 +59,36 @@ ADB is available in emulator packages under out/host/linux_x86/bin.
 Alternatively, it may be downloaded as part of the
 [Android SDK](http://developer.android.com/sdk/index.html).
 
+Testing on Desktop build
+========================
+
+You can download the latest build of the desktop client from [this location](http://ftp.mozilla.org/pub/mozilla.org/b2g/nightly/latest-mozilla-b2g18/), 
+but make sure you download the appropriate file for your operating system.
+
+Note : Unfortunately, due to [Bug 832469](https://bugzilla.mozilla.org/show_bug.cgi?id=832469) the nightly desktop builds do not currently work on Windows, so you will 
+need either Mac or Linux to continue :
+
+  * **Mac**: b2g-[VERSION].multi.mac64.dmg
+  * **Linux (32bit)**: b2g-[VERSION].multi.linux-i686.tar.bz2
+  * **Linux (64bit)**: b2g-[VERSION].multi.linux-x86_64.tar.bz2
+
+Note : If you do not have the operating systems installed on your machine, a virtual machine is fine as well.
+
+Once downloaded, you will need to extract the contents to a local folder. For the purposes of the rest 
+of this guide, I’ll refer to this location as `$B2G_HOME`.
+
+
+Add the line `user_pref('marionette.force-local', true);` to your gaia/profile/user.js file, which on :
+
+  * **Mac** is located in $B2G_HOME/B2G.app/Contents/MacOS 
+  * **Linux** is located in $B2G_HOME/b2g
+ 
+Because we’re running against the desktop client we must filter out all tests that are unsuitable. To run the tests, use the following command:
+
+`gaiatest --address=localhost:2828 --type=b2g-antenna-bluetooth-carrier-camera-sdcard-wifi-xfail gaiatest/tests/manifest.ini`
+
+You should then start to see the tests running.
+
 Testvars
 ========
 We use the --testvars option to pass in local variables, particularly those that cannot be checked into the repository. For example in gaia-ui-tests these variables can be your private login credentials, phone number or details of your WiFi connection.
@@ -125,3 +155,5 @@ prevailing style of the existing tests. Use them as a template for writing
 your tests.
 We follow [PEP8](http://www.python.org/dev/peps/pep-0008/) for formatting, although we're pretty lenient on the
 80-character line length.
+
+
