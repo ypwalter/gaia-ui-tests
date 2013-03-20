@@ -48,6 +48,7 @@ class Browser(Base):
         for web_frame in web_frames:
             if web_frame.is_displayed():
                 self.marionette.switch_to_frame(web_frame)
+                break
 
     def switch_to_chrome(self):
         Base.launch(self)
