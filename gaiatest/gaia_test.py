@@ -7,6 +7,7 @@ import json
 import os
 import sys
 import time
+import traceback
 
 from marionette import MarionetteTestCase
 from marionette import Marionette
@@ -480,21 +481,21 @@ class GaiaTestCase(MarionetteTestCase):
                     screenshot = self.marionette.screenshot()[22:]
                     f.write(base64.decodestring(screenshot))
             except:
-                print 'Failed to capture screenshot'
+                traceback.print_exc()
 
             # page source
             try:
                 with open(os.path.join(debug_path, '%s_source.txt' % test_name), 'w') as f:
                     f.write(self.marionette.page_source.encode('utf-8'))
             except:
-                print 'Failed to capture page source'
+                traceback.print_exc()
 
             # settings
             try:
                 with open(os.path.join(debug_path, '%s_settings.json' % test_name), 'w') as f:
                     f.write(json.dumps(self.data_layer.all_settings))
             except:
-                print 'Failed to capture settings'
+                traceback.print_exc()
 
         self.lockscreen = None
         self.apps = None
