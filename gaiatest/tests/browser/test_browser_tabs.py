@@ -8,7 +8,7 @@ from gaiatest import GaiaTestCase
 from gaiatest.apps.browser.app import Browser
 
 
-class TestBrowserLAN(GaiaTestCase):
+class TestBrowserTabs(GaiaTestCase):
 
     _page_title_locator = ('id', 'page-title')
 
