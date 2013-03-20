@@ -11,7 +11,7 @@ class TestGallery(GaiaTestCase):
     _current_image_locator = ('css selector', '#frame2 > img')
     _photos_toolbar_locator = ('id', 'fullscreen-toolbar')
     _delete_image_locator = ('id', 'fullscreen-delete-button')
-    _ok_button_locator = ('id', 'modal-dialog-confirm-ok')
+    _confirm_delete_locator = ('id', 'modal-dialog-confirm-ok')
 
     _empty_gallery_title_locator = ('id', 'overlay-title')
     _empty_gallery_text_locator = ('id', 'overlay-text')
@@ -42,8 +42,8 @@ class TestGallery(GaiaTestCase):
 
         self.marionette.switch_to_frame()
 
-        self.wait_for_element_displayed(*self._ok_button_locator)
-        ok_button = self.marionette.find_element(*self._ok_button_locator)
+        self.wait_for_element_displayed(*self._confirm_delete_locator)
+        ok_button = self.marionette.find_element(*self._confirm_delete_locator)
         self.marionette.tap(ok_button)
 
         self.marionette.switch_to_frame(self.app.frame)
