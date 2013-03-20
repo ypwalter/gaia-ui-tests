@@ -19,7 +19,7 @@ class TestLockScreen(GaiaTestCase):
     _homescreen_landing_locator = ('id', 'landing-page')
 
     # Camera locators
-    _camera_frame_locator = ('css selector', 'iframe[src="app://camera.gaiamobile.org/index.html"]')
+    _camera_frame_locator = ('css selector', 'iframe[src^="app://camera"][src$="index.html"]')
     _capture_button_locator = ('id', 'capture-button')
 
     def setUp(self):

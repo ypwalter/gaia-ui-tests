@@ -29,7 +29,7 @@ depending on what device you're using.  The general format is:
 
 Options:
 
-    --emulator arm --homedir /path/to/emulator:  use these options to 
+    --emulator arm --homedir /path/to/emulator:  use these options to
         let Marionette launch an emulator for you in which to run a test
     --address <host>:<port>  use this option to run a test on an emulator
         which you've manually launched yourself, a real device, or a b2g
@@ -37,14 +37,26 @@ Options:
         you'd specify --address localhost:2828
     --testvars= (see section below)
 
-If you are running the tests on a device connected via ADB (Android Debug 
-Bridge), you must additionally setup port forwarding from the device to your 
+Testing on a Device
+===================
+
+You must run a build of B2G on the device that has Marionette enabled.
+The easiest way to do that is to grab a nightly `eng` build, like
+[this one for Unagi](https://pvtbuilds.mozilla.org/pub/mozilla.org/b2g/nightly/mozilla-b2g18-unagi-eng/latest/)
+(currently it requires a Mozilla LDAP login). Flash that to your device.
+
+You should not enable Remote Debugging manually on the device because
+there will be competing debuggers. See
+[bug 764913](https://bugzilla.mozilla.org/show_bug.cgi?id=764913).
+
+If you are running the tests on a device connected via ADB (Android Debug
+Bridge), you must additionally set up port forwarding from the device to your
 local machine. You can do this by running the command:
 
     adb forward tcp:2828 tcp:2828
 
-ADB is available in emulator packages under out/host/linux_x86/bin. 
-Alternatively, it may be downloaded as part of the 
+ADB is available in emulator packages under out/host/linux_x86/bin.
+Alternatively, it may be downloaded as part of the
 [Android SDK](http://developer.android.com/sdk/index.html).
 
 Testvars

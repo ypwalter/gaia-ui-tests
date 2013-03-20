@@ -22,7 +22,7 @@ class Base(object):
     def launch(self):
         self.app = self.apps.launch(self.name)
 
-    def wait_for_element_present(self, by, locator, timeout=10):
+    def wait_for_element_present(self, by, locator, timeout=_default_timeout):
         timeout = float(timeout) + time.time()
 
         while time.time() < timeout:
@@ -48,7 +48,7 @@ class Base(object):
             raise TimeoutException(
                 'Element %s still present after timeout' % locator)
 
-    def wait_for_element_displayed(self, by, locator, timeout=10):
+    def wait_for_element_displayed(self, by, locator, timeout=_default_timeout):
         timeout = float(timeout) + time.time()
 
         while time.time() < timeout:
@@ -76,7 +76,7 @@ class Base(object):
             raise TimeoutException(
                 'Element %s still visible after timeout' % locator)
 
-    def wait_for_condition(self, method, timeout=10, message="Condition timed out"):
+    def wait_for_condition(self, method, timeout=_default_timeout, message="Condition timed out"):
         """Calls the method provided with the driver as an argument until the return value is not False."""
         end_time = time.time() + timeout
         while time.time() < end_time:

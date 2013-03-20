@@ -96,4 +96,6 @@ class TestGallery(GaiaTestCase):
                               '%s50%%' % (direction == 'previous' and '+' or direction == 'next' and '-'), 0,  # move 50% of width to the left/right
                               800)  # gesture duration
         self.wait_for_element_displayed(*self._current_image_locator)
+        # TODO
+        # remove sleep after Bug 843202 - Flicking through images in gallery crashes the app is fixed
         time.sleep(1)
