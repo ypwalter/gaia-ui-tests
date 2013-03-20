@@ -4,11 +4,10 @@
 
 from gaiatest import GaiaTestCase
 
+from gaiatest.apps.gallery.app import Gallery
+
 
 class TestGalleryEmpty(GaiaTestCase):
-
-    _empty_gallery_title_locator = ('id', 'overlay-title')
-    _empty_gallery_text_locator = ('id', 'overlay-text')
 
     def setUp(self):
         GaiaTestCase.setUp(self)
@@ -20,14 +19,15 @@ class TestGalleryEmpty(GaiaTestCase):
         # https://moztrap.mozilla.org/manage/case/4003/
         # Requires there to be no photos on SDCard which is the default
 
-        # Wait for the empty gallery overlay to render
-        self.wait_for_element_displayed(*self._empty_gallery_title_locator)
-        self.wait_for_element_displayed(*self._empty_gallery_text_locator)
+        gallery = Gallery(self.marionette)
+        gallery.launch()
+
+        # # Wait for the empty gallery overlay to render
+        # self.wait_for_element_displayed(*self._empty_gallery_title_locator)
+        # self.wait_for_element_displayed(*self._empty_gallery_text_locator)
 
         # Verify empty gallery title
-        self.assertEqual(self.marionette.find_element(*self._empty_gallery_title_locator).text,
-                         "No photos or videos")
+        self.assertEqual(gallery.empty_gallery_title, 'No photos or videos')
 
         # Verify empty gallery text
-        self.assertEqual(self.marionette.find_element(*self._empty_gallery_text_locator).text,
-                         "Use the Camera app to get started.")
+        self.assertEqual(gallery.empty_gallery_text, 'Use the Camera app to get started.')
