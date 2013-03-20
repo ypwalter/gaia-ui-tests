@@ -4,6 +4,7 @@
 
 import re
 import time
+
 from gaiatest.apps.base import Base
 from gaiatest.apps.base import PageRegion
 
@@ -14,21 +15,21 @@ class Browser(Base):
 
     _browser_frame_locator = ('css selector', 'iframe[mozbrowser]')
 
-    _awesome_bar_locator = ("id", "url-input")
-    _url_button_locator = ("id", "url-button")
-    _throbber_locator = ("id", "throbber")
+    _awesome_bar_locator = ('id', 'url-input')
+    _url_button_locator = ('id', 'url-button')
+    _throbber_locator = ('id', 'throbber')
     _tab_badge_locator = ('id', 'tabs-badge')
     _tabs_number_locator = ('css selector', '#toolbar-start > span')
     _new_tab_button_locator = ('id', 'new-tab-button')
     _tabs_list_locator = ('css selector', '#tabs-list > ul li a')
-    _bookmark_button_locator = ("id", "bookmark-button")
-    _add_bookmark_to_home_screen_choice_locator = ("id", "bookmark-menu-add-home")
-    _add_bookmark_to_home_screen_frame_locator = ('css selector', "iframe[src^='app://homescreen'][src$='save-bookmark.html']")
-    _add_bookmark_to_home_screen_dialog_button_locator = ("id", "button-bookmark-add")
-    _bookmark_title_input_locator = ("id", "bookmark-title")
+    _bookmark_button_locator = ('id', 'bookmark-button')
+    _add_bookmark_to_home_screen_choice_locator = ('id', 'bookmark-menu-add-home')
+    _add_bookmark_to_home_screen_frame_locator = ('css selector', 'iframe[src^="app://homescreen"][src$="save-bookmark.html"]')
+    _add_bookmark_to_home_screen_dialog_button_locator = ('id', 'button-bookmark-add')
+    _bookmark_title_input_locator = ('id', 'bookmark-title')
 
-    _back_button_locator = ("id", "back-button")
-    _forward_button_locator = ("id", "forward-button")
+    _back_button_locator = ('id', 'back-button')
+    _forward_button_locator = ('id', 'forward-button')
 
     def launch(self):
         Base.launch(self)
