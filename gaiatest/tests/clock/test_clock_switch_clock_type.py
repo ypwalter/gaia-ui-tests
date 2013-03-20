@@ -24,9 +24,9 @@ class TestClockSwitchClockType(GaiaTestCase):
         https://moztrap.mozilla.org/manage/case/1770
 
         """
-        self.wait_for_element_displayed(*clock_object._alarm_create_new_locator)
 
         # switch to digital clock
+        self.wait_for_element_displayed(*clock_object._analog_clock_display)
         analog_display = self.marionette.find_element(*clock_object._analog_clock_display)
         self.marionette.tap(analog_display)
         self.wait_for_element_displayed(*clock_object._digital_clock_display)
@@ -44,9 +44,9 @@ class TestClockSwitchClockType(GaiaTestCase):
         https://moztrap.mozilla.org/manage/case/1771
 
         """
-        self.wait_for_element_displayed(*clock_object._alarm_create_new_locator)
 
         # check the date, time, state for digital clock
+        self.wait_for_element_displayed(*clock_object._analog_clock_display)
         analog_display = self.marionette.find_element(*clock_object._analog_clock_display)
         self.marionette.tap(analog_display)
         self.wait_for_element_displayed(*clock_object._digital_clock_display)
