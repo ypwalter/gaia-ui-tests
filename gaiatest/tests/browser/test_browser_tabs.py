@@ -52,6 +52,5 @@ class TestBrowserLAN(GaiaTestCase):
 
         # Switch back to the first tab.
         browser.tap_tab_badge_button()
-        time.sleep(1)
         browser.tabs[0].tap_tab()
         self.assertTrue(browser.is_awesome_bar_visible)
