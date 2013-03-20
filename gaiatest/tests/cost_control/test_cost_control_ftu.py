@@ -31,7 +31,7 @@ class TestCostControlFTU(GaiaTestCase):
     def setUp(self):
         GaiaTestCase.setUp(self)
 
-        # launch the Gallery app
+        # launch the Usage app
         self.app = self.apps.launch('Usage')
 
     def test_cost_control_ftu(self):
