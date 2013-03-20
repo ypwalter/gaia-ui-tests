@@ -10,9 +10,9 @@ class TestChangeLanguage(GaiaTestCase):
     # Language settings locators
     _settings_header_text_locator = ('css selector', '#root > header > h1')
     _language_settings_locator = ('id', 'menuItem-languageAndRegion')
-    _select_language_locator = ('css selector', 'li:nth-child(1) .fake-select>select')
-    _option_language_locator = ('css selector', 'option[value="pt-BR"]')
-    _back_button_locator = ('css selector', '.icon-back')
+    _select_language_locator = ('css selector', 'li:nth-child(1) .fake-select > select')
+    _option_language_locator = ('css selector', 'option')
+    _back_button_locator = ('css selector', ".current header > a")
 
     def setUp(self):
 
@@ -22,7 +22,6 @@ class TestChangeLanguage(GaiaTestCase):
         self.app = self.apps.launch('Settings')
 
     def test_change_language_settings(self):
-        before_language_change = self.marionette.find_element(*self._settings_header_text_locator).text
 
         # Navigate to Language settings
         self.wait_for_element_present(*self._language_settings_locator)
@@ -38,18 +37,34 @@ class TestChangeLanguage(GaiaTestCase):
         select_language_option = self.marionette.find_element(*self._option_language_locator)
         select_language_option.click()
 
+        self._select('Portugu'u"\u00ea"'s (do Brasil)')
+
         # Go back to Settings menu
         go_back = self.marionette.find_element(*self._back_button_locator)
-        go_back.click()
+        self.marionette.tap(go_back)
 
         after_language_change = self.marionette.find_element(*self._settings_header_text_locator).text
 
         # Verify that language has changed
-        self.assertNotEqual(before_language_change, after_language_change)
+        self.assertEqual(after_language_change, 'Configura'u"\u00E7\u00F5"'es')
+        self.assertEqual(self.data_layer.get_setting('language.current'), "pt-BR")
 
-    def tearDown(self):
+    def _select(self, match_string):
+        # Cheeky Select wrapper until Marionette has its own
+        # Due to the way B2G wraps the app's select box we match on text
 
-        # Change language back to English
-        self.data_layer.set_setting("language.current", "en-US")
+        # Have to go back to top level to get the B2G select box wrapper
+        self.marionette.switch_to_frame()
 
-        GaiaTestCase.tearDown(self)
+        options = self.marionette.find_elements('css selector', '#value-selector-container li')
+        close_button = self.marionette.find_element('css selector', 'button.value-option-confirm')
+
+        # Loop options until we find the match
+        for option in options:
+            if option.text == match_string:
+                option.click()
+                break
+
+        self.marionette.tap(close_button)
+
+        self.marionette.switch_to_frame(self.app.frame)
