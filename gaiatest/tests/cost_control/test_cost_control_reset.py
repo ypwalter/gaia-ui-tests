@@ -2,23 +2,39 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from gaiatest import GaiaTestCase
 import time
 
+from gaiatest import GaiaTestCase
+from gaiatest.apps.browser.app import Browser
+
 class TestCostControlReset(GaiaTestCase):
-    
+
+    # fte locators (can be removed once javascript starts to work)
+    _welcome_title_locator = ('css selector', 'h1[data-l10n-id="fte-welcome-title"]')
+    _next_button_locator_1 = ('css selector', 'section#step-1 span[data-l10n-id="next"]') 
+    _data_report_title_locator = ('css selector', 'h1[data-l10n-id="fte-onlydata2-title"]')
+    _next_button_locator_2 = ('css selector', 'section#non-vivo-step-1 span[data-l10n-id="next"]')
+    _data_alert_title_locator = ('css selector', 'section#non-vivo-step-2 h1[data-l10n-id="fte-onlydata3-title"]')
+    _go_button_locator = ('css selector', 'section#non-vivo-step-2 button.recommend') 
+
+    # usage main screen locators
     _usage_app_main_locator = ('id', 'datausage-tab')
     _usage_app_title_locator = ('css selector', 'h1[data-l10n-id="usage"]')
 
+    # main screen switch locators
+    _mobile_data_item_locator = ('id', 'mobileItem')
     _mobile_data_tracking_locator = ('id', 'mobileCheck')
     _wifi_data_tracking_locator = ('id', 'wifiCheck')
+    _mobile_data_label_locator = ('css selector', 'li#mobileItem label')
+    _wifi_data_label_locator = ('css selector', 'li#wifiItem label')
     _wifi_overview_data_locator = ('id', 'wifiOverview')
 
-    _awesome_bar_locator = ("id", "url-input")
-    _url_button_locator = ("id", "url-button")
+    # browser app locators
+    _page_title_locator = ("id", "page-title")
 
+    # usage app settings app
     _settings_title_locator = ('css selector', 'section#settings-view h1')
-    _settings_button_locator = ('css selector', 'button.settings-button')
+    _settings_button_locator = ('css selector', 'button.settings-button')   
     _settings_iframe_locator = ('id', "settings-view-placeholder")
     _reset_button_locator = ('id', 'reset-data-usage')
     _reset_confirm_locator = ('css selector', 'section#reset-confirmation-dialog button.danger')
@@ -33,52 +49,69 @@ class TestCostControlReset(GaiaTestCase):
             self.data_layer.enable_wifi()
             self.data_layer.connect_to_wifi(self.testvars['wifi'])
 
-        # launch the Gallery app
+        # launch the cost control app
         self.app = self.apps.launch('Usage')
 
-    def test_cost_control_ftu(self):
-        # close fte from javascript.
-        self.marionette.execute_script("return window.wrappedJSObject.ConfigManager.setOption({ fte: false });")
+    def test_cost_control_reset_wifi(self):
+        # open fte from javascript (if this got fixed, switch to use fte:false and delete the temp solution down this section)
+        self.marionette.execute_script("return window.wrappedJSObject.ConfigManager.setOption({ fte: true });")
         self.marionette.refresh()
+
+        # temporary solution for current not working script (going through fte by UI)
+        # please remove "fte locators" once this got fixed
+        try:
+            # go through 1st step in fte
+            self.wait_for_element_displayed(*self._welcome_title_locator)
+            next = self.marionette.find_element(*self._next_button_locator_1)
+            self.marionette.tap(next)
+
+            # go through 2nd step in fte
+            self.wait_for_element_displayed(*self._data_report_title_locator)
+            next = self.marionette.find_element(*self._next_button_locator_2)
+            self.marionette.tap(next)
+
+            # go through final step in fte
+            self.wait_for_element_displayed(*self._data_alert_title_locator)
+            next = self.marionette.find_element(*self._go_button_locator)
+            self.marionette.tap(next)
+        except:
+            pass
 
         # wait for usage app main screen to come out
         self.wait_for_element_displayed(*self._usage_app_main_locator)
 
         # make sure wifi tracking is on and mobile data tracking is off
-        self.wait_for_element_displayed(*self._mobile_data_tracking_locator))
+        self.wait_for_element_displayed(*self._mobile_data_item_locator)
         mobileswitch = self.marionette.find_element(*self._mobile_data_tracking_locator)
         wifiswitch = self.marionette.find_element(*self._wifi_data_tracking_locator)
+        mobileswitch_click = self.marionette.find_element(*self._mobile_data_label_locator)
+        wifiswitch_click = self.marionette.find_element(*self._wifi_data_label_locator)
         if mobileswitch.is_selected():
-            self.marionette.tap(mobileswitch)
+            self.marionette.tap(mobileswitch_click)
         if not wifiswitch.is_selected():
-            self.marionette.tap(wifiswitch)
+            self.marionette.tap(wifiswitch_click)
 
-        # make sure the wifi is not 0 kb now. otherwise, open browser to get some data downloaded
+        # open browser to get some data downloaded
+        # please remove this once there is a better way than launching browser app/obj to do so
+        browser = Browser(self.marionette)
+        browser.launch()
+        browser.go_to_url('http://mozqa.com/data/firefox/layout/mozilla.html')
+        browser.switch_to_content()
+        self.wait_for_element_present(*self._page_title_locator)
+
+        # go back to Usage app
+        self.apps.launch('Usage')
+        self.wait_for_element_displayed(*self._usage_app_title_locator)
+
+        # if we can't trigger any data usage, there must be something wrong
         if self.marionette.find_element(*self._wifi_overview_data_locator).text == u'0.00 B':
-            # open browser and do something
-            self.apps.launch('Browser')
-            self.wait_for_condition(lambda m: m.execute_script("return window.wrappedJSObject.Browser.hasLoaded;"))
-
-            # go to a website
-            awesome_bar = self.marionette.find_element(*self._awesome_bar_locator)
-            awesome_bar.send_keys('http://mozqa.com/data/firefox/layout/mozilla.html')
-
-            url_button = self.marionette.find_element(*self._url_button_locator)
-            self.marionette.tap(url_button)
-
-            # wait for it to load website
-            try:
-                self.wait_for_condition(lambda m: not self.is_throbber_visible(), timeout=20)
-            except:
-                pass
-
-            self.apps.launch('Usage')
-            self.wait_for_element_displayed(*self._usage_app_title_locator)
+            assertTrue(False, 'No data usage shown;')
 
         # disable wifi before reset data, wait for wifi to be closed, and switch back to self.app
+        self.data_layer.forget_all_networks()
         self.data_layer.disable_wifi()
         time.sleep(1)
-        self.marionette.switch_to_frame(self.marionette.find_element('css selector', 'iframe[data-url="app://costcontrol.gaiamobile.org/index.html#datausage-tab"]'))
+        self.marionette.switch_to_frame(self.app.frame)
 
         # go to settings section
         settings = self.marionette.find_element(*self._settings_button_locator)
