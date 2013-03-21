@@ -11,7 +11,6 @@ class TestClockTestAllItemsPresentNewAlarm(GaiaTestCase):
     def setUp(self):
         GaiaTestCase.setUp(self)
 
-        # launch the Clock app
         self.clock = Clock(self.marionette)
         self.clock.launch()
 

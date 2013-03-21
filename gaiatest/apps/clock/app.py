@@ -2,47 +2,41 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import time
-from gaiatest.apps.base import Base, PageRegion
+from gaiatest.apps.base import Base
+from gaiatest.apps.base import PageRegion
 
 
 class Clock(Base):
 
-    name = "Clock"
+    name = 'Clock'
 
     _alarm_create_new_locator = ('id', 'alarm-new')
-
-    _analog_clock_display = ('id', 'analog-clock-svg')
-    _digital_clock_display = ('id', 'digital-clock-display')
-    _clock_day_date = ('id', 'clock-day-date')
-    _digital_clock_hour24_state = ('id', 'clock-hour24-state')
-
-    _all_alarms = ('css selector', '#alarms li')
-
+    _analog_clock_display_locator = ('id', 'analog-clock-svg')
+    _digital_clock_display_locator = ('id', 'digital-clock-display')
+    _clock_day_date_locator = ('id', 'clock-day-date')
+    _digital_clock_hour24_state_locator = ('id', 'clock-hour24-state')
+    _all_alarms_locator = ('css selector', '#alarms li')
     _banner_countdown_notification_locator = ('id', 'banner-countdown')
 
-    def __init__(self, marionette):
-        Base.__init__(self, marionette)
+    def launch(self):
+        Base.launch(self)
+        self.wait_for_new_alarm_button()
 
     @property
     def is_digital_clock_displayed(self):
-        return self.is_element_displayed(*self._digital_clock_display)
+        return self.is_element_displayed(*self._digital_clock_display_locator)
 
     @property
     def is_analog_clock_displayed(self):
-        return self.is_element_displayed(*self._analog_clock_display)
+        return self.is_element_displayed(*self._analog_clock_display_locator)
 
     @property
     def is_day_and_date_displayed(self):
-        return self.is_element_displayed(*self._clock_day_date)
+        return self.is_element_displayed(*self._clock_day_date_locator)
 
     @property
     def is_24_hour_state_displayed(self):
-        return self.is_element_displayed(*self._digital_clock_hour24_state)
-
-    @property
-    def number_of_set_alarms(self):
-        return len(self.marionette.find_elements(*self._all_alarms))
+        return self.is_element_displayed(*self._digital_clock_hour24_state_locator)
 
     @property
     def banner_countdown_notification(self):
@@ -50,11 +44,7 @@ class Clock(Base):
 
     @property
     def alarms(self):
-        return [self.Alarm(self.marionette, alarm) for alarm in self.marionette.find_elements(*self._all_alarms)]
-
-    def launch(self):
-        Base.launch(self)
-        self.wait_for_new_alarm_button()
+        return [self.Alarm(self.marionette, alarm) for alarm in self.marionette.find_elements(*self._all_alarms_locator)]
 
     def wait_for_new_alarm_button(self):
         self.wait_for_element_displayed(*self._alarm_create_new_locator)
@@ -66,12 +56,12 @@ class Clock(Base):
         self.wait_for_element_displayed(*self._banner_countdown_notification_locator)
 
     def tap_analog_display(self):
-        self.marionette.tap(self.marionette.find_element(*self._analog_clock_display))
-        self.wait_for_element_displayed(*self._digital_clock_display)
+        self.marionette.tap(self.marionette.find_element(*self._analog_clock_display_locator))
+        self.wait_for_element_displayed(*self._digital_clock_display_locator)
 
     def tap_digital_display(self):
-        self.marionette.tap(self.marionette.find_element(*self._digital_clock_display))
-        self.wait_for_element_displayed(*self._analog_clock_display)
+        self.marionette.tap(self.marionette.find_element(*self._digital_clock_display_locator))
+        self.wait_for_element_displayed(*self._analog_clock_display_locator)
 
     def tap_new_alarm(self):
         self.marionette.tap(self.marionette.find_element(*self._alarm_create_new_locator))
@@ -79,7 +69,6 @@ class Clock(Base):
         from gaiatest.apps.clock.regions.alarm import NewAlarm
         new_alarm = NewAlarm(self.marionette)
         new_alarm.wait_for_picker_to_be_visible()
-
         return new_alarm
 
     class Alarm(PageRegion):
@@ -102,5 +91,5 @@ class Clock(Base):
 
         def tap(self):
             self.marionette.tap(self.root_element.find_element(*self._tap_locator))
-            from gaiatest.apps.clock.regions.alarm import Edit_Alarm
-            return Edit_Alarm(self.marionette)
+            from gaiatest.apps.clock.regions.alarm import EditAlarm
+            return EditAlarm(self.marionette)

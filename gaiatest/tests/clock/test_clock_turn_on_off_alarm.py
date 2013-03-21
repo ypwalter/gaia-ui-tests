@@ -12,7 +12,6 @@ class TestClockTurnOnOffAlarm(GaiaTestCase):
     def setUp(self):
         GaiaTestCase.setUp(self)
 
-        # launch the Clock app
         self.clock = Clock(self.marionette)
         self.clock.launch()
 
@@ -32,19 +31,15 @@ class TestClockTurnOnOffAlarm(GaiaTestCase):
         origin_alarm_checked = alarm.is_alarm_active
 
         alarm.tap_checkbox()
-
-        time.sleep(2)
-        new_alarm_checked = alarm.is_alarm_active
-
-        self.assertTrue(origin_alarm_checked != new_alarm_checked, 'user should be able to turn on the alarm.')
+        time.sleep(2)  # TODO: Remove the sleep and add a wait_for_checkbox_state_to_change (one day)
+        self.assertTrue(origin_alarm_checked != alarm.is_alarm_active, 'user should be able to turn on the alarm.')
 
         origin_alarm_checked = alarm.is_alarm_active
 
         alarm.tap_checkbox()
+        time.sleep(2)  # TODO: Remove the sleep and add a wait_for_checkbox_state_to_change (one day)
 
-        time.sleep(2)
-        new_alarm_checked = alarm.is_alarm_active
-        self.assertTrue(origin_alarm_checked != new_alarm_checked, 'user should be able to turn off the alarm.')
+        self.assertTrue(origin_alarm_checked != alarm.is_alarm_active, 'user should be able to turn off the alarm.')
 
     def tearDown(self):
         # delete any existing alarms

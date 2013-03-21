@@ -8,12 +8,9 @@ from gaiatest.apps.clock.app import Clock
 
 class TestClockCreateNewAlarm(GaiaTestCase):
 
-    alarm_label_text = "test4321"
-
     def setUp(self):
         GaiaTestCase.setUp(self)
 
-        # launch the Clock app
         self.clock = Clock(self.marionette)
         self.clock.launch()
 
@@ -23,11 +20,10 @@ class TestClockCreateNewAlarm(GaiaTestCase):
         """
 
         # Get the number of alarms set, before adding the new alarm
-        initial_alarms_count = self.clock.number_of_set_alarms
+        initial_alarms_count = len(self.clock.alarms)
 
         # create a new alarm with the default values that are available
         new_alarm = self.clock.tap_new_alarm()
-
         self.clock = new_alarm.tap_done()
 
         # verify the banner-countdown message appears
@@ -35,10 +31,9 @@ class TestClockCreateNewAlarm(GaiaTestCase):
         self.assertTrue('The alarm is set for' in alarm_msg, 'Actual banner message was: "' + alarm_msg + '"')
 
         # Get the number of alarms set after the new alarm was added
-        new_alarms_count = self.clock.number_of_set_alarms
 
         # Ensure the new alarm has been added and is displayed
-        self.assertTrue(initial_alarms_count < new_alarms_count,
+        self.assertTrue(initial_alarms_count < len(self.clock.alarms),
                         'Alarms count did not increment')
 
     def test_clock_set_alarm_label(self):
@@ -48,11 +43,12 @@ class TestClockCreateNewAlarm(GaiaTestCase):
 
         """
 
+        alarm_label_text = "test4321"
         # create a new alarm with the default values that are available
         new_alarm = self.clock.tap_new_alarm()
 
         # set label
-        new_alarm.alarm_label = self.alarm_label_text
+        new_alarm.type_alarm_label(alarm_label_text)
 
         # save the alarm
         self.clock = new_alarm.tap_done()
@@ -61,7 +57,7 @@ class TestClockCreateNewAlarm(GaiaTestCase):
         # verify the label of alarm
         alarms = self.clock.alarms
         self.assertEqual(len(alarms), 1)
-        self.assertEqual(alarms[0].label, self.alarm_label_text)
+        self.assertEqual(alarms[0].label, alarm_label_text)
 
     def tearDown(self):
         # delete any existing alarms

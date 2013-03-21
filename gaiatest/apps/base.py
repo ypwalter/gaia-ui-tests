@@ -94,7 +94,7 @@ class Base(object):
         try:
             self.marionette.find_element(by, locator)
             return True
-        except:
+        except NoSuchElementException:
             return False
 
     def is_element_displayed(self, by, locator):

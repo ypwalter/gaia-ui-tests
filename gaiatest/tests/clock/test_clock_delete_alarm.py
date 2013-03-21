@@ -11,7 +11,6 @@ class TestClockDeleteAlarm(GaiaTestCase):
     def setUp(self):
         GaiaTestCase.setUp(self)
 
-        # launch the Clock app
         self.clock = Clock(self.marionette)
         self.clock.launch()
 
@@ -26,7 +25,7 @@ class TestClockDeleteAlarm(GaiaTestCase):
         """
 
         # find the origin alarms' number
-        initial_alarms_count = self.clock.number_of_set_alarms
+        initial_alarms_count = len(self.clock.alarms)
 
         # edit alarm
         edit_alarm = self.clock.alarms[0].tap()
@@ -36,9 +35,9 @@ class TestClockDeleteAlarm(GaiaTestCase):
 
         # wait alarm item not displayed
         self.clock.wait_for_new_alarm_button()
-        self.wait_for_condition(lambda m: self.clock.number_of_set_alarms != initial_alarms_count)
+        self.wait_for_condition(lambda m: len(self.clock.alarms) != initial_alarms_count)
 
-        self.assertEqual(initial_alarms_count, self.clock.number_of_set_alarms + 1, "delete alarm failed.")
+        self.assertEqual(len(self.clock.alarms), initial_alarms_count - 1, "delete alarm failed.")
 
     def tearDown(self):
         # delete any existing alarms
