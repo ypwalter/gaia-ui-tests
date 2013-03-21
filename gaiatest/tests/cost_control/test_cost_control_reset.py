@@ -106,7 +106,7 @@ class TestCostControlReset(GaiaTestCase):
 
         # if we can't trigger any data usage, there must be something wrong
         if self.marionette.find_element(*self._wifi_overview_data_locator).text == u'0.00 B':
-            assertTrue(False, 'No data usage shown;')
+            self.assertTrue(False, 'No data usage shown;')
 
         # disable wifi before reset data, wait for wifi to be closed, and switch back to self.app
         self.data_layer.forget_all_networks()
@@ -136,6 +136,3 @@ class TestCostControlReset(GaiaTestCase):
         # waiting for usage to be refreshed and checking for usage
         time.sleep(2)
         self.assertTrue(self.marionette.find_element(*self._wifi_data_locator).text == u'0.00 B')
-
-    def is_throbber_visible(self):
-        return self.marionette.find_element(*self._throbber_locator).get_attribute('class') == 'loading'
