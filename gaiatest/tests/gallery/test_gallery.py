@@ -15,9 +15,6 @@ class TestGallery(GaiaTestCase):
         # add photo to storage
         self.push_resource('IMG_0001.jpg', destination='DCIM/100MZLLA')
 
-        # launch the Gallery app
-        self.app = self.apps.launch('Gallery')
-
     def test_gallery_view(self):
         # https://moztrap.mozilla.org/manage/case/1326/
 

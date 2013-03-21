@@ -13,6 +13,8 @@ class Gallery(Base):
 
     _gallery_items_locator = ('css selector', 'li.thumbnail')
     _current_image_locator = ('css selector', '#frame2 > img')
+    _next_image_locator = ('css selector', '#frame3 > img')
+    _previous_image_locator = ('css selector', '#frame1 > img')
     _photos_toolbar_locator = ('id', 'fullscreen-toolbar')
     _empty_gallery_title_locator = ('id', 'overlay-title')
     _empty_gallery_text_locator = ('id', 'overlay-text')
@@ -20,25 +22,23 @@ class Gallery(Base):
 
     def launch(self):
         Base.launch(self)
-        self.wait_for_element_displayed(*self._gallery_items_locator)
         self.wait_for_element_not_displayed(*self._progress_bar_locator)
 
     @property
     def gallery_items(self):
-        return self.marionette.execute_script("return window.wrappedJSObject.files;")
-        #return self.marionette.find_elements(*self._gallery_items_locator)
+        return self.marionette.find_elements(*self._gallery_items_locator)
 
     @property
     def first_gallery_item(self):
-        for index, item in enumerate(self.gallery_items):
-            # If the current item is not a video, set it as the gallery item to tap.
-            if 'video' not in item['metadata']:
-                return self.marionette.find_elements(*self._gallery_items_locator)[index]
-                break
+        return self.marionette.find_elements(*self._gallery_items_locator)[0]
 
     def tap_first_gallery_item(self):
         self.marionette.tap(self.first_gallery_item)
         self.wait_for_element_displayed(*self._current_image_locator)
+
+    @property
+    def current_image(self):
+        return self.marionette.find_element(*self._current_image_locator)
 
     @property
     def current_image_source(self):
@@ -57,13 +57,14 @@ class Gallery(Base):
         return self.marionette.find_element(*self._empty_gallery_text_locator).text
 
     def flick_to_image(self, direction):
-        self.assertTrue(direction in ['previous', 'next'])
+        #self.assertTrue(direction in ['previous', 'next'])
         current_image = self.marionette.find_element(*self._current_image_locator)
         self.marionette.flick(current_image,  # target element
                               '50%', '50%',  # start from middle of the target element
                               '%s50%%' % (direction == 'previous' and '+' or direction == 'next' and '-'), 0,  # move 50% of width to the left/right
                               800)  # gesture duration
-        self.wait_for_element_displayed(*self._current_image_locator)
+        self.wait_for_element_not_displayed(*self._current_image_locator)
         # TODO
         # remove sleep after Bug 843202 - Flicking through images in gallery crashes the app is fixed
         time.sleep(1)
+        print self.marionette.find_element(*self._next_image_locator).get_attribute('src')
