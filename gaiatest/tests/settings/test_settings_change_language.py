@@ -56,6 +56,8 @@ class TestChangeLanguage(GaiaTestCase):
         # Have to go back to top level to get the B2G select box wrapper
         self.marionette.switch_to_frame()
 
+        self.wait_for_condition(lambda m: len(self.marionette.find_elements('css selector', '#value-selector-container li')) > 0)
+
         options = self.marionette.find_elements('css selector', '#value-selector-container li')
         close_button = self.marionette.find_element('css selector', 'button.value-option-confirm')
 
