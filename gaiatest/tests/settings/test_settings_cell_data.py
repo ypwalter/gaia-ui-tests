@@ -19,9 +19,6 @@ class TestSettingsCellData(GaiaTestCase):
 
         GaiaTestCase.setUp(self)
 
-        # make sure cell data is off for the beginning of the test
-        self.data_layer.disable_cell_data()
-
         # launch the Settings app
         self.app = self.apps.launch('Settings')
 
