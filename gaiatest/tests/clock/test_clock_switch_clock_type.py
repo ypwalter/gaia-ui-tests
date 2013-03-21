@@ -31,7 +31,6 @@ class TestClockSwitchClockType(GaiaTestCase):
         """ Show the time, date
         https://moztrap.mozilla.org/manage/case/1771
         """
-        self.clock.launch()
 
         # check the date, time, state for digital clock
         self.clock.tap_analog_display()
