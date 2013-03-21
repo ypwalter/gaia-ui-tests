@@ -5,7 +5,7 @@
 from gaiatest import GaiaTestCase
 
 
-class TestGallery(GaiaTestCase):
+class TestGalleryDelete(GaiaTestCase):
 
     _gallery_items_locator = ('css selector', 'li.thumbnail')
     _current_image_locator = ('css selector', '#frame2 > img')
@@ -37,14 +37,16 @@ class TestGallery(GaiaTestCase):
         self.wait_for_element_displayed(*self._current_image_locator)
         self.wait_for_element_displayed(*self._photos_toolbar_locator)
 
+        # tap the delete button from the fullscreen toolbar
         delete_button = self.marionette.find_element(*self._delete_image_locator)
         self.marionette.tap(delete_button)
 
         self.marionette.switch_to_frame()
 
+        # wait for delete dialog to appear and tap the confirm delete button
         self.wait_for_element_displayed(*self._confirm_delete_locator)
-        ok_button = self.marionette.find_element(*self._confirm_delete_locator)
-        self.marionette.tap(ok_button)
+        confirm_delete_button = self.marionette.find_element(*self._confirm_delete_locator)
+        self.marionette.tap(confirm_delete_button)
 
         self.marionette.switch_to_frame(self.app.frame)
 
