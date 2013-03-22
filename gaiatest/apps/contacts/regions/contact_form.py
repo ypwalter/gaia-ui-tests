@@ -151,7 +151,10 @@ class EditContact(ContactForm):
         return ContactDetails(self.marionette)
 
     def tap_delete(self):
-        self.marionette.tap(self.marionette.find_element(*self._delete_locator))
+        delete_item = self.marionette.find_element(*self._delete_locator)
+        # TODO Bug 850819 - Remove scrollIntoView() and use single_tap()
+        self.marionette.execute_script("arguments[0].scrollIntoView(false);", [delete_item])
+        self.marionette.tap(delete_item)
 
     def tap_cancel_delete(self):
         self.wait_for_element_displayed(*self._delete_form_locator)

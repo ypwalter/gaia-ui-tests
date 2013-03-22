@@ -7,6 +7,7 @@ import json
 import os
 import sys
 import time
+import traceback
 
 from marionette import MarionetteTestCase
 from marionette import Marionette
@@ -344,6 +345,13 @@ class GaiaTestCase(MarionetteTestCase):
             for filename in self.data_layer.media_files:
                 self.device.manager.removeFile('/'.join(['sdcard', filename]))
 
+        # disable passcode before restore settings from testvars
+        self.data_layer.set_setting('lockscreen.passcode-lock.code', '1111')
+        self.data_layer.set_setting('lockscreen.passcode-lock.enabled', False)
+
+        # Change language back to English
+        self.data_layer.set_setting("language.current", "en-US")
+
         # restore settings from testvars
         [self.data_layer.set_setting(name, value) for name, value in self.testvars.get('settings', {}).items()]
 
@@ -355,6 +363,9 @@ class GaiaTestCase(MarionetteTestCase):
 
         # disable sound completely
         self.data_layer.set_volume(0)
+
+        # enable the device radio, disable Airplane mode
+        self.data_layer.set_setting('ril.radio.disabled', False)
 
         if self.wifi:
             # forget any known networks
@@ -467,24 +478,32 @@ class GaiaTestCase(MarionetteTestCase):
                 os.makedirs(debug_path)
 
             # screenshot
-            with open(os.path.join(debug_path, '%s_screenshot.png' % test_name), 'w') as f:
-                # TODO: Bug 818287 - Screenshots include data URL prefix
-                screenshot = self.marionette.screenshot()[22:]
-                f.write(base64.decodestring(screenshot))
+            try:
+                with open(os.path.join(debug_path, '%s_screenshot.png' % test_name), 'w') as f:
+                    # TODO: Bug 818287 - Screenshots include data URL prefix
+                    screenshot = self.marionette.screenshot()[22:]
+                    f.write(base64.decodestring(screenshot))
+            except:
+                traceback.print_exc()
 
             # page source
-            with open(os.path.join(debug_path, '%s_source.txt' % test_name), 'w') as f:
-                f.write(self.marionette.page_source.encode('utf-8'))
+            try:
+                with open(os.path.join(debug_path, '%s_source.txt' % test_name), 'w') as f:
+                    f.write(self.marionette.page_source.encode('utf-8'))
+            except:
+                traceback.print_exc()
 
             # settings
-            with open(os.path.join(debug_path, '%s_settings.json' % test_name), 'w') as f:
-                f.write(json.dumps(self.data_layer.all_settings))
+            try:
+                with open(os.path.join(debug_path, '%s_settings.json' % test_name), 'w') as f:
+                    f.write(json.dumps(self.data_layer.all_settings))
+            except:
+                traceback.print_exc()
 
         self.lockscreen = None
         self.apps = None
         self.data_layer = None
         MarionetteTestCase.tearDown(self)
-
 
 class Keyboard(object):
     _language_key = '-3'
