@@ -9,7 +9,7 @@ from gaiatest.apps.base import Base
 
 class Gallery(Base):
 
-    name = "Gallery"
+    name = 'Gallery'
 
     _gallery_items_locator = ('css selector', 'li.thumbnail')
     _current_image_locator = ('css selector', '#frames > div.frame[style ~= "translateX(0px);"] > img')
@@ -17,6 +17,9 @@ class Gallery(Base):
     _empty_gallery_title_locator = ('id', 'overlay-title')
     _empty_gallery_text_locator = ('id', 'overlay-text')
     _progress_bar_locator = ('id', 'progress')
+
+    _delete_image_locator = ('id', 'fullscreen-delete-button')
+    _confirm_delete_locator = ('id', 'modal-dialog-confirm-ok')
 
     def launch(self):
         Base.launch(self)
@@ -63,3 +66,13 @@ class Gallery(Base):
         # TODO
         # remove sleep after Bug 843202 - Flicking through images in gallery crashes the app is fixed
         time.sleep(1)
+
+    def tap_delete_button(self):
+        self.marionette.tap(self.marionette.find_element(*self._delete_image_locator))
+        self.marionette.switch_to_frame()
+        self.wait_for_element_displayed(*self._confirm_delete_locator)
+
+    def tap_confirm_deletion_button(self):
+        self.marionette.tap(self.marionette.find_element(*self._confirm_delete_locator))
+        self.wait_for_element_not_displayed(*self._confirm_delete_locator)
+        self.marionette.switch_to_frame(self.app.frame)
