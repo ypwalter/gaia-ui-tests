@@ -83,9 +83,6 @@ class TestFtu(GaiaTestCase):
         self.data_layer.enable_wifi()
         self.data_layer.forget_all_networks()
 
-        # Cell data must be off so we can switch it on again
-        self.data_layer.disable_cell_data()
-
         # launch the First Time User app
         self.app = self.apps.launch('FTU')
 
@@ -211,7 +208,6 @@ class TestFtu(GaiaTestCase):
     def tearDown(self):
 
         # TODO flush any settings set by the FTU app
-        self.data_layer.disable_cell_data()
 
         self.data_layer.disable_wifi()
 
