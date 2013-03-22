@@ -349,6 +349,9 @@ class GaiaTestCase(MarionetteTestCase):
         self.data_layer.set_setting('lockscreen.passcode-lock.code', '1111')
         self.data_layer.set_setting('lockscreen.passcode-lock.enabled', False)
 
+        # Change language back to English
+        self.data_layer.set_setting("language.current", "en-US")
+
         # restore settings from testvars
         [self.data_layer.set_setting(name, value) for name, value in self.testvars.get('settings', {}).items()]
 
