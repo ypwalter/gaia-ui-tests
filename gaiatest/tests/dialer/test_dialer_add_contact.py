@@ -20,7 +20,6 @@ class TestDialerAddContact(GaiaTestCase):
 
     # Header buttons
     _done_button_locator = ('id', 'save-button')
-    _details_back_button_locator = ('id', 'details-back')
 
     # New/Edit contact fields
     _given_name_field_locator = ('id', 'givenName')
@@ -85,8 +84,8 @@ class TestDialerAddContact(GaiaTestCase):
         self.marionette.switch_to_frame()
 
         self.wait_for_element_present(*self._keypad_frame_locator)
-        keyboard_frame = self.marionette.find_element(*self._keypad_frame_locator)
-        self.marionette.switch_to_frame(keyboard_frame)
+        keypad_frame = self.marionette.find_element(*self._keypad_frame_locator)
+        self.marionette.switch_to_frame(keypad_frame)
 
         #Go to Contact list and Verify result
         contact_view = self.marionette.find_element(*self._contacts_view_locator)
@@ -117,10 +116,3 @@ class TestDialerAddContact(GaiaTestCase):
         # Verify phone number
         self.assertEqual(self.marionette.find_element(*self._call_phone_number_button_locator).text,
                          self.contact['tel']['value'])
-
-        # click back into the contact
-        details_back_button = self.marionette.find_element(*self._details_back_button_locator)
-        self.marionette.tap(details_back_button)
-
-    def tearDown(self):
-        GaiaTestCase.tearDown(self)
