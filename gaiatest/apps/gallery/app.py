@@ -12,9 +12,7 @@ class Gallery(Base):
     name = "Gallery"
 
     _gallery_items_locator = ('css selector', 'li.thumbnail')
-    _current_image_locator = ('css selector', '#frame2 > img')
-    _next_image_locator = ('css selector', '#frame3 > img')
-    _previous_image_locator = ('css selector', '#frame1 > img')
+    _current_image_locator = ('css selector', '#frames > div.frame[style ~= "translateX(0px);"] > img')
     _photos_toolbar_locator = ('id', 'fullscreen-toolbar')
     _empty_gallery_title_locator = ('id', 'overlay-title')
     _empty_gallery_text_locator = ('id', 'overlay-text')
@@ -57,14 +55,11 @@ class Gallery(Base):
         return self.marionette.find_element(*self._empty_gallery_text_locator).text
 
     def flick_to_image(self, direction):
-        #self.assertTrue(direction in ['previous', 'next'])
-        current_image = self.marionette.find_element(*self._current_image_locator)
-        self.marionette.flick(current_image,  # target element
+        self.marionette.flick(self.current_image,  # target element
                               '50%', '50%',  # start from middle of the target element
                               '%s50%%' % (direction == 'previous' and '+' or direction == 'next' and '-'), 0,  # move 50% of width to the left/right
                               800)  # gesture duration
-        self.wait_for_element_not_displayed(*self._current_image_locator)
+        self.wait_for_element_displayed(*self._current_image_locator)
         # TODO
         # remove sleep after Bug 843202 - Flicking through images in gallery crashes the app is fixed
         time.sleep(1)
-        print self.marionette.find_element(*self._next_image_locator).get_attribute('src')
