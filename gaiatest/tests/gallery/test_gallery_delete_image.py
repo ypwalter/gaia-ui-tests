@@ -28,6 +28,7 @@ class TestGalleryDelete(GaiaTestCase):
     def test_gallery_delete_image(self):
 
         # wait for gallery item to be displayed
+        self.wait_for_condition(lambda m: m.execute_script('return window.wrappedJSObject.files.length') == 1)
         self.wait_for_element_displayed(*self._gallery_items_locator)
 
         gallery_item = self.marionette.find_element(*self._gallery_items_locator)

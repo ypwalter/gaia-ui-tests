@@ -23,6 +23,7 @@ class TestGallery(GaiaTestCase):
     def test_gallery_view(self):
         # https://moztrap.mozilla.org/manage/case/1326/
 
+        self.wait_for_condition(lambda m: m.execute_script('return window.wrappedJSObject.files.length') == 1)
         self.wait_for_element_displayed(*self._gallery_items_locator)
 
         gallery_items = self.marionette.execute_script("return window.wrappedJSObject.files;")

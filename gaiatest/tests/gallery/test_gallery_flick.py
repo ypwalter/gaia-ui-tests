@@ -29,7 +29,8 @@ class TestGallery(GaiaTestCase):
         # https://moztrap.mozilla.org/manage/case/1326/
 
         #wait for gallery to be available
-        self.wait_for_element_not_displayed(*self._progress_bar_locator)
+        self.wait_for_condition(lambda m: m.execute_script('return window.wrappedJSObject.files.length') == self.image_count)
+        self.wait_for_element_displayed(*self._gallery_items_locator)
 
         all_gallery_items = self.marionette.find_elements(*self._gallery_items_locator)
 
