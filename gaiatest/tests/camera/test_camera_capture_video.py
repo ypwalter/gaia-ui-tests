@@ -60,6 +60,6 @@ class TestCamera(GaiaTestCase):
         self.marionette.execute_async_script("""
             waitFor(
                 function () { marionetteScriptFinished(); },
-                function () { return document.getElementById('viewfinder').readyState === 1; }
+                function () { return document.getElementById('viewfinder').readyState > 0; }
             );
         """)
