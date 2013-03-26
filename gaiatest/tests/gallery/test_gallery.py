@@ -20,10 +20,10 @@ class TestGallery(GaiaTestCase):
         gallery = Gallery(self.marionette)
         gallery.launch()
 
-        gallery.tap_first_gallery_item()
+        image = gallery.tap_first_gallery_item()
 
-        self.assertIsNotNone(gallery.current_image_source)
-        self.assertTrue(gallery.is_photo_toolbar_visible)
+        self.assertIsNotNone(image.current_image_source)
+        self.assertTrue(image.is_photo_toolbar_displayed)
 
         # TODO
         # Add steps to view picture full screen

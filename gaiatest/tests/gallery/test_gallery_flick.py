@@ -23,37 +23,37 @@ class TestGallery(GaiaTestCase):
         gallery = Gallery(self.marionette)
         gallery.launch()
 
-        self.assertEqual(len(gallery.gallery_items), self.image_count)
+        self.assertEqual(gallery.gallery_items_number, self.image_count)
 
         # Tap first image to open full screen view.
-        gallery.tap_first_gallery_item()
+        image = gallery.tap_first_gallery_item()
 
         previous_image_source = None
 
         # Check the next flicks.
-        for i in range(len(gallery.gallery_items)):
-            self.assertIsNotNone(gallery.current_image_source)
-            self.assertNotEqual(gallery.current_image_source, previous_image_source)
-            self.assertTrue(gallery.is_photo_toolbar_visible)
-            previous_image_source = gallery.current_image_source
-            gallery.flick_to_image('next')
+        for i in range(gallery.gallery_items_number):
+            self.assertIsNotNone(image.current_image_source)
+            self.assertNotEqual(image.current_image_source, previous_image_source)
+            self.assertTrue(image.is_photo_toolbar_displayed)
+            previous_image_source = image.current_image_source
+            image.flick_to_next_image()
 
-        self.assertIsNotNone(gallery.current_image_source)
-        self.assertEqual(gallery.current_image_source, previous_image_source)
-        self.assertTrue(gallery.is_photo_toolbar_visible)
+        self.assertIsNotNone(image.current_image_source)
+        self.assertEqual(image.current_image_source, previous_image_source)
+        self.assertTrue(image.is_photo_toolbar_displayed)
 
-        previous_image_source = gallery.current_image_source
+        previous_image_source = image.current_image_source
 
         # Check the prev flick.
-        for i in range(len(gallery.gallery_items) - 1):
-            gallery.flick_to_image('previous')
-            self.assertIsNotNone(gallery.current_image_source)
-            self.assertNotEqual(gallery.current_image_source, previous_image_source)
-            self.assertTrue(gallery.is_photo_toolbar_visible)
-            previous_image_source = gallery.current_image_source
+        for i in range(gallery.gallery_items_number - 1):
+            image.flick_to_previous_image()
+            self.assertIsNotNone(image.current_image_source)
+            self.assertNotEqual(image.current_image_source, previous_image_source)
+            self.assertTrue(image.is_photo_toolbar_displayed)
+            previous_image_source = image.current_image_source
 
         # Try to flick prev image (No image should be available)
-        gallery.flick_to_image('previous')
-        self.assertIsNotNone(gallery.current_image_source)
-        self.assertEqual(gallery.current_image_source, previous_image_source)
-        self.assertTrue(gallery.is_photo_toolbar_visible)
+        image.flick_to_previous_image()
+        self.assertIsNotNone(image.current_image_source)
+        self.assertEqual(image.current_image_source, previous_image_source)
+        self.assertTrue(image.is_photo_toolbar_displayed)

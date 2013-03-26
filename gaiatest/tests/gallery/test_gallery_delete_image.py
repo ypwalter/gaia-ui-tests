@@ -19,13 +19,13 @@ class TestGalleryDelete(GaiaTestCase):
         gallery.launch()
 
         # Tap first image to open full screen view.
-        gallery.tap_first_gallery_item()
+        image = gallery.tap_first_gallery_item()
 
         # Tap the delete button from the fullscreen toolbar.
-        gallery.tap_delete_button()
+        image.tap_delete_button()
 
         # Tap the confirm delete button.
-        gallery.tap_confirm_deletion_button()
+        image.tap_confirm_deletion_button()
 
         # Verify empty gallery title.
         self.assertEqual(gallery.empty_gallery_title, 'No photos or videos')
