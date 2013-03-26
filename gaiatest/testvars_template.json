@@ -9,5 +9,8 @@
   "marketplace": {
     "username": "",
     "password": ""
+  },
+  "bluetooth": {
+    "device": ""
   }
 }
