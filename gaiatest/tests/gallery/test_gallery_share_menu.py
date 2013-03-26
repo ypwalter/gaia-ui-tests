@@ -59,6 +59,4 @@ class TestGalleryShareMenu(GaiaTestCase):
         cancel_button = self.marionette.find_element(*self._cancel_button_locator)
         self.marionette.tap(cancel_button)
 
-        self.app.kill()
-
         GaiaTestCase.tearDown(self)
