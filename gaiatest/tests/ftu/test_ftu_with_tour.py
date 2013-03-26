@@ -106,7 +106,6 @@ class TestFtu(GaiaTestCase):
     def tearDown(self):
 
         # TODO flush any settings set by the FTU app
-        self.data_layer.disable_cell_data()
 
         self.data_layer.disable_wifi()
 

@@ -19,6 +19,7 @@ class Gallery(Base):
 
     def launch(self):
         Base.launch(self)
+        self.wait_for_condition(lambda m: m.execute_script('return window.wrappedJSObject.files.length') == self.gallery_items_number)
         self.wait_for_element_not_displayed(*self._progress_bar_locator)
 
     @property
