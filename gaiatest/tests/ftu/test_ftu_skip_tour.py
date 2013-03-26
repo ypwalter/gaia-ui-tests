@@ -196,7 +196,7 @@ class TestFtu(GaiaTestCase):
         self.wait_for_element_displayed(*self._section_finish_locator)
 
         # Skip the tour
-        self.marionette.find_element(*self._skip_tour_button_locator).click()
+        self.marionette.tap(self.marionette.find_element(*self._skip_tour_button_locator))
 
         # Switch back to top level now that FTU app is gone
         self.marionette.switch_to_frame()
