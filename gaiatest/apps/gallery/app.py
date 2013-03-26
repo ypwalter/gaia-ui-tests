@@ -12,15 +12,16 @@ class Gallery(Base):
     name = 'Gallery'
 
     _gallery_items_locator = ('css selector', 'li.thumbnail')
-    _current_image_locator = ('css selector', '#frames > div.frame[style ~= "translateX(0px);"] > img')
     _empty_gallery_title_locator = ('id', 'overlay-title')
     _empty_gallery_text_locator = ('id', 'overlay-text')
     _progress_bar_locator = ('id', 'progress')
 
     def launch(self):
         Base.launch(self)
-        self.wait_for_condition(lambda m: m.execute_script('return window.wrappedJSObject.files.length') == self.gallery_items_number)
         self.wait_for_element_not_displayed(*self._progress_bar_locator)
+
+    def wait_for_files_to_load(self, files_number):
+        self.wait_for_condition(lambda m: m.execute_script('return window.wrappedJSObject.files.length') == files_number)
 
     @property
     def gallery_items_number(self):

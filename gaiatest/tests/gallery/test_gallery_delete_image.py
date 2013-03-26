@@ -17,6 +17,7 @@ class TestGalleryDelete(GaiaTestCase):
     def test_gallery_delete_image(self):
         gallery = Gallery(self.marionette)
         gallery.launch()
+        gallery.wait_for_files_to_load(1)
 
         # Tap first image to open full screen view.
         image = gallery.tap_first_gallery_item()

@@ -19,6 +19,7 @@ class TestGallery(GaiaTestCase):
 
         gallery = Gallery(self.marionette)
         gallery.launch()
+        gallery.wait_for_files_to_load(1)
 
         image = gallery.tap_first_gallery_item()
 

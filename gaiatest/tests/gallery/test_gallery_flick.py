@@ -22,6 +22,7 @@ class TestGallery(GaiaTestCase):
 
         gallery = Gallery(self.marionette)
         gallery.launch()
+        gallery.wait_for_files_to_load(self.image_count)
 
         self.assertEqual(gallery.gallery_items_number, self.image_count)
 
