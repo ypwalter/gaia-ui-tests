@@ -8,8 +8,8 @@ class TestMarketplaceWithoutConnectivity(GaiaTestCase):
 
     _error_title_locator = ('css selector', '#appError-appframe1 h3[data-l10n-id="error-title"]')
     _error_message_locator = ('css selector', '#appError-appframe1 span[data-l10n-id="error-message"]')
-    _expected_error_title = u'Marketplace is having problems'
-    _expected_error_message = u'Marketplace is not loading properly'
+    _expected_error_title = u'Network connection unavailable'
+    _expected_error_message = u'Marketplace requires a network connection. Try connecting to a Wi-Fi or mobile data network.'
 
     def setUp(self):
         GaiaTestCase.setUp(self)
