@@ -1,9 +1,6 @@
-# -*- coding: iso-8859-15 -*-
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
-import time
 
 from gaiatest import GaiaTestCase
 
@@ -18,11 +15,8 @@ class TestBluetoothPair(GaiaTestCase):
     def setUp(self):
         GaiaTestCase.setUp(self)
 
-        # unlock the lockscreen if it's locked
-        self.lockscreen.unlock()
-
         # turn on bluetooth
-        self.data_layer.set_setting('bluetooth.enabled', True)        
+        self.data_layer.set_setting('bluetooth.enabled', True)
 
         # launch the settings app
         self.app = self.apps.launch('settings')
