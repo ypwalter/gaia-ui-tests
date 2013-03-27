@@ -60,7 +60,8 @@ class TestGalleryEditPhoto(GaiaTestCase):
         previous_image_source = None
         for e in effects:
             self.marionette.tap(e)
-            time.sleep(2)
+            # Wait until the current effect is selected.
+            self.wait_for_condition(lambda m: 'selected' in e.get_attribute('class'))
 
             # TBD. Verify the photo is changed.
 
@@ -69,7 +70,4 @@ class TestGalleryEditPhoto(GaiaTestCase):
 
         # Verify new Photo is created
         self.wait_for_element_displayed(*self._gallery_items_locator)
-        # need extra wait until new image is saved and appear on screen
-        time.sleep(3)
-        new_count = len(self.marionette.find_elements(*self._gallery_items_locator))
-        self.assertEqual(old_count + 1, new_count)
+        self.wait_for_condition(lambda m: len(self.marionette.find_elements(*self._gallery_items_locator)) == 2)
