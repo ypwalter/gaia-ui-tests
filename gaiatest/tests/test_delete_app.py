@@ -90,3 +90,7 @@ class TestDeleteApp(GaiaTestCase):
 
     def _activate_edit_mode(self):
         self.marionette.execute_script("window.wrappedJSObject.Homescreen.setMode('edit')")
+
+    def tearDown(self):
+        self.apps.uninstall(APP_NAME)
+        GaiaTestCase.tearDown(self)
