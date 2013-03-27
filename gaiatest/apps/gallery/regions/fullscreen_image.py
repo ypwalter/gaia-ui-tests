@@ -28,21 +28,16 @@ class FullscreenImage(Base):
         return self.marionette.find_element(*self._current_image_locator).get_attribute('src')
 
     def flick_to_next_image(self):
-        current_image = self.marionette.find_element(*self._current_image_locator)
-        self.marionette.flick(current_image,  # target element
-                               '50%', '50%',  # start from middle of the target element
-                               '-50%', 0,  # move 50% of width to the left
-                               800)  # gesture duration
-        self.wait_for_element_displayed(*self._current_image_locator)
-        # TODO
-        # remove sleep after Bug 843202 - Flicking through images in gallery crashes the app is fixed
-        time.sleep(1)
+        self.flick_to_image('next')
 
     def flick_to_previous_image(self):
+        self.flick_to_image('previous')
+
+    def flick_to_image(self, direction):
         current_image = self.marionette.find_element(*self._current_image_locator)
         self.marionette.flick(current_image,  # target element
                               '50%', '50%',  # start from middle of the target element
-                              '+50%', 0,  # move 50% of width to the right
+                              '%s50%%' % (direction == 'previous' and '+' or direction == 'next' and '-'), 0,  # move 50% of width to the left/right
                               800)  # gesture duration
         self.wait_for_element_displayed(*self._current_image_locator)
         # TODO
