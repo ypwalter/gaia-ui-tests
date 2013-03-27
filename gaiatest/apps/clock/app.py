@@ -83,6 +83,10 @@ class Clock(Base):
             return self.root_element.find_element(*self._label_locator).text
 
         @property
+        def text(self):
+            return self.root_element.text
+
+        @property
         def is_alarm_active(self):
             return self.root_element.find_element(*self._check_box_locator).is_selected()
 
