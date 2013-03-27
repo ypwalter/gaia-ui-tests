@@ -16,7 +16,6 @@ class TestCamera(GaiaTestCase):
     _video_capturing_locator = ('css selector', 'body.capturing')
     _video_timer_locator = ('id', 'video-timer')
 
-
     def setUp(self):
         GaiaTestCase.setUp(self)
 
@@ -26,7 +25,7 @@ class TestCamera(GaiaTestCase):
         # launch the Camera app
         self.app = self.apps.launch('camera')
 
-        self.wait_for_capture_ready()
+        self.wait_for_element_present(*self._capture_button_enabled_locator)
 
     def test_capture_a_video(self):
         # https://moztrap.mozilla.org/manage/case/2477/
@@ -54,12 +53,3 @@ class TestCamera(GaiaTestCase):
 
         # Find the new film thumbnail in the film strip
         self.assertTrue(self.marionette.find_element(*self._film_strip_image_locator).is_displayed())
-
-    def wait_for_capture_ready(self):
-        self.marionette.set_script_timeout(10000)
-        self.marionette.execute_async_script("""
-            waitFor(
-                function () { marionetteScriptFinished(); },
-                function () { return document.getElementById('viewfinder').readyState > 1; }
-            );
-        """)

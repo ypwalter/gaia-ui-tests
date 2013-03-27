@@ -497,6 +497,10 @@ class GaiaTestCase(MarionetteTestCase):
                 traceback.print_exc()
 
             # settings
+            # Switch to top frame in case we are in a 3rd party app
+            # There is no more debug gathering is not specific to the app
+            self.marionette.switch_to_frame()
+
             try:
                 with open(os.path.join(debug_path, '%s_settings.json' % test_name), 'w') as f:
                     f.write(json.dumps(self.data_layer.all_settings))

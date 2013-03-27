@@ -11,6 +11,8 @@ class TestCamera(GaiaTestCase):
     _focus_ring = ('id', 'focus-ring')
     _video_mode_locator = ('css selector', 'body.video')
     _film_strip_image_locator = ('css selector', '#filmstrip > img.thumbnail')
+    # This is a workaround for the Bug 832045
+    _capture_button_enabled_locator = ('css selector', '#capture-button:not([disabled])')
 
     def setUp(self):
         GaiaTestCase.setUp(self)
@@ -21,7 +23,7 @@ class TestCamera(GaiaTestCase):
         # launch the Camera app
         self.app = self.apps.launch('camera')
 
-        self.wait_for_capture_ready()
+        self.wait_for_element_present(*self._capture_button_enabled_locator)
 
     def test_capture_a_photo(self):
         # https://moztrap.mozilla.org/manage/case/1325/
@@ -39,12 +41,3 @@ class TestCamera(GaiaTestCase):
 
         # Find the new picture in the film strip
         self.assertTrue(self.marionette.find_element(*self._film_strip_image_locator).is_displayed())
-
-    def wait_for_capture_ready(self):
-        self.marionette.set_script_timeout(10000)
-        self.marionette.execute_async_script("""
-            waitFor(
-                function () { marionetteScriptFinished(); },
-                function () { return document.getElementById('viewfinder').readyState > 1; }
-            );
-        """)
