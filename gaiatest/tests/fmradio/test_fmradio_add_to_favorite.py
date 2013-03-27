@@ -50,7 +50,7 @@ class TestFMRadioAddToFavorite(GaiaTestCase):
         self.assertEqual(initial_favorite_count, new_favorite_count - 1)
 
         # verify the favorite frequency is equal to the current frequency
-        favorite_frequency = favorite_list[0].text
+        favorite_frequency = favorite_list[0].text.split('.')[0]
         self.assertEqual(current_frequency, favorite_frequency)
 
     def tearDown(self):
