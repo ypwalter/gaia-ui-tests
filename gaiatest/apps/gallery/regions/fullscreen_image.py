@@ -13,6 +13,7 @@ class FullscreenImage(Base):
     _photos_toolbar_locator = ('id', 'fullscreen-toolbar')
     _delete_image_locator = ('id', 'fullscreen-delete-button')
     _confirm_delete_locator = ('id', 'modal-dialog-confirm-ok')
+    _edit_photo_locator = ('id', 'fullscreen-edit-button')
 
     def __init__(self, marionette, app):
         Base.__init__(self, marionette)
@@ -53,3 +54,8 @@ class FullscreenImage(Base):
         self.marionette.tap(self.marionette.find_element(*self._confirm_delete_locator))
         self.wait_for_element_not_displayed(*self._confirm_delete_locator)
         self.marionette.switch_to_frame(self.app.frame)
+
+    def tap_edit_button(self):
+        self.marionette.tap(self.marionette.find_element(*self._edit_photo_locator))
+        from gaiatest.apps.gallery.regions.edit_photo import EditPhoto
+        return EditPhoto(self.marionette)
