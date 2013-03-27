@@ -32,8 +32,6 @@ class TestEverythingMe(GaiaTestCase):
             self.data_layer.enable_wifi()
             self.data_layer.connect_to_wifi(self.testvars['wifi'])
 
-        self.lockscreen.unlock()
-
     def test_launch_everything_me_app(self):
         # https://github.com/mozilla/gaia-ui-tests/issues/69
 
