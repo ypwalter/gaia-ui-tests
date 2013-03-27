@@ -5,7 +5,7 @@
 from gaiatest import GaiaTestCase
 
 
-class TestBluetoothPair(GaiaTestCase):
+class TestBluetoothPairWithoutPin(GaiaTestCase):
 
     _bluetooth_settings_locator = ('id', 'menuItem-bluetooth')
     _bluetooth_checkbox_locator = ('css selector', '#bluetooth-status input')
@@ -21,7 +21,7 @@ class TestBluetoothPair(GaiaTestCase):
         # launch the settings app
         self.app = self.apps.launch('settings')
 
-    def test_bluetooth_pair(self):
+    def test_bluetooth_pair_without_pin(self):
 
         # navigate to bluetooth settings
         self.wait_for_element_displayed(*self._bluetooth_settings_locator)
