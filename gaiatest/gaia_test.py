@@ -174,6 +174,10 @@ class GaiaData(object):
         result = self.marionette.execute_async_script("return GaiaDataLayer.disableCellData()", special_powers=True)
         assert result, 'Unable to disable cell data'
 
+    @property
+    def is_cell_data_enabled(self):
+        return self.marionette.execute_script("return GaiaDataLayer.isCellDataEnabled()")
+
     def enable_cell_roaming(self):
         self.set_setting('ril.data.roaming_enabled', True)
 
