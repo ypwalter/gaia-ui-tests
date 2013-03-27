@@ -46,7 +46,7 @@ class TestCostControlDataAlertWifi(GaiaTestCase):
     _usage_done_button_locator = ('id', 'data-usage-done-button')
 
     # browser app locators
-    _page_end_locator = ("xpath", "//span[text()='Help']")
+    _page_end_locator = ("id", "colophon")
 
     # notification bar locators
     _cost_control_widget_locator = ('css selector', 'iframe[data-frame-origin="app://costcontrol.gaiamobile.org"]')
@@ -122,7 +122,6 @@ class TestCostControlDataAlertWifi(GaiaTestCase):
         # there are two choice in this switch u'GB' or u'MB'. if it is u'GB', try to switch to u'MB'
         if capacity.text == u'GB':
             self.marionette.tap(capacity)
-        import pdb; pdb.set_trace()
         # clear the default value and set it to 0.1
         size = self.marionette.find_element(*self._size_input_locator)
         size.clear()
@@ -148,7 +147,7 @@ class TestCostControlDataAlertWifi(GaiaTestCase):
         browser = Browser(self.marionette)
         browser.launch()
         for i in range(2):
-            browser.go_to_url('http://news.yahoo.com/')
+            browser.go_to_url('http://www.mozilla.org/')
             browser.switch_to_content()
             self.wait_for_element_present(*self._page_end_locator)
             browser.switch_to_chrome()
