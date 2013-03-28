@@ -24,7 +24,7 @@ class TestClockSetAlarmSnooze(GaiaTestCase):
 
         # Set label & snooze
         new_alarm.type_alarm_label("TestSetAlarmSnooze")
-        new_alarm.select_snooze('15 minutes')
+        new_alarm.select_snooze("15 minutes")
 
         self.assertEqual("15 minutes", new_alarm.alarm_snooze)
 
