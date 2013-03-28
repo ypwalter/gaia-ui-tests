@@ -7,6 +7,7 @@ from gaiatest import GaiaTestCase
 MANIFEST = 'http://mozqa.com/data/webapps/mozqa.com/manifest.webapp'
 APP_NAME = 'Mozilla QA WebRT Tester'
 TITLE = 'Index of /data'
+APP_INSTALLED = False
 
 
 class TestDeleteApp(GaiaTestCase):
@@ -59,7 +60,7 @@ class TestDeleteApp(GaiaTestCase):
         # check that the app is available
         app_icon = self.marionette.find_element(*self._icon_locator)
         self.assertTrue(app_icon.is_displayed())
-        self.app_installed = True
+        APP_INSTALLED = True
 
         # go to edit mode.
         # TODO: activate edit mode using HOME button https://bugzilla.mozilla.org/show_bug.cgi?id=814425
@@ -74,7 +75,7 @@ class TestDeleteApp(GaiaTestCase):
         self.marionette.tap(delete)
 
         self.wait_for_element_not_present(*self._icon_locator)
-        self.app_installed = False
+        APP_INSTALLED = False
 
         # return to normal mode
         self.marionette.switch_to_frame()
@@ -94,6 +95,6 @@ class TestDeleteApp(GaiaTestCase):
         self.marionette.execute_script("window.wrappedJSObject.Homescreen.setMode('edit')")
 
     def tearDown(self):
-        if self.app_installed:
+        if APP_INSTALLED:
             self.apps.uninstall(APP_NAME)
         GaiaTestCase.tearDown(self)
