@@ -55,8 +55,9 @@ class TestCostControlDataAlertWifi(GaiaTestCase):
     def setUp(self):
         GaiaTestCase.setUp(self)
 
-        self.data_layer.disable_wifi()
-        self.data_layer.enable_cell_data()
+        if self.wifi:
+            self.data_layer.disable_wifi()
+            self.data_layer.enable_cell_data()
 
         # launch the cost control app
         self.app = self.apps.launch('Usage')
@@ -146,11 +147,10 @@ class TestCostControlDataAlertWifi(GaiaTestCase):
         # please remove this once there is a better way than launching browser app/obj to do so
         browser = Browser(self.marionette)
         browser.launch()
-        for i in range(2):
-            browser.go_to_url('http://www.mozilla.org/')
-            browser.switch_to_content()
-            self.wait_for_element_present(*self._page_end_locator)
-            browser.switch_to_chrome()
+        browser.go_to_url('http://www.mozilla.org/')
+        browser.switch_to_content()
+        self.wait_for_element_present(*self._page_end_locator)
+        browser.switch_to_chrome()
 
         # get the notification bar
         self.marionette.switch_to_frame()
@@ -161,6 +161,5 @@ class TestCostControlDataAlertWifi(GaiaTestCase):
         self.marionette.switch_to_frame(usage_iframe)
 
         # make sure the color changed
-        time.sleep(3)
         bar = self.marionette.find_element(*self._data_usage_view_locator)
-        self.assertTrue('reached-limit' in bar.get_attribute('class'))
+        self.wait_for_condition('reached-limit' in bar.get_attribute('class'), message='some message')
