@@ -372,7 +372,8 @@ class GaiaTestCase(MarionetteTestCase):
         self.data_layer.set_setting('ril.radio.disabled', False)
 
         # disable carrier data connection
-        self.data_layer.disable_cell_data()
+        if self.device.is_android_build:
+            self.data_layer.disable_cell_data()
 
         if self.wifi:
             # forget any known networks
