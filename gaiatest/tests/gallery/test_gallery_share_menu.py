@@ -11,11 +11,12 @@ class TestGalleryShareMenu(GaiaTestCase):
     _current_image_locator = ('css selector', '#frame2 > img')
     _photos_toolbar_locator = ('id', 'fullscreen-toolbar')
     _share_button_locator = ('id', 'fullscreen-share-button')
+    _back_button_locator = ('id', 'fullscreen-back-button')
 
-    _share_with_list_locator = ('css selector', 'ul#list-menu-root')
-    _cancel_button_locator = ('css selector', 'ul#list-menu-root li:nth-child(4)')
+    _share_with_list_locator = ('css selector', 'ul#list-menu-root a[role="button"]')
+    _cancel_button_locator = ('css selector', 'ul#list-menu-root button[data-action="cancel"]')
 
-    _share_with_list_expected = [u'E-Mail', u'Wallpaper', u'Bluetooth Transfer', u'Cancel']
+    _share_with_list_expected = [u'E-Mail', u'Wallpaper', u'Bluetooth Transfer']
 
     def setUp(self):
         GaiaTestCase.setUp(self)
@@ -29,12 +30,7 @@ class TestGalleryShareMenu(GaiaTestCase):
     def test_gallery_click_share_button(self):
         self.wait_for_element_displayed(*self._gallery_items_locator)
 
-        gallery_items = self.marionette.execute_script("return window.wrappedJSObject.files;")
-        for index, item in enumerate(gallery_items):
-            # If the current item is not a video, set it as the gallery item to tap.
-            if 'video' not in item['metadata']:
-                first_gallery_item = self.marionette.find_elements(*self._gallery_items_locator)[index]
-                break
+        first_gallery_item = self.marionette.find_elements(*self._gallery_items_locator)[0]
 
         self.marionette.tap(first_gallery_item)
         self.wait_for_element_displayed(*self._current_image_locator)
@@ -49,14 +45,25 @@ class TestGalleryShareMenu(GaiaTestCase):
         share_button = self.marionette.find_element(*self._share_button_locator)
         self.marionette.tap(share_button)
 
-        #switch to home frame and check the result
+        # switch to home frame and check the result
         self.marionette.switch_to_frame()
         share_with_list = self.marionette.find_element(*self._share_with_list_locator)
 
-        self.assertTrue(share_with_list.text.split('\n') == self._share_with_list_expected)
+        self.assertTrue(len(share_with_list.text.split('\n')) > 0)
 
-    def tearDown(self):
         cancel_button = self.marionette.find_element(*self._cancel_button_locator)
         self.marionette.tap(cancel_button)
 
+        # import pdb; pdb.set_trace()
+        self.marionette.switch_to_frame(self.app.frame_id)
+
+        self.wait_for_element_displayed(*self._back_button_locator)
+        back_button = self.marionette.find_element(*self._back_button_locator)
+        self.marionette.tap(back_button)
+
+        self.wait_for_element_displayed(*self._gallery_items_locator)
+        first_gallery_item = self.marionette.find_elements(*self._gallery_items_locator)[0]
+        self.assertTrue(first_gallery_item.is_displayed)
+
+    def tearDown(self):
         GaiaTestCase.tearDown(self)
