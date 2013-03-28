@@ -273,6 +273,10 @@ class GaiaDevice(object):
     def is_android_build(self):
         return 'Android' in self.marionette.session_capabilities['platform']
 
+    @property
+    def has_mobile_connection(self):
+        return self.marionette.execute_script('return window.navigator.mozMobileConnection !== undefined')
+
     def push_file(self, source, count=1, destination='', progress=None):
         if not destination.count('.') > 0:
             destination = '/'.join([destination, source.rpartition(os.path.sep)[-1]])
@@ -372,7 +376,7 @@ class GaiaTestCase(MarionetteTestCase):
         self.data_layer.set_setting('ril.radio.disabled', False)
 
         # disable carrier data connection
-        if self.device.is_android_build:
+        if self.device.has_mobile_connection:
             self.data_layer.disable_cell_data()
 
         if self.wifi:
