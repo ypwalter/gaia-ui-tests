@@ -30,8 +30,8 @@ class TestCallLogAllCalls(GaiaTestCase):
         # Now check that at least one call is listed.
         self.assertGreater(call_log.all_calls_count, 0)
 
-        # Check that the first one is displayed. this is only a smoke test after all
-        self.assertTrue(call_log.is_first_all_call_displayed)
+        # Check that the call displayed is for the call we made
+        self.assertIn(test_phone_number, call_log.first_all_call_text)
 
     def _make_outgoing_call(self, phone, test_phone_number):
 

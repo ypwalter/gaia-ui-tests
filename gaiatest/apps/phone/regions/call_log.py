@@ -29,9 +29,10 @@ class CallLog(Phone):
         return len(self._all_calls)
 
     @property
-    def is_first_all_call_displayed(self):
-        return self._all_calls[0].is_displayed()
+    def first_all_call_text(self):
+        return self._all_calls[0].text
 
+    # TODO: Add a subregion for each call in the call log, when we have tests that need to work with more than 1 call
     @property
     def _all_calls(self):
         return self.marionette.find_elements(*self._all_calls_list_item_locator)
