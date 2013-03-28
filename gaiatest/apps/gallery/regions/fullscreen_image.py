@@ -29,12 +29,12 @@ class FullscreenImage(Base):
         return self.marionette.find_element(*self._current_image_locator).get_attribute('src')
 
     def flick_to_next_image(self):
-        self.flick_to_image('next')
+        self._flick_to_image('next')
 
     def flick_to_previous_image(self):
-        self.flick_to_image('previous')
+        self._flick_to_image('previous')
 
-    def flick_to_image(self, direction):
+    def _flick_to_image(self, direction):
         current_image = self.marionette.find_element(*self._current_image_locator)
         self.marionette.flick(current_image,  # target element
                               '50%', '50%',  # start from middle of the target element
