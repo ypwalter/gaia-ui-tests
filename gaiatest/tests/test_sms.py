@@ -25,9 +25,18 @@ class TestSms(GaiaTestCase):
     # Conversation view
     _all_messages_locator = ('css selector', 'li.bubble')
     _received_message_content_locator = ('xpath', "//li[@class='bubble'][a[@class='received']]")
+    _unread_icon_locator = ('css selector', 'aside.icon-unread')
 
     def setUp(self):
         GaiaTestCase.setUp(self)
+
+        # delete any existing SMS messages to start clean
+        self.data_layer.delete_all_sms()
+
+        # temporary workaround for bug 837029
+        # launch and then kill messags app, to clear any left-over sms msg notifications
+        self.app = self.apps.launch('Messages', False)
+        self.apps.kill(self.app)
 
         # launch the app
         self.app = self.apps.launch('Messages')
@@ -76,10 +85,9 @@ class TestSms(GaiaTestCase):
         # go into the new message
         unread_message = self.marionette.find_element(*self._unread_message_locator)
         self.marionette.tap(unread_message)
+        self.wait_for_element_not_displayed(*self._unread_icon_locator)
 
-        # TODO Due to displayed bugs I cannot find a good wait for switch btw views
-        time.sleep(5)
-
+        self.wait_for_element_displayed(*self._received_message_content_locator)
         # get the most recent listed and most recent received text message
         received_message = self.marionette.find_elements(
             *self._received_message_content_locator)[-1]
