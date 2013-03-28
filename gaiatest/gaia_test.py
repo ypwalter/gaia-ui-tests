@@ -175,8 +175,8 @@ class GaiaData(object):
         assert result, 'Unable to disable cell data'
 
     @property
-    def is_cell_data_enabled(self):
-        return self.marionette.execute_script("return GaiaDataLayer.isCellDataEnabled()")
+    def is_cell_data_connected(self):
+        return self.marionette.execute_script("return GaiaDataLayer.isCellDataConnected()")
 
     def enable_cell_roaming(self):
         self.set_setting('ril.data.roaming_enabled', True)

@@ -108,8 +108,8 @@ class TestFtu(GaiaTestCase):
         # Click enable data
         self.marionette.find_element(*self._enable_data_checkbox_locator).click()
 
-        self.wait_for_condition(lambda m: self.data_layer.is_cell_data_enabled == True,
-                                message="Cell data was not enabled by FTU app")
+        self.wait_for_condition(lambda m: self.data_layer.is_cell_data_connected,
+                                message="Cell data was not connected by FTU app")
 
         # Click next
         self.marionette.find_element(*self._next_button_locator).click()
