@@ -43,6 +43,7 @@ class TestDeleteApp(GaiaTestCase):
         self.wait_for_element_displayed(*self._yes_button_locator)
         yes = self.marionette.find_element(*self._yes_button_locator)
         self.marionette.tap(yes)
+        APP_INSTALLED = True
 
         # wait for the app to be installed and the notification banner to be available
         self.wait_for_element_displayed(*self._notification_banner_locator)
@@ -60,7 +61,6 @@ class TestDeleteApp(GaiaTestCase):
         # check that the app is available
         app_icon = self.marionette.find_element(*self._icon_locator)
         self.assertTrue(app_icon.is_displayed())
-        APP_INSTALLED = True
 
         # go to edit mode.
         # TODO: activate edit mode using HOME button https://bugzilla.mozilla.org/show_bug.cgi?id=814425
