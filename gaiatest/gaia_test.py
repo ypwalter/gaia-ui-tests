@@ -239,6 +239,9 @@ class GaiaData(object):
     def delete_all_alarms(self):
         self.marionette.execute_script('GaiaDataLayer.deleteAllAlarms();')
 
+    def delete_all_call_log_entries(self):
+        self.marionette.execute_script('GaiaDataLayer.deleteAllCallLogEntries();')
+
     def kill_active_call(self):
         self.marionette.execute_script("var telephony = window.navigator.mozTelephony; " +
                                        "if(telephony.active) telephony.active.hangUp();")
