@@ -4,13 +4,12 @@
 
 from gaiatest import GaiaTestCase
 
-MANIFEST = 'http://mozqa.com/data/webapps/mozqa.com/manifest.webapp'
-APP_NAME = 'Mozilla QA WebRT Tester'
-TITLE = 'Index of /data'
-APP_INSTALLED = False
-
 
 class TestDeleteApp(GaiaTestCase):
+
+    MANIFEST = 'http://mozqa.com/data/webapps/mozqa.com/manifest.webapp'
+    APP_NAME = 'Mozilla QA WebRT Tester'
+    APP_INSTALLED = False
 
     _icon_locator = ('css selector', 'li.icon[aria-label="%s"]' % APP_NAME)
     _delete_app_locator = ('css selector', 'span.options')
@@ -37,18 +36,18 @@ class TestDeleteApp(GaiaTestCase):
         # install app
         self.marionette.switch_to_frame()
         self.marionette.execute_script(
-            'navigator.mozApps.install("%s")' % MANIFEST)
+            'navigator.mozApps.install("%s")' % self.MANIFEST)
 
         # click YES on the installation dialog and wait for icon displayed
         self.wait_for_element_displayed(*self._yes_button_locator)
         yes = self.marionette.find_element(*self._yes_button_locator)
         self.marionette.tap(yes)
-        APP_INSTALLED = True
+        self.APP_INSTALLED = True
 
         # wait for the app to be installed and the notification banner to be available
         self.wait_for_element_displayed(*self._notification_banner_locator)
         notification = self.marionette.find_element(*self._notification_banner_locator).text
-        self.assertEqual('%s installed' % APP_NAME, notification)
+        self.assertEqual('%s installed' % self.APP_NAME, notification)
         self.wait_for_element_not_displayed(*self._notification_banner_locator)
 
         self.marionette.switch_to_frame(self.homescreen.frame)
@@ -73,7 +72,7 @@ class TestDeleteApp(GaiaTestCase):
         self.wait_for_element_displayed(*self._confirm_delete_locator)
         delete = self.marionette.find_element(*self._confirm_delete_locator)
         self.marionette.tap(delete)
-        APP_INSTALLED = False
+        self.APP_INSTALLED = False
 
         self.wait_for_element_not_present(*self._icon_locator)
 
@@ -83,7 +82,7 @@ class TestDeleteApp(GaiaTestCase):
 
         # check that the app is no longer available
         with self.assertRaises(AssertionError):
-            self.apps.launch(APP_NAME)
+            self.apps.launch(self.APP_NAME)
 
     def _touch_home_button(self):
         self.marionette.execute_script("window.wrappedJSObject.dispatchEvent(new Event('home'));")
@@ -95,6 +94,6 @@ class TestDeleteApp(GaiaTestCase):
         self.marionette.execute_script("window.wrappedJSObject.Homescreen.setMode('edit')")
 
     def tearDown(self):
-        if APP_INSTALLED:
-            self.apps.uninstall(APP_NAME)
+        if self.APP_INSTALLED:
+            self.apps.uninstall(self.APP_NAME)
         GaiaTestCase.tearDown(self)
