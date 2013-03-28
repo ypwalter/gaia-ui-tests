@@ -73,9 +73,9 @@ class TestDeleteApp(GaiaTestCase):
         self.wait_for_element_displayed(*self._confirm_delete_locator)
         delete = self.marionette.find_element(*self._confirm_delete_locator)
         self.marionette.tap(delete)
+        APP_INSTALLED = False
 
         self.wait_for_element_not_present(*self._icon_locator)
-        APP_INSTALLED = False
 
         # return to normal mode
         self.marionette.switch_to_frame()
