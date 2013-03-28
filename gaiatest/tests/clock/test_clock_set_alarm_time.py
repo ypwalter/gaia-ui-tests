@@ -28,7 +28,7 @@ class TestClockSetAlarmTime(GaiaTestCase):
         new_alarm.tap_done()
         self.clock.wait_for_banner_not_visible()
 
-        old_alarm_text = self.clock.alarms[0].text
+        old_alarm_text = self.clock.alarms[0].time
 
         # Tap to Edit alarm
         edit_alarm = self.clock.alarms[0].tap()
@@ -52,7 +52,7 @@ class TestClockSetAlarmTime(GaiaTestCase):
         self.assertEqual("TestSetAlarmTime", self.clock.alarms[0].label)
 
         # Verify that alarm time has been changed
-        new_alarm_text = self.clock.alarms[0].text
+        new_alarm_text = self.clock.alarms[0].time
         self.assertNotEqual(old_alarm_text, new_alarm_text)
 
     def tearDown(self):

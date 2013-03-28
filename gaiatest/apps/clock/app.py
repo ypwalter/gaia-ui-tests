@@ -74,6 +74,7 @@ class Clock(Base):
     class Alarm(PageRegion):
 
         _label_locator = ('css selector', 'div.label')
+        _time_locator = ('css selector', 'div.alarmList-time')
         _tap_locator = ('id', 'alarm-item')
         _check_box_locator = ('id', 'input-enable')
         _enable_button_locator = ('css selector', 'label.alarmList')
@@ -83,8 +84,8 @@ class Clock(Base):
             return self.root_element.find_element(*self._label_locator).text
 
         @property
-        def text(self):
-            return self.root_element.text
+        def time(self):
+            return self.root_element.find_element(*self._time_locator).text
 
         @property
         def is_alarm_active(self):
