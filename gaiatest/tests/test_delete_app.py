@@ -59,6 +59,7 @@ class TestDeleteApp(GaiaTestCase):
         # check that the app is available
         app_icon = self.marionette.find_element(*self._icon_locator)
         self.assertTrue(app_icon.is_displayed())
+        self.app_installed = True
 
         # go to edit mode.
         # TODO: activate edit mode using HOME button https://bugzilla.mozilla.org/show_bug.cgi?id=814425
@@ -73,6 +74,7 @@ class TestDeleteApp(GaiaTestCase):
         self.marionette.tap(delete)
 
         self.wait_for_element_not_present(*self._icon_locator)
+        self.app_installed = False
 
         # return to normal mode
         self.marionette.switch_to_frame()
@@ -92,5 +94,6 @@ class TestDeleteApp(GaiaTestCase):
         self.marionette.execute_script("window.wrappedJSObject.Homescreen.setMode('edit')")
 
     def tearDown(self):
-        self.apps.uninstall(APP_NAME)
+        if self.app_installed:
+            self.apps.uninstall(APP_NAME)
         GaiaTestCase.tearDown(self)
