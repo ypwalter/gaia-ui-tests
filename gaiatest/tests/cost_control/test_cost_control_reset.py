@@ -55,8 +55,8 @@ class TestCostControlReset(GaiaTestCase):
 
     def test_cost_control_reset_wifi(self):
         # open fte from javascript (if this got fixed, switch to use fte:false and delete the temp solution down this section)
-        self.marionette.execute_script("return window.wrappedJSObject.ConfigManager.setOption({ fte: true });")
-        self.marionette.refresh()
+        # self.marionette.execute_script("return window.wrappedJSObject.ConfigManager.setOption({ fte: true });")
+        # self.marionette.refresh()
 
         # temporary solution for current not working script (going through fte by UI)
         # please remove "fte locators" once this got fixed
@@ -134,5 +134,4 @@ class TestCostControlReset(GaiaTestCase):
         self.marionette.tap(done)
 
         # waiting for usage to be refreshed and checking for usage
-        time.sleep(2)
-        self.assertTrue(self.marionette.find_element(*self._wifi_data_locator).text == u'0.00 B')
+        self.wait_for_condition(lambda m: m.find_element(*self._wifi_data_locator).text == u'0.00 B', message='Wifi usage did not re-set back to 0.00B')
