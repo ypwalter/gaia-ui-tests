@@ -37,7 +37,7 @@ class TestChangeLanguage(GaiaTestCase):
         select_language_option = self.marionette.find_element(*self._option_language_locator)
         select_language_option.click()
 
-        self._select('Portugu'u"\u00ea"'s (do Brasil)')
+        self._select(u'Fran\u00E7ais')
 
         # Go back to Settings menu
         go_back = self.marionette.find_element(*self._back_button_locator)
@@ -46,8 +46,8 @@ class TestChangeLanguage(GaiaTestCase):
         after_language_change = self.marionette.find_element(*self._settings_header_text_locator).text
 
         # Verify that language has changed
-        self.assertEqual(after_language_change, 'Configura'u"\u00E7\u00F5"'es')
-        self.assertEqual(self.data_layer.get_setting('language.current'), "pt-BR")
+        self.assertEqual(after_language_change, u'Param\u00E8tres')
+        self.assertEqual(self.data_layer.get_setting('language.current'), "fr")
 
     def _select(self, match_string):
         # Cheeky Select wrapper until Marionette has its own

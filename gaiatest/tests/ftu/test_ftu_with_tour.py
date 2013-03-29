@@ -98,7 +98,7 @@ class TestFtu(GaiaTestCase):
         self.marionette.find_element(*self._tour_next_button_locator).click()
 
         self.wait_for_element_displayed(*self._section_tutorial_finish_locator)
-        self.marionette.find_element(*self._lets_go_button_locator).click()
+        self.marionette.tap(self.marionette.find_element(*self._lets_go_button_locator))
 
         # Switch back to top level now that FTU app is gone
         self.marionette.switch_to_frame()
