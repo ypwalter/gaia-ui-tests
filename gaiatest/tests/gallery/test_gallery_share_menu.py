@@ -16,8 +16,6 @@ class TestGalleryShareMenu(GaiaTestCase):
     _share_with_list_locator = ('css selector', 'ul#list-menu-root a[role="button"]')
     _cancel_button_locator = ('css selector', 'ul#list-menu-root button[data-action="cancel"]')
 
-    _share_with_list_expected = [u'E-Mail', u'Wallpaper', u'Bluetooth Transfer']
-
     def setUp(self):
         GaiaTestCase.setUp(self)
 
@@ -47,11 +45,12 @@ class TestGalleryShareMenu(GaiaTestCase):
 
         # switch to home frame and check the result
         self.marionette.switch_to_frame()
-        share_with_list = self.marionette.find_elements(*self._share_with_list_locator)
 
-        self.assertTrue(share_with_list[0].text == self._share_with_list_expected[0])
-        self.assertTrue(share_with_list[1].text == self._share_with_list_expected[1])
-        self.assertTrue(share_with_list[2].text == self._share_with_list_expected[2])
+        # wait for Shar with Menu is renderred
+        share_with_list = self.marionette.find_elements(*self._share_with_list_locator)
+        self.wait_for_element_displayed(*self._cancel_button_locator)
+
+        self.assertTrue(len(share_with_list) > 0)
 
         cancel_button = self.marionette.find_element(*self._cancel_button_locator)
         self.marionette.tap(cancel_button)
