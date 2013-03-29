@@ -3,8 +3,10 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import time
-from gaiatest.apps.clock.app import Clock
+
 from marionette.marionette import Actions
+
+from gaiatest.apps.clock.app import Clock
 
 
 class NewAlarm(Clock):
