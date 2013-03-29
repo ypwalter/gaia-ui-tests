@@ -32,6 +32,6 @@ class EditPhoto(Base):
 
     class Effect(PageRegion):
 
-        def tap_effect(self):
+        def tap(self):
             self.marionette.tap(self.root_element)
             self.wait_for_condition(lambda m: 'selected' in self.root_element.get_attribute('class'))

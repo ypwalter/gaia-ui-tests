@@ -26,13 +26,9 @@ class TestGalleryEditPhoto(GaiaTestCase):
         gallery.launch()
         gallery.wait_for_files_to_load(1)
 
-        old_count = gallery.gallery_items_number
-        self.assertTrue(old_count > 0)
+        self.assertTrue(gallery.gallery_items_number > 0)
 
         image = gallery.tap_first_gallery_item()
-
-        self.assertIsNotNone(image.current_image_source)
-        self.assertTrue(image.is_photo_toolbar_displayed)
 
         # Tap on Edit button.
         edit_image = image.tap_edit_button()
@@ -41,13 +37,12 @@ class TestGalleryEditPhoto(GaiaTestCase):
         edit_image.tap_edit_effects_button()
 
         # Change effects.
-        for e in edit_image.effects:
-            e.tap_effect()
+        [effect.tap() for effect in edit_image.effects]
 
-            # TBD. Verify the photo is changed.
+        # TBD. Verify the photo is changed.
 
         gallery = edit_image.tap_edit_save_button()
         gallery.wait_for_files_to_load(2)
 
         # Verify new Photo is created
-        self.assertEqual(old_count + 1, gallery.gallery_items_number)
+        self.assertEqual(2, gallery.gallery_items_number)

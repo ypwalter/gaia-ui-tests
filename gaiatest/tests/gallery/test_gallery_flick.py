@@ -43,8 +43,6 @@ class TestGallery(GaiaTestCase):
         self.assertEqual(image.current_image_source, previous_image_source)
         self.assertTrue(image.is_photo_toolbar_displayed)
 
-        previous_image_source = image.current_image_source
-
         # Check the prev flick.
         for i in range(gallery.gallery_items_number - 1):
             image.flick_to_previous_image()
