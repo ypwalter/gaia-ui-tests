@@ -51,7 +51,7 @@ class TestGalleryShareMenu(GaiaTestCase):
         self.wait_for_element_displayed(*self._cancel_button_locator)
 
         self.assertTrue(len(share_with_list) > 0)
-
+        
         cancel_button = self.marionette.find_element(*self._cancel_button_locator)
         self.marionette.tap(cancel_button)
 
