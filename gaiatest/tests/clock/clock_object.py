@@ -26,6 +26,7 @@ _alarm_checked_status = ('css selector', 'li label.alarmList #input-enable')
 _alarm_checked_status_button = ('css selector', 'li label.alarmList')
 _alarm_item = ('id', 'alarm-item')
 _alarm_delete_button = ('id', 'alarm-delete')
+_alarm_close = ('id','alarm-close')
 
 
 def create_alarm(self):
@@ -40,6 +41,7 @@ def create_alarm(self):
     self.marionette.tap(alarm_save)
     self.wait_for_element_displayed(*_alarm_create_new_locator)
     self.wait_for_condition(lambda m: len(m.find_elements(*_all_alarms)) > initial_alarms_count)
+    self.wait_for_element_not_displayed(*_banner_countdown_notification_locator)
 
 
 def delete_alarm(self):

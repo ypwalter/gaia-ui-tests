@@ -6,43 +6,79 @@
 
 var GaiaDataLayer = {
 
-  insertContact: function(cdata) {
-    contact = new mozContact();
-    contact.init(cdata);
-    var request = window.navigator.mozContacts.save(contact);
-
-    request.onerror = function onerror() {
-      console.log('Error saving contact', request.error.name);
+  insertContact: function(aContact) {
+    SpecialPowers.addPermission('contacts-create', true, document);
+    var contact = new mozContact();
+    contact.init(aContact);
+    var req = window.navigator.mozContacts.save(contact);
+    req.onsuccess = function () {
+      console.log('success saving contact');
+      SpecialPowers.removePermission('contacts-create', document);
+      marionetteScriptFinished(true);
     };
-
-    request.onsuccess = function onsuccess() {
-      console.log('Success saving contact', request);
+    req.onerror = function () {
+      console.error('error saving contact', req.error.name);
+      SpecialPowers.removePermission('contacts-create', document);
+      marionetteScriptFinished(false);
     };
-    return request;
   },
 
-  findAndRemoveContact: function(cdata) {
-    var options = {
-      filterBy: ['familyName'],
-      filterOp: 'contains',
-      filterValue: cdata['familyName']
+  getAllContacts: function(aCallback) {
+    var callback = aCallback || marionetteScriptFinished;
+    SpecialPowers.addPermission('contacts-read', true, document);
+    var req = window.navigator.mozContacts.find({});
+    req.onsuccess = function () {
+      console.log('success finding contacts');
+      SpecialPowers.removePermission('contacts-read', document);
+      callback(req.result);
     };
-
-    contact = window.navigator.mozContacts.find(options);
-
-    contact.onerror = function onerror() {
-      console.log('Could not find contact', contact.error.name);
+    req.onerror = function () {
+      console.error('error finding contacts', req.error.name);
+      SpecialPowers.removePermission('contacts-read', document);
+      callback([]);
     };
+  },
 
-    contact.onsuccess = function onsuccess() {
-      console.log('Success finding contact', contact);
-      if (contact.result.length > 0) {
-        return window.navigator.mozContacts.remove(contact.result[0]);
+  removeAllContacts: function() {
+    var self = this;
+    this.getAllContacts(function (aContacts) {
+      if (aContacts.length > 0) {
+        var contactsLength = aContacts.length;
+        var done = 0;
+        for (var i = 0; i < contactsLength; i++) {
+          self.removeContact(aContacts[i], function () {
+            if (++done === contactsLength) {
+              marionetteScriptFinished(true);
+            }
+          });
+        }
       }
-    }
+      else {
+        console.log('no contacts to remove');
+          marionetteScriptFinished(true);
+      }
+    });
+  },
+
+  removeContact: function(aContact, aCallback) {
+    var callback = aCallback || marionetteScriptFinished;
+    SpecialPowers.addPermission('contacts-write', true, document);
+    console.log("removing contact with id '" + aContact.id + "'")
+    var req = window.navigator.mozContacts.remove(aContact);
+    req.onsuccess = function() {
+      console.log("success removing contact with id '" + aContact.id + "'");
+      SpecialPowers.removePermission('contacts-write', document);
+      callback(true);
+    };
+    req.onerror = function() {
+      console.error("error removing contact with id '" + aContacts[i].id + "'");
+      SpecialPowers.removePermission('contacts-write', document);
+      callback(false);
+    };
   },
 
   getSetting: function(aName) {
+    SpecialPowers.addPermission('settings-read', true, document);
     var req = window.navigator.mozSettings.createLock().get(aName);
     req.onsuccess = function() {
       console.log('setting retrieved');
@@ -55,6 +91,7 @@ var GaiaDataLayer = {
   },
 
   setSetting: function(aName, aValue, aReturnOnSuccess) {
+    SpecialPowers.addPermission('settings-readwrite', true, document);
     var returnOnSuccess = aReturnOnSuccess || aReturnOnSuccess === undefined;
     var setting = {};
     setting[aName] = aValue;
@@ -256,6 +293,10 @@ var GaiaDataLayer = {
     }
   },
 
+  isCellDataConnected: function() {
+      return window.navigator.mozMobileConnection.data.connected;
+  },
+
   getAllMediaFiles: function (aCallback) {
     var callback = aCallback || marionetteScriptFinished;
     var mediaTypes = ['pictures', 'videos', 'music'];
@@ -290,5 +331,89 @@ var GaiaDataLayer = {
       function () { callback(media); },
       function () { return remainingMediaTypes === 0; }
     );
+  },
+
+  deleteAllSms: function(aCallback) {
+    var callback = aCallback || marionetteScriptFinished;
+    console.log('searching for sms messages');
+
+    SpecialPowers.addPermission("sms", true, document);
+    SpecialPowers.setBoolPref("dom.sms.enabled", true);
+    let sms = window.navigator.mozSms;
+
+    let msgList = new Array();
+    let filter = new MozSmsFilter;
+    let request = sms.getMessages(filter, false);
+
+    request.onsuccess = function(event) {
+      cursor = event.target.result;
+      // Check if message was found
+      if (cursor.message) {
+        msgList.push(cursor.message.id);
+        // Now get next message in the list
+        cursor.continue();
+      } else {
+        // No (more) messages found
+        if (msgList.length) {
+          console.log("found " + msgList.length + " sms messages to delete");
+          deleteSmsMsgs(msgList);
+        } else {
+          console.log("zero sms messages found");
+          disableSms();
+          callback(true);
+        }
+      }
+    };
+
+    request.onerror = function(event) {
+      console.log("sms.getMessages error: " + event.target.error.name);
+      disableSms();
+      callback(false);
+    };
+
+    function deleteSmsMsgs(msgList) {
+      let smsId = msgList.shift();
+      console.log("deleting sms id: " + smsId);
+      let request = sms.delete(smsId);
+
+      request.onsuccess = function(event) {
+        if (event.target.result) {
+          // Message deleted, continue until none are left
+          if (msgList.length) {
+            deleteSmsMsgs(msgList);
+          } else {
+            // All messages deleted
+            console.log('finished deleting all sms messages');
+            disableSms();
+            callback(true);
+          }
+        } else {
+          console.log("sms delete failed");
+          disableSms();
+          callback(false);
+        }
+      };
+
+      request.onerror = function(event) {
+        console.log("sms.delete request returned unexpected error: "
+            + event.target.error.name );
+        disableSms();
+        callback(false);
+      };
+    }
+
+    function disableSms() {
+      SpecialPowers.removePermission("sms", document);
+      SpecialPowers.clearUserPref("dom.sms.enabled");
+    }
+  },
+
+  deleteAllAlarms: function() {
+    window.wrappedJSObject.AlarmManager.getAlarmList (function(aList) {
+      aList.forEach(function(aAlarm) {
+         console.log("Deleting alarm with id  '" + aAlarm.id + "'");
+         window.wrappedJSObject.AlarmManager.delete(aAlarm);
+      });
+    });
   }
 };
