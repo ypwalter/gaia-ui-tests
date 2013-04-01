@@ -47,7 +47,7 @@ var GaiaDataLayer = {
       console.log('bluetooth already enabled');
     }
     marionetteScriptFinished(true);
-  },  
+  },
 
   insertContact: function(aContact) {
     SpecialPowers.addPermission('contacts-create', true, document);
@@ -334,6 +334,10 @@ var GaiaDataLayer = {
       console.log('cell data already disabled');
       marionetteScriptFinished(true);
     }
+  },
+
+  isCellDataConnected: function() {
+      return window.navigator.mozMobileConnection.data.connected;
   },
 
   getAllMediaFiles: function (aCallback) {
