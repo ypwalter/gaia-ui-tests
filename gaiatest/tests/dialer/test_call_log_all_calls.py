@@ -16,7 +16,7 @@ class TestCallLogAllCalls(GaiaTestCase):
         test_phone_number = self.testvars['remote_phone_number']
 
         # Make a call so it will appear in the call log
-        self._make_outgoing_call(phone, test_phone_number)
+        phone.make_call_and_hang_up(test_phone_number)
 
         # Switch back to phone app
         phone.launch()
@@ -27,17 +27,11 @@ class TestCallLogAllCalls(GaiaTestCase):
         # Check that 'All calls' tab is selected
         self.assertTrue(call_log.is_all_calls_tab_selected)
 
-        # Now check that at least one call is listed.
-        self.assertGreater(call_log.all_calls_count, 0)
+        # Now check that one call appears in the call log
+        self.assertEqual(call_log.all_calls_count, 1)
 
         # Check that the call displayed is for the call we made
         self.assertIn(test_phone_number, call_log.first_all_call_text)
-
-    def _make_outgoing_call(self, phone, test_phone_number):
-
-        call_screen = phone.keypad.call_number(test_phone_number)
-        call_screen.wait_for_outgoing_call()
-        call_screen.hang_up()
 
     def tearDown(self):
 

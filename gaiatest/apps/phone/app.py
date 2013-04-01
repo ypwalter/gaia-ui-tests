@@ -40,3 +40,9 @@ class Phone(Base):
         self.wait_for_element_displayed(*self._call_log_toolbar_button_locator)
         self.marionette.tap(self.marionette.find_element(*self._call_log_toolbar_button_locator))
         return self.call_log
+
+    def make_call_and_hang_up(self, phone_number):
+        """Just makes a call and hangs up. Does not do any assertions."""
+        call_screen = self.keypad.call_number(phone_number)
+        call_screen.wait_for_outgoing_call()
+        call_screen.hang_up()

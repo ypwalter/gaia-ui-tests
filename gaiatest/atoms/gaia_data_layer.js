@@ -415,9 +415,5 @@ var GaiaDataLayer = {
          window.wrappedJSObject.AlarmManager.delete(aAlarm);
       });
     });
-  },
-
-  deleteAllCallLogEntries: function() {
-    window.wrappedJSObject.RecentsDBManager.deleteAll();
   }
 };
