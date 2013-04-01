@@ -293,7 +293,7 @@ var GaiaDataLayer = {
     }
   },
 
-  isCellDataEnabled: function() {
+  isCellDataConnected: function() {
       return window.navigator.mozMobileConnection.data.connected;
   },
 

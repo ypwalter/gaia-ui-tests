@@ -175,8 +175,8 @@ class GaiaData(object):
         assert result, 'Unable to disable cell data'
 
     @property
-    def is_cell_data_enabled(self):
-        return self.marionette.execute_script("return GaiaDataLayer.isCellDataEnabled()")
+    def is_cell_data_connected(self):
+        return self.marionette.execute_script("return GaiaDataLayer.isCellDataConnected()")
 
     def enable_cell_roaming(self):
         self.set_setting('ril.data.roaming_enabled', True)
@@ -275,6 +275,10 @@ class GaiaDevice(object):
     @property
     def is_android_build(self):
         return 'Android' in self.marionette.session_capabilities['platform']
+
+    @property
+    def has_mobile_connection(self):
+        return self.marionette.execute_script('return window.navigator.mozMobileConnection !== undefined')
 
     def push_file(self, source, count=1, destination='', progress=None):
         if not destination.count('.') > 0:
@@ -375,7 +379,8 @@ class GaiaTestCase(MarionetteTestCase):
         self.data_layer.set_setting('ril.radio.disabled', False)
 
         # disable carrier data connection
-        self.data_layer.disable_cell_data()
+        if self.device.has_mobile_connection:
+            self.data_layer.disable_cell_data()
 
         if self.wifi:
             # forget any known networks
