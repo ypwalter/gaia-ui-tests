@@ -47,6 +47,7 @@ class TestGalleryShareMenu(GaiaTestCase):
         self.marionette.switch_to_frame()
 
         # wait for Shar with Menu is renderred
+        self.wait_for_element_displayed(*self._share_with_list_locator)
         share_with_list = self.marionette.find_elements(*self._share_with_list_locator)
         self.wait_for_element_displayed(*self._cancel_button_locator)
 
