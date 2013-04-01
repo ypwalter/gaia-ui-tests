@@ -6,6 +6,49 @@
 
 var GaiaDataLayer = {
 
+  unpairAllBluetoothDevices: function() {
+    var adapter = window.navigator.mozBluetooth.getDefaultAdapter();
+    adapter.onsuccess = function a() {
+      realAdapter = adapter.result;
+      var req = realAdapter.getPairedDevices();
+      req.onsuccess = function b() {
+        var total = req.result.slice().length;
+        var count = 0;
+        for(var i = total; i > 0; i--) {
+          var up = realAdapter.unpair(req.result.slice()[0]);
+          up.onsuccess = function c() {
+            count++;
+          };
+        }
+        marionetteScriptFinished(true);
+      };
+    };
+  },
+
+  disableBluetooth: function() {
+    var bluetooth = window.navigator.mozBluetooth;
+    if (bluetooth.enabled) {
+      console.log('trying to disable bluetooth');
+      this.setSetting('bluetooth.enabled', false);
+    }
+    else {
+      console.log('bluetooth already disabled');
+    }
+    marionetteScriptFinished(true);
+  },
+
+  enableBluetooth: function() {
+    var bluetooth = window.navigator.mozBluetooth;
+    if (!bluetooth.enabled) {
+      console.log('trying to enable bluetooth');
+      this.setSetting('bluetooth.enabled', true);
+    }
+    else {
+      console.log('bluetooth already enabled');
+    }
+    marionetteScriptFinished(true);
+  },  
+
   insertContact: function(aContact) {
     SpecialPowers.addPermission('contacts-create', true, document);
     var contact = new mozContact();
@@ -291,10 +334,6 @@ var GaiaDataLayer = {
       console.log('cell data already disabled');
       marionetteScriptFinished(true);
     }
-  },
-
-  isCellDataConnected: function() {
-      return window.navigator.mozMobileConnection.data.connected;
   },
 
   getAllMediaFiles: function (aCallback) {
