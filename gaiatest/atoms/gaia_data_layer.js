@@ -18,6 +18,7 @@ var GaiaDataLayer = {
         }
       };
     };
+    marionetteScriptFinished(true);
   },
 
   disableBluetooth: function() {
