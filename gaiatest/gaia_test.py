@@ -522,6 +522,7 @@ class GaiaTestCase(MarionetteTestCase):
         self.data_layer = None
         MarionetteTestCase.tearDown(self)
 
+
 class Keyboard(object):
     _language_key = '-3'
     _numeric_sign_key = '-2'
