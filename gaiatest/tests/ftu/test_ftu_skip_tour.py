@@ -83,9 +83,6 @@ class TestFtu(GaiaTestCase):
         self.data_layer.enable_wifi()
         self.data_layer.forget_all_networks()
 
-        # Cell data must be off so we can switch it on again
-        self.data_layer.disable_cell_data()
-
         # launch the First Time User app
         self.app = self.apps.launch('FTU')
 
@@ -98,8 +95,6 @@ class TestFtu(GaiaTestCase):
 
         self.wait_for_element_displayed(*self._section_languages_locator)
 
-        # FTU is not properly localized yet so let's just check some are listed
-        # TODO enhance this to include lang selection when FTU is localized
         listed_languages = self.marionette.find_elements(*self._listed_languages_locator)
         self.assertGreater(len(listed_languages), 0, "No languages listed on screen")
         # select en-US due to the condition of this test is only for en-US
@@ -113,6 +108,9 @@ class TestFtu(GaiaTestCase):
         # Click enable data
         self.marionette.find_element(*self._enable_data_checkbox_locator).click()
 
+        self.wait_for_condition(lambda m: self.data_layer.is_cell_data_connected,
+                                message="Cell data was not connected by FTU app")
+
         # Click next
         self.marionette.find_element(*self._next_button_locator).click()
         self.wait_for_element_displayed(*self._section_wifi_locator)
@@ -121,7 +119,6 @@ class TestFtu(GaiaTestCase):
         self.wait_for_condition(lambda m: len(m.find_elements(*self._found_wifi_networks_locator)) > 0,
                                 message="No networks listed on screen")
 
-        # TODO This will only work on Mozilla Guest or unsecure network
         wifi_network = self.marionette.find_element('id', self.testvars['wifi']['ssid'])
         wifi_network.click()
 
@@ -136,6 +133,12 @@ class TestFtu(GaiaTestCase):
 
         self.wait_for_condition(
             lambda m: wifi_network.find_element(*self._network_state_locator).text == "Connected")
+
+        self.assertTrue(self.data_layer.is_wifi_connected(self.testvars['wifi']),
+                                "WiFi was not connected via FTU app")
+
+        # Marionette needs to be resynced to the frame, see bug 855029
+        self.marionette.switch_to_frame(self.app.frame)
 
         # Click next
         self.marionette.find_element(*self._next_button_locator).click()
@@ -163,8 +166,7 @@ class TestFtu(GaiaTestCase):
         # You can do this as many times as you like without db conflict
         self.marionette.find_element(*self._import_from_sim_locator).click()
 
-        # TODO What if Sim has two contacts?
-        # pass thid condition when contacts are 0~N
+        # pass third condition when contacts are 0~N
         self.wait_for_condition(lambda m: self._pattern_contacts.match(m.find_element(*self._sim_import_feedback_locator).text) is not None,
                                 message="Contact did not import from sim before timeout")
         # Find how many contacts are imported.
@@ -177,6 +179,11 @@ class TestFtu(GaiaTestCase):
         elif self._pattern_contacts_N.match(import_sim_message) is not None:
             count = self._pattern_contacts_N.match(import_sim_message).group(1)
             import_sim_count = int(count)
+
+        self.assertEqual(len(self.data_layer.all_contacts), import_sim_count)
+
+        # all_contacts switches to top frame; Marionette needs to be switched back to ftu
+        self.marionette.switch_to_frame(self.app.frame)
 
         # Click next
         self.marionette.find_element(*self._next_button_locator).click()
@@ -199,20 +206,14 @@ class TestFtu(GaiaTestCase):
         self.wait_for_element_displayed(*self._section_finish_locator)
 
         # Skip the tour
-        self.marionette.find_element(*self._skip_tour_button_locator).click()
+        self.marionette.tap(self.marionette.find_element(*self._skip_tour_button_locator))
 
         # Switch back to top level now that FTU app is gone
         self.marionette.switch_to_frame()
 
-        self.assertEqual(len(self.data_layer.all_contacts), import_sim_count)
-        self.assertTrue(self.data_layer.get_setting("ril.data.enabled"), "Cell data was not enabled by FTU app")
-        self.assertTrue(self.data_layer.is_wifi_connected(self.testvars['wifi']), "WiFi was not connected via FTU app")
-
-
     def tearDown(self):
 
         # TODO flush any settings set by the FTU app
-        self.data_layer.disable_cell_data()
 
         self.data_layer.disable_wifi()
 

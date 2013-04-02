@@ -126,9 +126,15 @@ class ContactForm(Base):
     def wait_for_add_edit_contact_to_load(self):
         self.wait_for_element_displayed(*self._contact_form_locator)
 
+
 class EditContact(ContactForm):
 
     _update_locator = ('id', 'save-button')
+    _cancel_locator = ('id', 'cancel-edit')
+    _delete_locator = ('id', 'delete-contact')
+    _delete_form_locator = ('id', 'confirmation-message')
+    _cancel_delete_locator = ('css selector', 'form#confirmation-message button:not(.danger)')
+    _confirm_delete_locator = ('css selector', 'form#confirmation-message button.danger')
 
     def __init__(self, marionette):
         ContactForm.__init__(self, marionette)
@@ -138,6 +144,27 @@ class EditContact(ContactForm):
         self.marionette.tap(self.marionette.find_element(*self._update_locator))
         from gaiatest.apps.contacts.regions.contact_details import ContactDetails
         return ContactDetails(self.marionette)
+
+    def tap_cancel(self):
+        self.marionette.tap(self.marionette.find_element(*self._cancel_locator))
+        from gaiatest.apps.contacts.regions.contact_details import ContactDetails
+        return ContactDetails(self.marionette)
+
+    def tap_delete(self):
+        delete_item = self.marionette.find_element(*self._delete_locator)
+        # TODO Bug 850819 - Remove scrollIntoView() and use single_tap()
+        self.marionette.execute_script("arguments[0].scrollIntoView(false);", [delete_item])
+        self.marionette.tap(delete_item)
+
+    def tap_cancel_delete(self):
+        self.wait_for_element_displayed(*self._delete_form_locator)
+        self.marionette.tap(self.marionette.find_element(*self._cancel_delete_locator))
+
+    def tap_confirm_delete(self):
+        self.wait_for_element_displayed(*self._delete_form_locator)
+        self.marionette.tap(self.marionette.find_element(*self._confirm_delete_locator))
+        from gaiatest.apps.contacts.app import Contacts
+        return Contacts(self.marionette)
 
 
 class NewContact(ContactForm):

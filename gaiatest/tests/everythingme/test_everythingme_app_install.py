@@ -30,8 +30,6 @@ class TestEverythingMeInstallApp(GaiaTestCase):
             self.data_layer.enable_wifi()
             self.data_layer.connect_to_wifi(self.testvars['wifi'])
 
-        self.lockscreen.unlock()
-
     def test_installing_everything_me_app(self):
         # https://github.com/mozilla/gaia-ui-tests/issues/67
 
@@ -63,7 +61,10 @@ class TestEverythingMeInstallApp(GaiaTestCase):
 
         modal_dialog_message = self.marionette.find_element(*self._modal_dialog_message_locator).text
 
-        self.first_app_name = modal_dialog_message.rstrip('to Home Screen?').lstrip(' Add') # TODO remove hack after Bug 845828 lands in V1-train
+        self.first_app_name = modal_dialog_message[
+            modal_dialog_message.find('Add') + 3:
+            modal_dialog_message.find('to Home Screen?')
+        ].strip()  # TODO remove hack after Bug 845828 lands in V1-train
 
         modal_dialog_ok_button = self.marionette.find_element(*self._modal_dialog_ok_locator)
         self.marionette.tap(modal_dialog_ok_button)
@@ -73,19 +74,26 @@ class TestEverythingMeInstallApp(GaiaTestCase):
 
         self.marionette.switch_to_frame(hs_frame)
 
+        # check whether app is installed
+        self.app_installed = False
         while self._homescreen_has_more_pages:
             if self.is_element_displayed(self._homescreen_icon_locator[0], self._homescreen_icon_locator[1] % self.first_app_name):
+                self.app_installed = True
                 break
             self._go_to_next_page()
 
+        self.assertTrue(self.app_installed, 'The app %s was not found to be installed on the home screen.' % self.first_app_name)
+
     def tearDown(self):
-        self.delete_bookmark(self.first_app_name)
+        if self.app_installed:
+            self.delete_bookmark(self.first_app_name)
 
         GaiaTestCase.tearDown(self)
 
     def _go_to_next_page(self):
         self.marionette.execute_script('window.wrappedJSObject.GridManager.goToNextPage()')
 
+    @property
     def _homescreen_has_more_pages(self):
         # the naming of this could be more concise when it's in an app object!
         return self.marionette.execute_script("""
@@ -104,4 +112,4 @@ class TestEverythingMeInstallApp(GaiaTestCase):
                                               };
                                             };
                                           });
-                                        """ , script_args=[bookmark_name])
+                                        """, script_args=[bookmark_name])

@@ -11,7 +11,6 @@ class TestFtu(GaiaTestCase):
 
     _next_button_locator = ('id', 'forward')
 
-
     _section_languages_locator = ('id', 'languages')
     _section_cell_data_locator = ('id', 'data_3g')
     _section_wifi_locator = ('id', 'wifi')
@@ -99,16 +98,14 @@ class TestFtu(GaiaTestCase):
         self.marionette.find_element(*self._tour_next_button_locator).click()
 
         self.wait_for_element_displayed(*self._section_tutorial_finish_locator)
-        self.marionette.find_element(*self._lets_go_button_locator).click()
+        self.marionette.tap(self.marionette.find_element(*self._lets_go_button_locator))
 
         # Switch back to top level now that FTU app is gone
         self.marionette.switch_to_frame()
 
-
     def tearDown(self):
 
         # TODO flush any settings set by the FTU app
-        self.data_layer.disable_cell_data()
 
         self.data_layer.disable_wifi()
 
