@@ -63,3 +63,5 @@ class FullscreenImage(Base):
 
     def tap_tile_view_button(self):
         self.marionette.tap(self.marionette.find_element(*self._tile_view_locator))
+        from gaiatest.apps.gallery.app import Gallery
+        return Gallery(self.marionette)
