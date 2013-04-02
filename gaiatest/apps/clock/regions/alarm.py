@@ -70,24 +70,22 @@ class NewAlarm(Clock):
         return clock
 
     @property
-    def current_hour(self):
+    def hour(self):
         return self.marionette.find_element(*self._current_element(*self._hour_picker_locator)).text
 
     def spin_hour(self):
-        current_hour = int(self.current_hour)
-        if current_hour > 6:
+        if int(self.hour) > 6:
                 self._flick_menu_down(self._hour_picker_locator)
         else:
             self._flick_menu_up(self._hour_picker_locator)
         time.sleep(1)
 
     @property
-    def current_minute(self):
+    def minute(self):
         return self.marionette.find_element(*self._current_element(*self._minutes_picker_locator)).text
 
     def spin_minute(self):
-        current_minute = int(self.current_minute)
-        if current_minute > 30:
+        if int(self.minute) > 30:
             self._flick_menu_down(self._minutes_picker_locator)
         else:
             self._flick_menu_up(self._minutes_picker_locator)
@@ -95,12 +93,11 @@ class NewAlarm(Clock):
         time.sleep(1)
 
     @property
-    def current_hour24(self):
+    def hour24(self):
         return self.marionette.find_element(*self._current_element(*self._hour24_picker_locator)).text
 
     def spin_hour24(self):
-        current_hour = self.current_hour24
-        if current_hour == 'AM':
+        if self.hour24 == 'AM':
             self.marionette.flick(self.marionette.find_element(*self._current_element(*self._hour24_picker_locator)),
                                   '50%', '50%',
                                   0, -300,

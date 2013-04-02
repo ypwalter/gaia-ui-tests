@@ -33,8 +33,7 @@ class TestClockSetAlarmSnooze(GaiaTestCase):
         self.clock.wait_for_banner_not_visible()
 
         # Tap to Edit alarm
-        alarm_list = self.clock.alarms
-        edit_alarm = alarm_list[0].tap()
+        edit_alarm = self.clock.alarms[0].tap()
 
         # to verify the select list.
         self.assertEqual("15 minutes", new_alarm.alarm_snooze)

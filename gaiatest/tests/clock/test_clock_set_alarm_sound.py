@@ -32,8 +32,7 @@ class TestClockSetAlarmSound(GaiaTestCase):
         self.clock.wait_for_banner_not_visible()
 
         # Tap to Edit alarm
-        alarm_list = self.clock.alarms
-        edit_alarm = alarm_list[0].tap()
+        edit_alarm = self.clock.alarms[0].tap()
 
         self.assertEqual('Gem Echoes', new_alarm.alarm_sound)
 

@@ -26,9 +26,7 @@ class TestClockSetAlarmRepeat(GaiaTestCase):
         new_alarm.type_alarm_label("TestSetAlarmRepeat")
 
         # loop the options and select the ones in match list
-        match_list = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
-
-        for option in match_list:
+        for option in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']:
             new_alarm.select_repeat(option)
 
         self.assertEqual('Weekdays', new_alarm.alarm_repeat)
@@ -45,8 +43,7 @@ class TestClockSetAlarmRepeat(GaiaTestCase):
         self.clock.wait_for_banner_not_visible()
 
         # Tap to Edit alarm
-        alarm_list = self.clock.alarms
-        edit_alarm = alarm_list[0].tap()
+        edit_alarm = self.clock.alarms[0].tap()
 
         # To verify the select list.
         self.assertEqual('Weekdays', edit_alarm.alarm_repeat)

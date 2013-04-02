@@ -43,10 +43,8 @@ class TestClockSetAlarmTime(GaiaTestCase):
 
         # Verify Result
         # Get the number of alarms set after the new alarm was added
-        alarms_count = len(self.clock.alarms)
-
         # Ensure that there is only one alarm
-        self.assertEqual(1, alarms_count)
+        self.assertEqual(1, len(self.clock.alarms))
 
         # Verify label
         self.assertEqual("TestSetAlarmTime", self.clock.alarms[0].label)
