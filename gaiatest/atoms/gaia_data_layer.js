@@ -13,14 +13,9 @@ var GaiaDataLayer = {
       var req = realAdapter.getPairedDevices();
       req.onsuccess = function b() {
         var total = req.result.slice().length;
-        var count = 0;
         for(var i = total; i > 0; i--) {
           var up = realAdapter.unpair(req.result.slice()[0]);
-          up.onsuccess = function c() {
-            count++;
-          };
         }
-        marionetteScriptFinished(true);
       };
     };
   },
@@ -33,8 +28,8 @@ var GaiaDataLayer = {
     }
     else {
       console.log('bluetooth already disabled');
+      marionetteScriptFinished(true);
     }
-    marionetteScriptFinished(true);
   },
 
   enableBluetooth: function() {
@@ -45,8 +40,8 @@ var GaiaDataLayer = {
     }
     else {
       console.log('bluetooth already enabled');
+      marionetteScriptFinished(true);
     }
-    marionetteScriptFinished(true);
   },
 
   insertContact: function(aContact) {

@@ -186,11 +186,11 @@ class GaiaData(object):
 
     def enable_bluetooth(self):
         self.marionette.switch_to_frame()
-        self.marionette.execute_async_script("return GaiaDataLayer.enableBluetooth()")
+        return self.marionette.execute_async_script("return GaiaDataLayer.enableBluetooth()")
 
     def disable_bluetooth(self):
         self.marionette.switch_to_frame()
-        self.marionette.execute_async_script("return GaiaDataLayer.disableBluetooth()")
+        return self.marionette.execute_async_script("return GaiaDataLayer.disableBluetooth()")
 
     def unpair_all_bluetooth_devices(self):
         self.marionette.switch_to_frame()
