@@ -6,6 +6,21 @@
 
 var GaiaDataLayer = {
 
+  pairBluetoothDevice: function(device_name) {
+    var adapter = window.navigator.mozBluetooth.getDefaultAdapter();
+    adapter.onsuccess = function a() {
+      realAdapter = adapter.result;
+      realAdapter.ondevicefound = function b(evt) {
+        device = evt.device;
+        if(device.name == device_name) {
+          var req = realAdapter.pair(device);
+          marionetteScriptFinished(true);
+        }
+      };
+      var req = realAdapter.startDiscovery();
+    };
+  },
+
   unpairAllBluetoothDevices: function() {
     var adapter = window.navigator.mozBluetooth.getDefaultAdapter();
     adapter.onsuccess = function a() {
