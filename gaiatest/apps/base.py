@@ -5,6 +5,7 @@
 import time
 
 from marionette.errors import NoSuchElementException
+from marionette.errors import ElementNotVisibleException
 from marionette.errors import TimeoutException
 
 from gaiatest import GaiaApps
@@ -33,6 +34,19 @@ class Base(object):
         else:
             raise TimeoutException(
                 'Element %s not found before timeout' % locator)
+
+    def wait_for_element_not_present(self, by, locator, timeout=_default_timeout):
+        timeout = float(timeout) + time.time()
+
+        while time.time() < timeout:
+            time.sleep(0.5)
+            try:
+                self.marionette.find_element(by, locator)
+            except NoSuchElementException:
+                break
+        else:
+            raise TimeoutException(
+                'Element %s still present after timeout' % locator)
 
     def wait_for_element_displayed(self, by, locator, timeout=_default_timeout):
         timeout = float(timeout) + time.time()
@@ -75,6 +89,19 @@ class Base(object):
             time.sleep(0.5)
         else:
             raise TimeoutException(message)
+
+    def is_element_present(self, by, locator):
+        try:
+            self.marionette.find_element(by, locator)
+            return True
+        except NoSuchElementException:
+            return False
+
+    def is_element_displayed(self, by, locator):
+        try:
+            return self.marionette.find_element(by, locator).is_displayed()
+        except (NoSuchElementException, ElementNotVisibleException):
+            return False
 
 
 class PageRegion(Base):

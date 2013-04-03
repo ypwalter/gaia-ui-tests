@@ -5,6 +5,7 @@
 from gaiatest import GaiaTestCase
 
 import time
+import re
 
 
 class TestFtu(GaiaTestCase):
@@ -24,7 +25,7 @@ class TestFtu(GaiaTestCase):
 
     # Step Wifi
     _section_wifi_locator = ('id', 'wifi')
-    _found_wifi_networks_locator = ('css selector', 'ul#networks li')
+    _found_wifi_networks_locator = ('css selector', 'ul#networks-list li')
     _network_state_locator = ('xpath', 'p[2]')
     _password_input_locator = ('id', 'wifi_password')
     _join_network_locator = ('id', 'wifi-join-button')
@@ -69,6 +70,12 @@ class TestFtu(GaiaTestCase):
     _section_tutorial_finish_locator = ('id', 'tutorialFinish')
     _lets_go_button_locator = ('id', 'tutorialFinished')
 
+    # Pattern for import sim contacts message
+    _pattern_contacts = re.compile("^No contacts detected on SIM to import$|^Imported one contact$|^Imported [0-9]+ contacts$")
+    _pattern_contacts_0 = re.compile("^No contacts detected on SIM to import$")
+    _pattern_contacts_1 = re.compile("^Imported one contact$")
+    _pattern_contacts_N = re.compile("^Imported ([0-9]+) contacts$")
+
     def setUp(self):
         GaiaTestCase.setUp(self)
 
@@ -76,11 +83,11 @@ class TestFtu(GaiaTestCase):
         self.data_layer.enable_wifi()
         self.data_layer.forget_all_networks()
 
-        # Cell data must be off so we can switch it on again
-        self.data_layer.disable_cell_data()
-
         # launch the First Time User app
         self.app = self.apps.launch('FTU')
+
+    def create_language_locator(self, language):
+        return ('css selector', "#languages ul li input[name='language.current'][value='%s']" % language)
 
     def test_ftu_skip_tour(self):
         # https://moztrap.mozilla.org/manage/case/3876/
@@ -88,10 +95,11 @@ class TestFtu(GaiaTestCase):
 
         self.wait_for_element_displayed(*self._section_languages_locator)
 
-        # FTU is not properly localized yet so let's just check some are listed
-        # TODO enhance this to include lang selection when FTU is localized
         listed_languages = self.marionette.find_elements(*self._listed_languages_locator)
         self.assertGreater(len(listed_languages), 0, "No languages listed on screen")
+        # select en-US due to the condition of this test is only for en-US
+        listed_enUS_language = self.marionette.find_element(*self.create_language_locator("en-US"))
+        listed_enUS_language.click()
 
         # Click next
         self.marionette.find_element(*self._next_button_locator).click()
@@ -99,6 +107,9 @@ class TestFtu(GaiaTestCase):
 
         # Click enable data
         self.marionette.find_element(*self._enable_data_checkbox_locator).click()
+
+        self.wait_for_condition(lambda m: self.data_layer.is_cell_data_connected,
+                                message="Cell data was not connected by FTU app")
 
         # Click next
         self.marionette.find_element(*self._next_button_locator).click()
@@ -108,7 +119,6 @@ class TestFtu(GaiaTestCase):
         self.wait_for_condition(lambda m: len(m.find_elements(*self._found_wifi_networks_locator)) > 0,
                                 message="No networks listed on screen")
 
-        # TODO This will only work on Mozilla Guest or unsecure network
         wifi_network = self.marionette.find_element('id', self.testvars['wifi']['ssid'])
         wifi_network.click()
 
@@ -123,6 +133,12 @@ class TestFtu(GaiaTestCase):
 
         self.wait_for_condition(
             lambda m: wifi_network.find_element(*self._network_state_locator).text == "Connected")
+
+        self.assertTrue(self.data_layer.is_wifi_connected(self.testvars['wifi']),
+                                "WiFi was not connected via FTU app")
+
+        # Marionette needs to be resynced to the frame, see bug 855029
+        self.marionette.switch_to_frame(self.app.frame)
 
         # Click next
         self.marionette.find_element(*self._next_button_locator).click()
@@ -146,15 +162,28 @@ class TestFtu(GaiaTestCase):
         self.marionette.find_element(*self._next_button_locator).click()
         self.wait_for_element_displayed(*self._section_import_contacts_locator)
 
-        # Commenting out SIM import for now
-
         # Click import from SIM
         # You can do this as many times as you like without db conflict
         self.marionette.find_element(*self._import_from_sim_locator).click()
 
-        # TODO What if Sim has two contacts?
-        self.wait_for_condition(lambda m: m.find_element(*self._sim_import_feedback_locator).text ==
-                                "Imported one contact", message="Contact did not import from sim before timeout")
+        # pass third condition when contacts are 0~N
+        self.wait_for_condition(lambda m: self._pattern_contacts.match(m.find_element(*self._sim_import_feedback_locator).text) is not None,
+                                message="Contact did not import from sim before timeout")
+        # Find how many contacts are imported.
+        import_sim_message = self.marionette.find_element(*self._sim_import_feedback_locator).text
+        import_sim_count = None
+        if self._pattern_contacts_0.match(import_sim_message) is not None:
+            import_sim_count = 0
+        elif self._pattern_contacts_1.match(import_sim_message) is not None:
+            import_sim_count = 1
+        elif self._pattern_contacts_N.match(import_sim_message) is not None:
+            count = self._pattern_contacts_N.match(import_sim_message).group(1)
+            import_sim_count = int(count)
+
+        self.assertEqual(len(self.data_layer.all_contacts), import_sim_count)
+
+        # all_contacts switches to top frame; Marionette needs to be switched back to ftu
+        self.marionette.switch_to_frame(self.app.frame)
 
         # Click next
         self.marionette.find_element(*self._next_button_locator).click()
@@ -177,72 +206,7 @@ class TestFtu(GaiaTestCase):
         self.wait_for_element_displayed(*self._section_finish_locator)
 
         # Skip the tour
-        self.marionette.find_element(*self._skip_tour_button_locator).click()
-
-        # Switch back to top level now that FTU app is gone
-        self.marionette.switch_to_frame()
-
-        self.assertEqual(len(self.data_layer.all_contacts), 1)
-        self.assertTrue(self.data_layer.get_setting("ril.data.enabled"), "Cell data was not enabled by FTU app")
-        self.assertTrue(self.data_layer.is_wifi_connected(self.testvars['wifi']), "WiFi was not connected via FTU app")
-
-    def test_ftu_with_tour(self):
-
-        self.wait_for_element_displayed(*self._section_languages_locator)
-        # Click next
-        self.marionette.find_element(*self._next_button_locator).click()
-        self.wait_for_element_displayed(*self._section_cell_data_locator)
-        # Click next
-        self.marionette.find_element(*self._next_button_locator).click()
-        self.wait_for_element_displayed(*self._section_wifi_locator)
-        # Click next
-        self.marionette.find_element(*self._next_button_locator).click()
-        self.wait_for_element_displayed(*self._section_date_time_locator)
-        # Click next
-        self.marionette.find_element(*self._next_button_locator).click()
-        self.wait_for_element_displayed(*self._section_import_contacts_locator)
-        # Click next
-        self.marionette.find_element(*self._next_button_locator).click()
-        self.wait_for_element_displayed(*self._section_welcome_browser_locator)
-        # Click next
-        self.marionette.find_element(*self._next_button_locator).click()
-        self.wait_for_element_displayed(*self._section_browser_privacy_locator)
-        # Click next
-        self.marionette.find_element(*self._next_button_locator).click()
-        self.wait_for_element_displayed(*self._section_finish_locator)
-
-        # Take the tour
-        self.marionette.find_element(*self._take_tour_button_locator).click()
-
-        # Walk through the tour
-        self.wait_for_element_displayed(*self._step1_header_locator)
-        self.assertEqual(self.marionette.find_element(*self._step1_header_locator).text,
-                         "Swipe from right to left to browse your apps.")
-        self.marionette.find_element(*self._tour_next_button_locator).click()
-        self.wait_for_element_displayed(*self._step2_header_locator)
-        self.assertEqual(self.marionette.find_element(*self._step2_header_locator).text,
-                         "Swipe from left to right to discover new apps.")
-        self.marionette.find_element(*self._tour_next_button_locator).click()
-        self.wait_for_element_displayed(*self._step3_header_locator)
-        self.assertEqual(self.marionette.find_element(*self._step3_header_locator).text,
-                         "Tap and hold on an icon to delete or move it.")
-        self.marionette.find_element(*self._tour_next_button_locator).click()
-        self.wait_for_element_displayed(*self._step4_header_locator)
-        self.assertEqual(self.marionette.find_element(*self._step4_header_locator).text,
-                         "Swipe down to access recent notifications, credit information and settings.")
-        self.marionette.find_element(*self._tour_next_button_locator).click()
-        self.wait_for_element_displayed(*self._step5_header_locator)
-        self.assertEqual(self.marionette.find_element(*self._step5_header_locator).text,
-                         "Tap and hold the home button to browse and close recent apps.")
-        # Try going back a step
-        self.marionette.find_element(*self._tour_back_button_locator).click()
-        self.wait_for_element_displayed(*self._step4_header_locator)
-        self.marionette.find_element(*self._tour_next_button_locator).click()
-        self.wait_for_element_displayed(*self._step5_header_locator)
-        self.marionette.find_element(*self._tour_next_button_locator).click()
-
-        self.wait_for_element_displayed(*self._section_tutorial_finish_locator)
-        self.marionette.find_element(*self._lets_go_button_locator).click()
+        self.marionette.tap(self.marionette.find_element(*self._skip_tour_button_locator))
 
         # Switch back to top level now that FTU app is gone
         self.marionette.switch_to_frame()
@@ -250,7 +214,6 @@ class TestFtu(GaiaTestCase):
     def tearDown(self):
 
         # TODO flush any settings set by the FTU app
-        self.data_layer.disable_cell_data()
 
         self.data_layer.disable_wifi()
 

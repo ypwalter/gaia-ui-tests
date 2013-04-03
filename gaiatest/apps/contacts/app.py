@@ -11,38 +11,50 @@ class Contacts(Base):
 
     name = "Contacts"
 
-    _loading_overlay = ('id', 'loading-overlay')
+    _loading_overlay_locator = ('id', 'loading-overlay')
+    _new_contact_button_locator = ('id', 'add-contact-button')
+    _settings_button_locator = ('id', 'settings-button')
 
     #  contacts
     _contact_locator = ('css selector', 'li.contact-item')
 
     def launch(self):
         Base.launch(self)
-        self.wait_for_element_not_displayed(*self._loading_overlay)
+        self.wait_for_element_not_displayed(*self._loading_overlay_locator)
 
     @property
-    def contact_details(self):
-        from gaiatest.apps.contacts.regions.contact_details import ContactDetails
-        return ContactDetails(self.marionette)
+    def contacts(self):
+        self.wait_for_element_displayed(*self._new_contact_button_locator)
+        return [self.Contact(marionette=self.marionette, element=contact)
+                for contact in self.marionette.find_elements(*self._contact_locator)]
 
     def contact(self, name):
         for contact in self.contacts:
             if contact.name == name:
                 return contact
 
-    @property
-    def contacts(self):
-        return [self.Contact(marionette=self.marionette, element=contact)
-                for contact in self.marionette.find_elements(*self._contact_locator)]
+    def tap_new_contact(self):
+        self.marionette.tap(self.marionette.find_element(*self._new_contact_button_locator))
+        from gaiatest.apps.contacts.regions.contact_form import NewContact
+        return NewContact(self.marionette)
+
+    def tap_settings(self):
+        self.marionette.tap(self.marionette.find_element(*self._settings_button_locator))
+        from gaiatest.apps.contacts.regions.settings_form import SettingsForm
+        return SettingsForm(self.marionette)
 
     class Contact(PageRegion):
 
         _name_locator = ('css selector', 'p > strong')
-        _tap_locator = ('css selector', 'p > span.org')
+        _full_name_locator = ('css selector', 'p[data-order]')
 
         @property
         def name(self):
             return self.root_element.find_element(*self._name_locator).text
+
+        @property
+        def full_name(self):
+            return self.root_element.find_element(*self._full_name_locator).text
 
         def tap(self):
             self.marionette.tap(self.root_element)
