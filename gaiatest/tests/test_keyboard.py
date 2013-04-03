@@ -29,7 +29,6 @@ class TestKeyboard(GaiaTestCase):
         self.app = self.apps.launch('UI tests')
 
     def test_keyboard_basic(self):
-
         # wait for app to load
         self.wait_for_element_displayed(*self._test_keyboard_link_locator)
 
@@ -42,7 +41,7 @@ class TestKeyboard(GaiaTestCase):
         self.wait_for_element_displayed(*self._text_input_locator)
         self.marionette.find_element(*self._text_input_locator).click()
 
-	# send keys and try some special keys
+        # send keys and try some special keys
         self.keyboard.send(self._test_string)
         self.keyboard.tap_backspace()
         self.keyboard.enable_caps_lock()
