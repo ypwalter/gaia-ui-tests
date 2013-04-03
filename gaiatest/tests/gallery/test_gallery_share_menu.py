@@ -13,8 +13,8 @@ class TestGalleryShareMenu(GaiaTestCase):
     _share_button_locator = ('id', 'fullscreen-share-button')
     _back_button_locator = ('id', 'fullscreen-back-button')
 
-    _share_with_list_locator = ('css selector', 'ul#list-menu-root a[role="button"]')
-    _cancel_button_locator = ('css selector', 'ul#list-menu-root button[data-action="cancel"]')
+    _share_with_list_locator = ('css selector', '#list-menu-root a[role="button"]')
+    _cancel_button_locator = ('css selector', '#list-menu-root button[data-action="cancel"]')
 
     def setUp(self):
         GaiaTestCase.setUp(self)
@@ -52,7 +52,7 @@ class TestGalleryShareMenu(GaiaTestCase):
         self.wait_for_element_displayed(*self._cancel_button_locator)
 
         self.assertGreater(len(share_with_list), 0)
-        
+
         cancel_button = self.marionette.find_element(*self._cancel_button_locator)
         self.marionette.tap(cancel_button)
 
