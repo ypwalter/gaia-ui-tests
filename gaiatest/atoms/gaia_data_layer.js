@@ -6,30 +6,30 @@
 
 var GaiaDataLayer = {
 
-  pairBluetoothDevice: function(device_name) {
-    var adapter = window.navigator.mozBluetooth.getDefaultAdapter();
-    adapter.onsuccess = function a() {
-      realAdapter = adapter.result;
-      realAdapter.ondevicefound = function b(evt) {
-        device = evt.device;
-        if(device.name == device_name) {
-          var req = realAdapter.pair(device);
+  pairBluetoothDevice: function(aDeviceName) {
+    var req = window.navigator.mozBluetooth.getDefaultAdapter();
+    req.onsuccess = function() {
+      var adapter = req.result;
+      adapter.ondevicefound = function(aEvent) {
+        device = aEvent.device;
+        if (device.name === aDeviceName) {
+          var pair = adapter.pair(device);
           marionetteScriptFinished(true);
         }
       };
-      var req = realAdapter.startDiscovery();
+      var discovery = adapter.startDiscovery();
     };
   },
 
   unpairAllBluetoothDevices: function() {
-    var adapter = window.navigator.mozBluetooth.getDefaultAdapter();
-    adapter.onsuccess = function a() {
-      realAdapter = adapter.result;
-      var req = realAdapter.getPairedDevices();
-      req.onsuccess = function b() {
+    var req_get_adapter = window.navigator.mozBluetooth.getDefaultAdapter();
+    req_get_adapter.onsuccess = function() {
+      adapter = req_get_adapter.result;
+      var req = adapter.getPairedDevices();
+      req.onsuccess = function() {
         var total = req.result.slice().length;
-        for(var i = total; i > 0; i--) {
-          var up = realAdapter.unpair(req.result.slice()[0]);
+        for (var i = total; i > 0; i--) {
+          var up = adapter.unpair(req.result.slice()[0]);
         }
       };
     };
