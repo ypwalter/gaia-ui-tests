@@ -5,7 +5,7 @@
 from gaiatest import GaiaTestCase
 
 
-class TestSettingsWifi(GaiaTestCase):
+class TestSettingsPasscode(GaiaTestCase):
 
     # Input data
     _input_passcode = ['7', '9', '3', '1']
