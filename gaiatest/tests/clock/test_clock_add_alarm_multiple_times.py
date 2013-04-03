@@ -35,10 +35,10 @@ class TestClockAddAlarmMultipleTimes(GaiaTestCase):
             # verify the banner-countdown message appears
             alarm_msg = self.clock.banner_countdown_notification
             self.assertIn('The alarm is set for', alarm_msg)
+            self.clock.wait_for_banner_not_visible()
 
             # Ensure the new alarm has been added and is displayed
             self.assertEqual(i, len(self.clock.alarms))
-            self.clock.wait_for_banner_not_visible()
 
     def tearDown(self):
         # delete any existing alarms
