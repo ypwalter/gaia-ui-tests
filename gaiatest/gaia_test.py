@@ -676,43 +676,12 @@ class Keyboard(object):
         # after switching to correct keyboard, set long press if the key is there
         if self.is_element_present(*key):
             keyobj = self.marionette.find_element(*key)
-            action.press(keyobj).wait(1)
+            action.press(keyobj).perform()
+            time.sleep(1)
         else:
             assert False, 'Key %s not found on the keyboard' % val
 
-        if self.marionette.find_element('id', 'keyboard').get_attribute('class') == u'portrait':
-            # the list is -50 on y axis to original key
-            action.move_by_offset(0, -50)
-            # the gap between each element in the list is (+ or -)26 on x axis
-            # + or - depends on if it's on the left portion of right portion of the keyboard
-            # x axis of t&g is 128 and v is 144, using v as a standard
-            if keyobj.location['x'] > 144:
-                direction = -1
-            else:
-                direction = 1
-            if selection != 1 and movement == True:
-                action.move_by_offset(26 * (selection - 1) * direction, 0)
-        else:
-            # the list is -51 on y axis to original key
-            action.move_by_offset(0, -51)
-            # the gap between each element in the list is (+ or -)36 on x axis
-            # + or - depends on if it's on the left portion of right portion of the keyboard
-            # x axis of v is 216, using v as a standard
-            if keyobj.location['x'] > 216:
-                direction = -1
-            else:
-                direction = 1
-            if selection != 1 and movement == True:
-                action.move_by_offset(36 * (selection - 1) * direction, 0)
-
-        action.release()
-
-        # perform the action chain
-        action.perform()
-        time.sleep(2)
-
-        # after long press space key, it might get screwed up due to timing issue. adding 0.7sec for it.
-        if ord(long_press_key) == int(self._space_key):
-            time.sleep(0.7)
-
+        # find the extended key and perform the action chain
+        extend_keys = self.marionette.find_elements('css selector', 'div.highlighted button')
+        action.move(extend_keys[selection - 1]).release().perform()
         self.marionette.switch_to_frame()
