@@ -38,3 +38,7 @@ class Gallery(Base):
     @property
     def empty_gallery_text(self):
         return self.marionette.find_element(*self._empty_gallery_text_locator).text
+
+    @property
+    def are_gallery_items_displayed(self):
+        return self.marionette.find_element(*self._gallery_items_locator).is_displayed()
