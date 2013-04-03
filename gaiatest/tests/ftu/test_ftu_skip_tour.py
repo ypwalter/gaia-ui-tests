@@ -21,7 +21,7 @@ class TestFtu(GaiaTestCase):
 
     # Step Cell data section
     _section_cell_data_locator = ('id', 'data_3g')
-    _enable_data_checkbox_locator = ('id', 'data-connection-switch')
+    _enable_data_checkbox_locator = ('css selector', '#data_3g .pack-end')
 
     # Step Wifi
     _section_wifi_locator = ('id', 'wifi')
@@ -32,8 +32,8 @@ class TestFtu(GaiaTestCase):
 
     # Step Date & Time
     _section_date_time_locator = ('id', 'date_and_time')
-    _timezone_continent_locator = ('id', 'tz-region')
-    _timezone_city_locator = ('id', 'tz-city')
+    _timezone_continent_locator = ('css selector', '#time-form li:nth-child(1) > .change.icon.icon-dialog')
+    _timezone_city_locator =  ('css selector', '#time-form li:nth-child(2) > .change.icon.icon-dialog')
     _time_zone_title_locator = ('id', 'time-zone-title')
 
     # Section Import contacts
@@ -46,7 +46,7 @@ class TestFtu(GaiaTestCase):
 
     # Section Welcome Browser
     _section_welcome_browser_locator = ('id', 'welcome_browser')
-    _enable_statistic_checkbox_locator = ('id', 'share-performance')
+    _enable_statistic_checkbox_locator = ('id', 'form_share_statistics')
 
     # Section Privacy Choices
     _section_browser_privacy_locator = ('id', 'browser_privacy')
@@ -87,7 +87,7 @@ class TestFtu(GaiaTestCase):
         self.app = self.apps.launch('FTU')
 
     def create_language_locator(self, language):
-        return ('css selector', "#languages ul li input[name='language.current'][value='%s']" % language)
+        return ('css selector', "#languages ul li input[name='language.current'][value='%s'] ~ p" % language)
 
     def test_ftu_skip_tour(self):
         # https://moztrap.mozilla.org/manage/case/3876/
@@ -99,14 +99,14 @@ class TestFtu(GaiaTestCase):
         self.assertGreater(len(listed_languages), 0, "No languages listed on screen")
         # select en-US due to the condition of this test is only for en-US
         listed_enUS_language = self.marionette.find_element(*self.create_language_locator("en-US"))
-        listed_enUS_language.click()
+        self.marionette.tap(listed_enUS_language)
 
         # Click next
         self.marionette.find_element(*self._next_button_locator).click()
         self.wait_for_element_displayed(*self._section_cell_data_locator)
 
         # Click enable data
-        self.marionette.find_element(*self._enable_data_checkbox_locator).click()
+        self.marionette.tap(self.marionette.find_element(*self._enable_data_checkbox_locator))
 
         self.wait_for_condition(lambda m: self.data_layer.is_cell_data_connected,
                                 message="Cell data was not connected by FTU app")
