@@ -114,6 +114,7 @@ class NewAlarm(Clock):
         current_element = self.marionette.find_element(*self._current_element(*locator))
         next_element = self.marionette.find_element(*self._next_element(*locator))
 
+        #TODO: update this with more accurate Actions
         action = Actions(self.marionette)
         action.press(next_element)
         action.move(current_element)
@@ -124,6 +125,7 @@ class NewAlarm(Clock):
         current_element = self.marionette.find_element(*self._current_element(*locator))
         next_element = self.marionette.find_element(*self._next_element(*locator))
 
+        #TODO: update this with more accurate Actions
         action = Actions(self.marionette)
         action.press(current_element)
         action.move(next_element)

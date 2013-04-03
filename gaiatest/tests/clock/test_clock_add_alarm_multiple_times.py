@@ -24,7 +24,6 @@ class TestClockAddAlarmMultipleTimes(GaiaTestCase):
 
         """
 
-        "Add multiple alarms"
         count = 3
         for i in range(1, count + 1):
 
