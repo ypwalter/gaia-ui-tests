@@ -350,17 +350,30 @@ class GaiaDevice(object):
         self.start_b2g()
 
     def start_b2g(self):
-        self.manager.shellCheckOutput(['start', 'b2g'])
+        if self.marionette.instance:
+            # launch the gecko instance attached to marionette
+            self.marionette.instance.start()
+        elif self.is_android_build:
+            self.manager.shellCheckOutput(['start', 'b2g'])
+        else:
+            raise Exception('Unable to start B2G')
         self.marionette.wait_for_port()
         self.marionette.start_session()
-        self.marionette.execute_async_script("""
+        if self.is_android_build:
+            self.marionette.execute_async_script("""
 window.addEventListener('mozbrowserloadend', function mozbrowserloadend(aEvent) {
   window.removeEventListener('mozbrowserloadend', mozbrowserloadend);
   marionetteScriptFinished();
 });""")
 
     def stop_b2g(self):
-        self.manager.shellCheckOutput(['stop', 'b2g'])
+        if self.marionette.instance:
+            # close the gecko instance attached to marionette
+            self.marionette.instance.close()
+        elif self.is_android_build:
+            self.manager.shellCheckOutput(['stop', 'b2g'])
+        else:
+            raise Exception('Unable to stop B2G')
         self.marionette.client.close()
         self.marionette.session = None
         self.marionette.window = None
@@ -383,9 +396,8 @@ class GaiaTestCase(MarionetteTestCase):
         self.marionette.__class__ = type('Marionette', (Marionette, MarionetteTouchMixin), {})
 
         self.device = GaiaDevice(self.marionette)
-
-        if self.restart and self.device.is_android_build:
-                self.device.restart_b2g()
+        if self.restart and (self.marionette.instance or self.device.is_android_build):
+            self.device.restart_b2g()
 
         self.marionette.setup_touch()
 
