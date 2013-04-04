@@ -8,19 +8,28 @@ from gaiatest.apps.phone.app import Phone
 
 class TestCallLogAllCalls(GaiaTestCase):
 
+    def setUp(self):
+        GaiaTestCase.setUp(self)
+
+        # delete any existing call log entries - call log needs to be loaded
+        self.phone = Phone(self.marionette)
+        self.phone.launch()
+        self.phone.tap_call_log_toolbar_button()
+        self.data_layer.delete_all_call_log_entries()
+        # switch back to keypad for the test
+        self.phone.tap_keypad_toolbar_button()
+
     def test_call_log_all_calls(self):
         # https://moztrap.mozilla.org/manage/case/1306/
 
-        phone = Phone(self.marionette)
-        phone.launch()
         test_phone_number = self.testvars['remote_phone_number']
 
         # Make a call so it will appear in the call log
-        phone.make_call_and_hang_up(test_phone_number)
+        self.phone.make_call_and_hang_up(test_phone_number)
 
         # Switch back to phone app
-        phone.launch()
-        call_log = phone.tap_call_log_toolbar_button()
+        self.phone.launch()
+        call_log = self.phone.tap_call_log_toolbar_button()
 
         call_log.tap_all_calls_tab()
 
@@ -38,8 +47,5 @@ class TestCallLogAllCalls(GaiaTestCase):
         # In case the assertion fails this will still kill the call
         # An open call creates problems for future tests
         self.data_layer.kill_active_call()
-
-        # delete any existing call log entries
-        self.data_layer.delete_all_call_log_entries()
 
         GaiaTestCase.tearDown(self)

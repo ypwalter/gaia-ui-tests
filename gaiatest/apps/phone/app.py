@@ -13,6 +13,7 @@ class Phone(Base):
     _dialog_locator = ('id', 'confirmation-message')
     _dialog_title_locator = ('xpath', "//*[@id='confirmation-message']/section/h1")
     _call_log_toolbar_button_locator = ('id', 'option-recents')
+    _keypad_toolbar_button_locator = ('id', 'option-keypad')
 
     @property
     def keypad(self):
@@ -40,6 +41,11 @@ class Phone(Base):
         self.wait_for_element_displayed(*self._call_log_toolbar_button_locator)
         self.marionette.tap(self.marionette.find_element(*self._call_log_toolbar_button_locator))
         return self.call_log
+
+    def tap_keypad_toolbar_button(self):
+        self.wait_for_element_displayed(*self._keypad_toolbar_button_locator)
+        self.marionette.tap(self.marionette.find_element(*self._keypad_toolbar_button_locator))
+        return self.keypad
 
     def make_call_and_hang_up(self, phone_number):
         """Just makes a call and hangs up. Does not do any assertions."""
