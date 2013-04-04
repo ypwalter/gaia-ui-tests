@@ -360,6 +360,9 @@ class GaiaTestCase(MarionetteTestCase):
         # Change language back to English
         self.data_layer.set_setting("language.current", "en-US")
 
+        # Change timezone back to PST
+        self.data_layer.set_setting("time.timezone", "America/Los_Angeles")
+
         # restore settings from testvars
         [self.data_layer.set_setting(name, value) for name, value in self.testvars.get('settings', {}).items()]
 
