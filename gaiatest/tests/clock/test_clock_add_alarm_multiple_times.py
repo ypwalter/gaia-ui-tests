@@ -3,16 +3,16 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from gaiatest import GaiaTestCase
-from gaiatest.tests.clock import clock_object
-import time
+from gaiatest.apps.clock.app import Clock
+
 
 class TestClockAddAlarmMultipleTimes(GaiaTestCase):
 
     def setUp(self):
         GaiaTestCase.setUp(self)
 
-        # launch the Clock app
-        self.app = self.apps.launch('Clock')
+        self.clock = Clock(self.marionette)
+        self.clock.launch()
 
         # delete any existing alarms
         self.data_layer.delete_all_alarms()
@@ -24,31 +24,20 @@ class TestClockAddAlarmMultipleTimes(GaiaTestCase):
 
         """
 
-        "Add multiple alarms"
         count = 3
-        for x in range(count):
-            self.wait_for_element_displayed(*clock_object._alarm_create_new_locator)
+        for i in range(1, count + 1):
 
             # create a new alarm with the default values that are available
-            alarm_create_new = self.marionette.find_element(*clock_object._alarm_create_new_locator)
-            self.marionette.tap(alarm_create_new)
-
-            self.wait_for_element_displayed(*clock_object._alarm_save_locator)
-            alarm_save = self.marionette.find_element(*clock_object._alarm_save_locator)
-            self.marionette.tap(alarm_save)
+            new_alarm = self.clock.tap_new_alarm()
+            new_alarm.tap_done()
 
             # verify the banner-countdown message appears
-            self.wait_for_element_displayed(*clock_object._banner_countdown_notification_locator)
-            alarm_msg = self.marionette.find_element(*clock_object._banner_countdown_notification_locator).text
-            self.assertIn('The alarm is set for',alarm_msg)
-
-            # Get the number of alarms set after the new alarm was added
-            new_alarms_count = len(self.marionette.find_elements(*clock_object._all_alarms))
+            alarm_msg = self.clock.banner_countdown_notification
+            self.assertIn('The alarm is set for', alarm_msg)
+            self.clock.wait_for_banner_not_visible()
 
             # Ensure the new alarm has been added and is displayed
-            self.assertEqual(x+1, new_alarms_count)
-            # sleep for a while until the alarm message disappear
-            time.sleep(5)
+            self.assertEqual(i, len(self.clock.alarms))
 
     def tearDown(self):
         # delete any existing alarms
