@@ -104,7 +104,7 @@ class TestMarketplaceLogin(GaiaTestCase):
             password_field.send_keys(password)
 
             self.wait_for_element_displayed(*_returning_button_locator)
-            self.marionette.tap(self.marionette.find_element(*_returning_button_locator)) #.click()
+            self.marionette.tap(self.marionette.find_element(*_returning_button_locator))
 
         else:
             # Persona remembers your username and password
@@ -121,18 +121,3 @@ class TestMarketplaceLogin(GaiaTestCase):
                 self.marionette.find_element(*_this_session_only_button_locator).click()
             except:
                 pass
-
-    def tearDown(self):
-        # In the event that the test fails, a 2nd attempt is made to log out if logged in
-
-        # switch to marketplace frame and if we are logged in attempt to log out again
-        self.marionette.switch_to_frame()
-        self.marionette.switch_to_frame(self.app.frame)
-
-        if self.is_element_displayed(*self._sign_out_button_locator):
-            # Attempt a second log out
-            self.marionette.tap(self.marionette.find_element(*self._sign_out_button_locator))
-
-        if self.wifi:
-            self.data_layer.disable_wifi()
-        GaiaTestCase.tearDown(self)
