@@ -141,7 +141,7 @@ class GaiaData(object):
         result = self.marionette.execute_async_script('return GaiaDataLayer.insertContact(%s);' % json.dumps(contact), special_powers=True)
         assert result, 'Unable to insert contact %s' % contact
 
-    def remove_all_contacts(self, default_script_timeout):
+    def remove_all_contacts(self, default_script_timeout=60000):
         self.marionette.switch_to_frame()
         self.marionette.set_script_timeout(max(default_script_timeout, 1000 * len(self.all_contacts)))
         result = self.marionette.execute_async_script('return GaiaDataLayer.removeAllContacts();', special_powers=True)
