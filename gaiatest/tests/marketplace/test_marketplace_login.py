@@ -56,9 +56,10 @@ class TestMarketplaceLogin(GaiaTestCase):
 
         # Sign out, which should return to the Marketplace home screen
         sign_out_button = self.marionette.find_element(*self._sign_out_button_locator)
-        # TODO: neither click nor tap work
-        self.marionette.tap(sign_out_button)
+        # TODO: click works but not tap
         sign_out_button.click()
+        # Without this next line I was getting a StaleElementException
+        self.wait_for_element_not_displayed(*self._sign_out_button_locator)
 
         # Verify that user is signed out
         self.wait_for_element_displayed(*self._settings_button_locator)
@@ -97,7 +98,7 @@ class TestMarketplaceLogin(GaiaTestCase):
             email_field = self.marionette.find_element(*_email_input_locator)
             email_field.send_keys(username)
 
-            self.marionette.tap(self.marionette.find_element(*_next_button_locator)) #.click()
+            self.marionette.tap(self.marionette.find_element(*_next_button_locator))
 
             self.wait_for_element_displayed(*_password_input_locator)
             password_field = self.marionette.find_element(*_password_input_locator)
