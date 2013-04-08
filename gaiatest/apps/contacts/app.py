@@ -14,6 +14,7 @@ class Contacts(Base):
     _loading_overlay_locator = ('id', 'loading-overlay')
     _new_contact_button_locator = ('id', 'add-contact-button')
     _settings_button_locator = ('id', 'settings-button')
+    _favorites_group_locator = ('id', 'group-favorites')
 
     #  contacts
     _contact_locator = ('css selector', 'li.contact-item')
@@ -43,6 +44,11 @@ class Contacts(Base):
         from gaiatest.apps.contacts.regions.settings_form import SettingsForm
         return SettingsForm(self.marionette)
 
+    @property
+    def is_favorites_list_displayed(self):
+        return self.marionette.find_element(*self._)
+
+
     class Contact(PageRegion):
 
         _name_locator = ('css selector', 'p > strong')
@@ -61,3 +67,4 @@ class Contacts(Base):
 
             from gaiatest.apps.contacts.regions.contact_details import ContactDetails
             return ContactDetails(self.marionette)
+
