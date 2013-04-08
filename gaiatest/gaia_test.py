@@ -362,10 +362,13 @@ class GaiaDevice(object):
         self.marionette.wait_for_port()
         self.marionette.start_session()
         if self.is_android_build:
+            self.marionette.set_script_timeout(60000)
             self.marionette.execute_async_script("""
-window.addEventListener('mozbrowserloadend', function mozbrowserloadend(aEvent) {
-  window.removeEventListener('mozbrowserloadend', mozbrowserloadend);
-  marionetteScriptFinished();
+window.addEventListener('mozbrowserloadend', function ftuLoaded(aEvent) {
+  if (aEvent.target.src.indexOf('ftu') != -1) {
+    window.removeEventListener('mozbrowserloadend', ftuLoaded);
+    marionetteScriptFinished();
+  }
 });""")
 
     def stop_b2g(self):
@@ -398,8 +401,13 @@ class GaiaTestCase(MarionetteTestCase):
         self.marionette.__class__ = type('Marionette', (Marionette, MarionetteTouchMixin), {})
 
         self.device = GaiaDevice(self.marionette)
-        if self.restart and (self.marionette.instance or self.device.is_android_build):
-            self.device.restart_b2g()
+        if self.restart and (self.device.is_android_build or self.marionette.instance):
+            self.device.stop_b2g()
+            if self.device.is_android_build:
+                # revert device to a clean state
+                self.device.manager.removeDir('/data/local/indexedDB')
+                self.device.manager.removeDir('/data/b2g/mozilla')
+            self.device.start_b2g()
 
         self.marionette.setup_touch()
 
