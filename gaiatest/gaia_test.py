@@ -597,7 +597,7 @@ class Keyboard(object):
             self.marionette.set_search_timeout(10000)
 
     # this would go through fastest way to tap/click thru a string
-    # TODO: making extend characters working here 
+    # TODO: making extend characters working here
     def send(self, string):
         self._switch_to_keyboard()
 
