@@ -47,7 +47,6 @@ class Contacts(Base):
     def is_favorites_list_displayed(self):
         return self.marionette.find_element(*self._favorites_list_locator).is_displayed()
 
-
     class Contact(PageRegion):
 
         _name_locator = ('css selector', 'p > strong')
