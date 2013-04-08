@@ -103,6 +103,28 @@ class Base(object):
         except (NoSuchElementException, ElementNotVisibleException):
             return False
 
+    def select(self, match_string):
+        # cheeky Select wrapper until Marionette has its own
+        # due to the way B2G wraps the app's select box we match on text
+
+        # have to go back to top level to get the B2G select box wrapper
+        self.marionette.switch_to_frame()
+
+        self.wait_for_condition(lambda m: len(self.marionette.find_elements('css selector', '#value-selector-container li')) > 0)
+
+        options = self.marionette.find_elements('css selector', '#value-selector-container li')
+        close_button = self.marionette.find_element('css selector', 'button.value-option-confirm')
+
+        # loop options until we find the match
+        for li in options:
+            if li.text == match_string:
+                li.click()
+                break
+
+        close_button.click()
+
+        # now back to app
+        self.launch()
 
 class PageRegion(Base):
     def __init__(self, marionette, element):
