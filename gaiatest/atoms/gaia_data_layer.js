@@ -271,7 +271,7 @@ var GaiaDataLayer = {
     return window.navigator.mozTelephony.active.state;
   },
 
-  enableCellData: function() {
+  connectToCellData: function() {
     var manager = window.navigator.mozMobileConnection;
 
     if (!manager.data.connected) {
@@ -285,7 +285,7 @@ var GaiaDataLayer = {
       this.setSetting('ril.data.enabled', true, false);
     }
     else {
-      console.log('cell data already enabled');
+      console.log('cell data already connected');
       marionetteScriptFinished(true);
     }
   },
@@ -307,10 +307,6 @@ var GaiaDataLayer = {
       console.log('cell data already disabled');
       marionetteScriptFinished(true);
     }
-  },
-
-  isCellDataConnected: function() {
-      return window.navigator.mozMobileConnection.data.connected;
   },
 
   getAllMediaFiles: function (aCallback) {
