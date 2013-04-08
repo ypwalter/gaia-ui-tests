@@ -16,7 +16,6 @@ class TestAddContactToFavorite(GaiaTestCase):
         self.data_layer.insert_contact(self.contact)
 
     def test_add_contact_to_favorite(self):
-
         contacts_app = Contacts(self.marionette)
         contacts_app.launch()
 
@@ -24,7 +23,9 @@ class TestAddContactToFavorite(GaiaTestCase):
         contact_details.tap_add_remove_favorite()
         self.assertEqual(contact_details.add_remove_text, 'Remove as Favorite')
 
-        contact_details.tap_back()
-        self.assertEqual(len(contacts_app.contacts), 2)
+        contacts_app = contact_details.tap_back()
+        self.assertTrue(contacts_app.is_favorites_list_displayed)
 
-        print self.marionette.page_source
+        # Test that the contact is displayed twice: once under Favorites and once under Contacts.
+        self.assertEqual(len(contacts_app.contacts), 2)
+        self.assertEqual(contacts_app.contacts[0].full_name, contacts_app.contacts[1].full_name)
