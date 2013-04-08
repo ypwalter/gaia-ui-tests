@@ -531,6 +531,7 @@ class GaiaTestCase(MarionetteTestCase):
 
 
 class Keyboard(object):
+    # special keys locators
     _language_key = '-3'
     _numeric_sign_key = '-2'
     _alpha_key = '-1'
@@ -540,31 +541,50 @@ class Keyboard(object):
     _upper_case_key = '20'
     _space_key = '32'
 
-    # Keyboard app
+    # keyboard app locators
     _keyboard_frame_locator = ('css selector', '#keyboard-frame iframe')
     _keyboard_locator = ('css selector', '#keyboard')
-
     _button_locator = ('css selector', 'button.keyboard-key[data-keycode="%s"]')
+    _highlight_key_locator = 'css selector', 'div.highlighted button'
 
     def __init__(self, marionette, GaiaTestCase):
         self.testcase = GaiaTestCase
         self.marionette = marionette
 
+    # trying to switch to right layout
+    def _switch_to_correct_layout(self, val):
+        # alpha is in on keyboard
+        if val.isalpha():
+            if self.is_element_present(*self._key_locator(self._alpha_key)):
+                self._tap(self._alpha_key)
+            if not self.is_element_present(*self._key_locator(val)):
+                self._tap(self._upper_case_key)
+        # numbers and symbols are in another keyboard
+        else:
+            if self.is_element_present(*self._key_locator(self._numeric_sign_key)):
+                self._tap(self._numeric_sign_key)
+            if not self.is_element_present(*self._key_locator(val)):
+                self._tap(self._alt_key)
+
+    # this is to switch to the frame of keyboard
     def _switch_to_keyboard(self):
         self.marionette.switch_to_frame()
         keybframe = self.marionette.find_element(*self._keyboard_frame_locator)
         self.marionette.switch_to_frame(keybframe, focus=False)
 
+    # this is to get the locator of desired key on keyboard
     def _key_locator(self, val):
         if len(val) == 1:
             val = ord(val)
         return (self._button_locator[0], self._button_locator[1] % val)
 
+    # this is to tap on desired key on keyboard
     def _tap(self, val):
         self.testcase.wait_for_element_displayed(*self._key_locator(val))
         key = self.marionette.find_element(*self._key_locator(val))
         self.marionette.tap(key)
 
+    # this is to detect if the element is present
     def is_element_present(self, by, locator):
         try:
             self.marionette.set_search_timeout(500)
@@ -576,24 +596,14 @@ class Keyboard(object):
             # set the search timeout to the default value
             self.marionette.set_search_timeout(10000)
 
+    # this would go through fastest way to tap/click thru a string
+    # TODO: making extend characters working here 
     def send(self, string):
         self._switch_to_keyboard()
 
         for val in string:
-            # alpha is in on keyboard
-            if val.isalpha():
-                if self.is_element_present(*self._key_locator(self._alpha_key)):
-                    self._tap(self._alpha_key)
-                if not self.is_element_present(*self._key_locator(val)):
-                    self._tap(self._upper_case_key)
-            # numbers and symbols are in another keyboard
-            else:
-                if self.is_element_present(*self._key_locator(self._numeric_sign_key)):
-                    self._tap(self._numeric_sign_key)
-                if not self.is_element_present(*self._key_locator(val)):
-                    self._tap(self._alt_key)
-
             # after switching to correct keyboard, tap/click if the key is there
+            self._switch_to_correct_layout(val)
             if self.is_element_present(*self._key_locator(val)):
                 self._tap(val)
             else:
@@ -605,16 +615,19 @@ class Keyboard(object):
 
         self.marionette.switch_to_frame()
 
+    # switch to keyboard with numbers and special characters
     def switch_to_number_keyboard(self):
         self._switch_to_keyboard()
         self._tap(self._numeric_sign_key)
         self.marionette.switch_to_frame()
 
+    # switch to keyboard with alphabetic keys
     def switch_to_alpha_keyboard(self):
         self._switch_to_keyboard()
         self._tap(self._alpha_key)
         self.marionette.switch_to_frame()
 
+    # tap on "shift" key
     def tap_shift(self):
         self._switch_to_keyboard()
         if self.is_element_present(*self._key_locator(self._alpha_key)):
@@ -653,6 +666,7 @@ class Keyboard(object):
         self.marionette.double_tap(key_obj)
         self.marionette.switch_to_frame()
 
+    # do a long press on a character
     def long_press(self, key, timeout=2000):
         if len(key) == 1:
             self._switch_to_keyboard()
@@ -662,35 +676,24 @@ class Keyboard(object):
             self.marionette.switch_to_frame()
 
     # This is for selecting special characters after long pressing
-    # "selection" is the nth special element you want to select
-    # "movement" is when you don't like it to move toward list or when there is no list
+    # "selection" is the nth special element you want to select (n>=1)
     def choose_extended_character(self, long_press_key, selection, movement=True):
         self._switch_to_keyboard()
-
         action = Actions(self.marionette)
-        key = self._key_locator(long_press_key)
-        # alpha is in on keyboard
-        if long_press_key.isalpha():
-            if self.is_element_present(*self._key_locator(self._alpha_key)):
-                self._tap(self._alpha_key)
-            if not self.is_element_present(*key):
-                self._tap(self._upper_case_key)
-        # numbers and symbols are in another keyboard
-        else:
-            if self.is_element_present(*self._key_locator(self._numeric_sign_key)):
-                self._tap(self._numeric_sign_key)
-            if not self.is_element_present(*key):
-                self._tap(self._alt_key)
 
         # after switching to correct keyboard, set long press if the key is there
+        self._switch_to_correct_layout(long_press_key)
         if self.is_element_present(*key):
             keyobj = self.marionette.find_element(*key)
             action.press(keyobj).perform()
             time.sleep(1)
         else:
-            assert False, 'Key %s not found on the keyboard' % val
+            assert False, 'Key %s not found on the keyboard' % long_press_key
 
         # find the extended key and perform the action chain
-        extend_keys = self.marionette.find_elements('css selector', 'div.highlighted button')
-        action.move(extend_keys[selection - 1]).release().perform()
+        extend_keys = self.marionette.find_elements(*self._highlight_key_locator)
+        if movement == True:
+            action.move(extend_keys[selection - 1]).perform()
+        action.release().perform()
+
         self.marionette.switch_to_frame()
