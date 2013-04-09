@@ -2,14 +2,14 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from gaiatest import GaiaTestCase
-from marionette.marionette import Actions
 import time
+from marionette.marionette import Actions
+from gaiatest import GaiaTestCase
 
 
 class TestEditMode(GaiaTestCase):
 
-    _visible_apps_locator = ('css selector', "div.page[style*='transform: translateX(0px);'] > ol > .icon")
+    _visible_apps_locator = ('css selector', 'div.page[style*="transform: translateX(0px);"] > ol > .icon')
     _edit_mode_locator = ('css selector', 'body[data-mode="edit"]')
 
     def setUp(self):
@@ -18,10 +18,10 @@ class TestEditMode(GaiaTestCase):
         self.homescreen = self.apps.launch('Homescreen')
 
     def test_move_app_position(self):
-        '''
+        """
         Verify the user can move an application around on the homescreen.
         https://moztrap.mozilla.org/manage/case/1317/
-        '''
+        """
 
         # go to app page
         self._go_to_next_page()
