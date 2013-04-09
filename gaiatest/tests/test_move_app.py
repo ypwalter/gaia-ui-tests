@@ -34,7 +34,17 @@ class TestEditMode(GaiaTestCase):
         time.sleep(1)
 
         # move first app on the position 10
-        self._move_app(self._visible_apps_locator, 9)
+        app = self.marionette.find_element(*self._visible_apps_locator)
+        destination = self.marionette.find_elements(*self._visible_apps_locator)[9]
+
+        Actions(self.marionette).\
+            press(app).\
+            wait(3).\
+            move(destination).\
+            wait(1).\
+            release().\
+            perform()
+
         time.sleep(1)
 
         # Exit edit mode
@@ -43,8 +53,8 @@ class TestEditMode(GaiaTestCase):
         self.assertFalse(self.is_element_present(*self._edit_mode_locator))
 
         # check the app order and that the app on 10'th app is the right one
-        app_order_after_move = self.marionette.find_element(*self._visible_apps_locator).text
-        self.assertNotEqual(first_app_before_move, app_order_after_move)
+        first_app_after_move = self.marionette.find_element(*self._visible_apps_locator).text
+        self.assertNotEqual(first_app_before_move, first_app_after_move)
         self.assertEqual(first_app_before_move, self.marionette.find_elements(*self._visible_apps_locator)[9].text)
 
     def _touch_home_button(self):
@@ -55,22 +65,9 @@ class TestEditMode(GaiaTestCase):
         self.marionette.execute_script('window.wrappedJSObject.GridManager.goToNextPage()')
 
     def _activate_edit_mode(self):
-
         app = self.marionette.find_element(*self._visible_apps_locator)
         Actions(self.marionette). \
             press(app).\
             wait(3).\
-            release(). \
-            perform()
-
-    def _move_app(self, app, app_location):
-        app = self.marionette.find_element(*app)
-        destination = self.marionette.find_elements(*self._visible_apps_locator)[app_location]
-
-        Actions(self.marionette). \
-            press(app). \
-            wait(3). \
-            move(destination). \
-            wait(1). \
             release(). \
             perform()
