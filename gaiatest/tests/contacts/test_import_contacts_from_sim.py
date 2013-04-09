@@ -18,6 +18,9 @@ class TestImportContactsFromSIM(GaiaTestCase):
         contacts_app = Contacts(self.marionette)
         contacts_app.launch()
 
+        #import pdb
+        #pdb.set_trace()
+
         # import contacts from SIM
         contacts_settings = contacts_app.tap_settings()
         contacts_settings.tap_import_from_sim()
