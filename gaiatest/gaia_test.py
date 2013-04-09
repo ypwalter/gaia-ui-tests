@@ -317,7 +317,9 @@ class GaiaDevice(object):
 
     @property
     def is_android_build(self):
-        return 'Android' in self.marionette.session_capabilities['platform']
+        if not hasattr(self, '_is_android_build'):
+            self._is_android_build = 'Android' in self.marionette.session_capabilities['platform']
+        return self._is_android_build
 
     @property
     def has_mobile_connection(self):
