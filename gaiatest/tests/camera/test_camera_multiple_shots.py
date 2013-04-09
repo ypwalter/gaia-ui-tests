@@ -64,8 +64,7 @@ class TestCameraMultipleShots(GaiaTestCase):
         self.marionette.tap(capture_button)
 
         # Wait to complete focusing
-        self.wait_for_condition(lambda m: m.find_element(*self._focus_ring).get_attribute('data-state') == 'focused',
-            message="Camera failed to focus")
+        self.wait_for_condition(lambda m: m.find_element(*self._focus_ring).get_attribute('data-state') == 'focused')
 
         # Wait for image to be added in to filmstrip
         self.wait_for_element_displayed(*self._film_strip_image_locator, timeout=20)
