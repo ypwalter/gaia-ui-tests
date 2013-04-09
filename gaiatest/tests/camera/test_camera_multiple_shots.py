@@ -39,10 +39,9 @@ class TestCameraMultipleShots(GaiaTestCase):
 
     def preview_image(self, photo_number):
 
-        # Tap the view-finder
+        # Tap the view-finder, wait for the film-strip to appear
         viewFinder = self.marionette.find_element(*self._view_finder_locator)
         self.marionette.tap(viewFinder)
-
         self.wait_for_element_displayed(*self._film_strip_image_locator)
 
         # Check that there are available thumbnails to select
@@ -53,7 +52,7 @@ class TestCameraMultipleShots(GaiaTestCase):
 
         # Wait for image preview
         self.wait_for_element_displayed(*self._image_preview_locator)
-        
+
         # Switch back to the camera
         camera_button = self.marionette.find_element(*self._camera_button_locator)
         self.marionette.tap(camera_button)
@@ -75,7 +74,7 @@ class TestCameraMultipleShots(GaiaTestCase):
         self.assertTrue(self.marionette.find_element(*self._film_strip_image_locator).is_displayed())
 
         # Wait for the camera's focus state to 'ready' for the next shot
-        self.wait_for_condition(lambda m: m.find_element(*self._focus_ring).get_attribute('data-state') == None)
-        
+        self.wait_for_condition(lambda m: m.find_element(*self._focus_ring).get_attribute('data-state') is None)
+
         # Wait for the filmstrip to hide
         self.wait_for_element_not_displayed(*self._film_strip_locator)
