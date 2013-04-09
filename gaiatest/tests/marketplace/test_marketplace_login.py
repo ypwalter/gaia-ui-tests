@@ -37,6 +37,10 @@ class TestMarketplaceLogin(GaiaTestCase):
         # TODO: click works but not tap
         sign_in_button.click()
 
+        # TODO: This shouldn't be necessary as we are issuing the same command in
+        #       _login_to_persona, but some testers have seen improved reliability with it
+        self.marionette.switch_to_frame()
+
         self._login_to_persona(self.testvars['marketplace']['username'],
                                self.testvars['marketplace']['password'])
 
