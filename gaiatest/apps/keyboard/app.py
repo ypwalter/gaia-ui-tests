@@ -6,7 +6,8 @@ import time
 
 from gaiatest.apps.base import Base
 from gaiatest.apps.base import PageRegion
-from marionette.marionette import Actions 
+from marionette.marionette import Actions
+
 
 class Keyboard(Base):
 
