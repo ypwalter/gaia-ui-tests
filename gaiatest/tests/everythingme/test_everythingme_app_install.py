@@ -30,8 +30,6 @@ class TestEverythingMeInstallApp(GaiaTestCase):
             self.data_layer.enable_wifi()
             self.data_layer.connect_to_wifi(self.testvars['wifi'])
 
-        self.lockscreen.unlock()
-
     def test_installing_everything_me_app(self):
         # https://github.com/mozilla/gaia-ui-tests/issues/67
 
@@ -77,17 +75,18 @@ class TestEverythingMeInstallApp(GaiaTestCase):
         self.marionette.switch_to_frame(hs_frame)
 
         # check whether app is installed
-        app_installed = False
+        self.app_installed = False
         while self._homescreen_has_more_pages:
             if self.is_element_displayed(self._homescreen_icon_locator[0], self._homescreen_icon_locator[1] % self.first_app_name):
-                app_installed = True
+                self.app_installed = True
                 break
             self._go_to_next_page()
 
-        self.assertTrue(app_installed, 'The app %s was not found to be installed on the home screen.' % self.first_app_name)
+        self.assertTrue(self.app_installed, 'The app %s was not found to be installed on the home screen.' % self.first_app_name)
 
     def tearDown(self):
-        self.delete_bookmark(self.first_app_name)
+        if self.app_installed:
+            self.delete_bookmark(self.first_app_name)
 
         GaiaTestCase.tearDown(self)
 

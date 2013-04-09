@@ -309,6 +309,10 @@ var GaiaDataLayer = {
     }
   },
 
+  isCellDataConnected: function() {
+      return window.navigator.mozMobileConnection.data.connected;
+  },
+
   getAllMediaFiles: function (aCallback) {
     var callback = aCallback || marionetteScriptFinished;
     var mediaTypes = ['pictures', 'videos', 'music'];

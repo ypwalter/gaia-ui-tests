@@ -14,14 +14,14 @@ class TestYouTube(GaiaTestCase):
     _browser_frame_locator = ('css selector', 'iframe[mozbrowser]')
 
     # Video player fullscreen
-    _video_frame_locator = ('css selector', "iframe[src='app://video.gaiamobile.org/view.html']")
+    _video_frame_locator = ('css selector', "iframe[src^='app://video'][src$='view.html']")
     _video_spinner_locator = ('id', 'spinner-overlay')
     _video_player_locator = ('id', 'player')
     _video_player_frame_locator = ('id', 'videoFrame')
     _video_loaded_locator = ('css selector', 'video[style]')
 
     # YouTube
-    _video_container_locator = ('id', 'koya_elem_12_4')
+    _video_container_locator = ('id', 'koya_elem_0_6')
     _video_URL = 'http://m.youtube.com/watch?v=5MzuGWFIfio'
 
     def setUp(self):
