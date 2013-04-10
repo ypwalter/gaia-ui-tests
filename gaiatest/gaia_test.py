@@ -177,7 +177,7 @@ class GaiaData(object):
     def connect_to_cell_data(self):
         self.marionette.switch_to_frame()
         result = self.marionette.execute_async_script("return GaiaDataLayer.connectToCellData()", special_powers=True)
-        assert result, 'Unable to enable cell data'
+        assert result, 'Unable to connect to cell data'
 
     def disable_cell_data(self):
         self.marionette.switch_to_frame()
