@@ -9,5 +9,12 @@
   "marketplace": {
     "username": "",
     "password": ""
+  },
+  "email": {
+    "gmail": {
+      "name": "",
+      "email": "",
+      "password": ""
+    }
   }
 }
