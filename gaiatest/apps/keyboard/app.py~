@@ -156,6 +156,7 @@ class Keyboard(Base):
     def send(self, string):
         self._switch_to_keyboard()
         for val in string:
+            
             if ord(val) > 127:
                 # this would get the right key to long press and switch to the right keyboard
                 middle_key_val = self.character_lookup_table.get(val.encode('UTF-8'))
