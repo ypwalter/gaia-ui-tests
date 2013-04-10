@@ -30,23 +30,8 @@ class SettingsForm(Base):
         return self.marionette.find_element(*self._order_by_last_name_switch_locator).is_selected()
 
     def tap_import_from_sim(self):
-        import_from_sim_button = self.marionette.find_element(*self._import_from_sim_button_locator)
-        if import_from_sim_button.is_displayed():
-            self.marionette.tap(import_from_sim_button)
-            self.wait_for_element_not_displayed(*self._loading_overlay_locator)
-            from gaiatest.apps.contacts.app import Contacts
-            return Contacts(self.marionette)
-
-    def tap_import_from_gmail(self):
-        import_from_gmail_button = self.marionette.find_element(*self._import_from_gmail_button_locator)
-        self.marionette.tap(import_from_gmail_button)
-        self.wait_for_element_not_displayed(*self._loading_overlay_locator)
-        from gaiatest.apps.contacts.app import Contacts
-        return Contacts(self.marionette)
-
-    def tap_import_from_windows_live(self):
-        import_from_windows_live_button = self.marionette.find_element(*self._import_from_windows_live_button_locator)
-        self.marionette.tap(import_from_windows_live_button)
+        self.wait_for_element_displayed(*self._import_from_sim_button_locator)
+        self.marionette.tap(self.marionette.find_element(*self._import_from_sim_button_locator))
         self.wait_for_element_not_displayed(*self._loading_overlay_locator)
         from gaiatest.apps.contacts.app import Contacts
         return Contacts(self.marionette)
