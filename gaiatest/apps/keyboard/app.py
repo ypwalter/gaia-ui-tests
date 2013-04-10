@@ -39,10 +39,10 @@ class Keyboard(Base):
              ['Ž', 'Ź', 'Ż']]
     keys = ['a', 'c', 'e', 'i',
             'l', 'n', 'o', 's',
-            '', 'y', 'z',
+            'u', 'y', 'z',
             'A', 'C', 'E', 'I',
             'L', 'N', 'O', 'S',
-            '', 'Y', 'Z']
+            'U', 'Y', 'Z']
 
     # special keys locators
     _language_key = '-3'
