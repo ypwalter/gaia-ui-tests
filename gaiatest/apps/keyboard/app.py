@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -5,7 +6,6 @@
 import time
 
 from gaiatest.apps.base import Base
-from gaiatest.apps.base import PageRegion
 from marionette.marionette import Actions
 
 
@@ -39,10 +39,10 @@ class Keyboard(Base):
              ['Ž', 'Ź', 'Ż']]
     keys = ['a', 'c', 'e', 'i',
             'l', 'n', 'o', 's',
-            'u', 'y', 'z',
+            '', 'y', 'z',
             'A', 'C', 'E', 'I',
             'L', 'N', 'O', 'S',
-            'U', 'Y', 'Z']
+            '', 'Y', 'Z']
 
     # special keys locators
     _language_key = '-3'
@@ -58,12 +58,13 @@ class Keyboard(Base):
     _keyboard_frame_locator = ('css selector', '#keyboard-frame iframe')
     _keyboard_locator = ('css selector', '#keyboard')
     _button_locator = ('css selector', 'button.keyboard-key[data-keycode="%s"]')
+    _highlight_key_locator = ('css selector', 'div.highlighted button')
 
+    # constructor
     def launch(self):
-        for index, list in enumerate(lists):
+        for index, list in enumerate(self.lists):
             for item in list:
-                character_lookup_table[item] = keys[index]
-        Base.launch(self)
+                self.character_lookup_table[item] = self.keys[index]
 
     # trying to switch to right layout
     def _switch_to_correct_layout(self, val):
@@ -94,9 +95,41 @@ class Keyboard(Base):
 
     # this is to tap on desired key on keyboard
     def _tap(self, val):
-        self.testcase.wait_for_element_displayed(*self._key_locator(val))
+        self.wait_for_element_displayed(*self._key_locator(val))
         key = self.marionette.find_element(*self._key_locator(val))
         self.marionette.tap(key)
+
+    # This is for selecting special characters after long pressing
+    # "selection" is the nth special element you want to select (n>=1)
+    def choose_extended_character(self, long_press_key, selection, movement=True):
+        self._switch_to_keyboard()
+        action = Actions(self.marionette)
+
+        # after switching to correct keyboard, set long press if the key is there
+        self._switch_to_correct_layout(long_press_key)
+        key = self._key_locator(long_press_key)
+        if self.is_element_present(*key):
+            keyobj = self.marionette.find_element(*key)
+            action.press(keyobj).wait(2).perform()
+        else:
+            assert False, 'Key %s not found on the keyboard' % long_press_key
+
+        # find the extended key and perform the action chain
+        extend_keys = self.marionette.find_elements(*self._highlight_key_locator)
+        if movement == True:
+            action.move(extend_keys[selection - 1]).perform()
+        action.release().perform()
+        time.sleep(1)
+
+        self.marionette.switch_to_frame()
+
+    def enable_caps_lock(self):
+        self._switch_to_keyboard()
+        if self.is_element_present(*self._key_locator(self._alpha_key)):
+            self._tap(self._alpha_key)
+        key_obj = self.marionette.find_element(*self._key_locator(self._upper_case_key))
+        self.marionette.double_tap(key_obj)
+        self.marionette.switch_to_frame()
 
     # this is to detect if the element is present
     def is_element_present(self, by, locator):
@@ -110,16 +143,23 @@ class Keyboard(Base):
             # set the search timeout to the default value
             self.marionette.set_search_timeout(10000)
 
+    # do a long press on a character
+    def long_press(self, key, timeout=2000):
+        if len(key) == 1:
+            self._switch_to_keyboard()
+            key_obj = self.marionette.find_element(*self._key_locator(key))
+            self.marionette.long_press(key_obj, timeout)
+            time.sleep(timeout / 1000 + 1)
+            self.marionette.switch_to_frame()
+
     # this would go through fastest way to tap/click thru a string
-    # TODO: making extend characters working here
     def send(self, string):
         self._switch_to_keyboard()
-
         for val in string:
+            
             if ord(val) > 127:
-                # due to this is not ASCII standard code, this goes with ISO-8859-1.
                 # this would get the right key to long press and switch to the right keyboard
-                middle_key_val = character_lookup_table.get(val)
+                middle_key_val = self.character_lookup_table.get(val.encode('UTF-8'))
                 self._switch_to_correct_layout(middle_key_val)
 
                 # find the key to long press and press it to get the extended characters list
@@ -141,7 +181,6 @@ class Keyboard(Base):
             # after tap/click space key, it might get screwed up due to timing issue. adding 0.8sec for it.
             if ord(val) == int(self._space_key):
                 time.sleep(0.8)
-
         self.marionette.switch_to_frame()
 
     # switch to keyboard with numbers and special characters
@@ -156,7 +195,7 @@ class Keyboard(Base):
         self._tap(self._alpha_key)
         self.marionette.switch_to_frame()
 
-    # tap on "shift" key
+    # following are "5 functions" to substitute finish switch_to_frame()s and tap() for you
     def tap_shift(self):
         self._switch_to_keyboard()
         if self.is_element_present(*self._key_locator(self._alpha_key)):
@@ -187,42 +226,15 @@ class Keyboard(Base):
         self._tap(self._alt_key)
         self.marionette.switch_to_frame()
 
-    def enable_caps_lock(self):
-        self._switch_to_keyboard()
-        if self.is_element_present(*self._key_locator(self._alpha_key)):
-            self._tap(self._alpha_key)
-        key_obj = self.marionette.find_element(*self._key_locator(self._upper_case_key))
-        self.marionette.double_tap(key_obj)
-        self.marionette.switch_to_frame()
+    def wait_for_element_present(self, by, locator, timeout=30):
+        timeout = float(timeout) + time.time()
 
-    # do a long press on a character
-    def long_press(self, key, timeout=2000):
-        if len(key) == 1:
-            self._switch_to_keyboard()
-            key_obj = self.marionette.find_element(*self._key_locator(key))
-            self.marionette.long_press(key_obj, timeout)
-            time.sleep(timeout / 1000 + 1)
-            self.marionette.switch_to_frame()
-
-    # This is for selecting special characters after long pressing
-    # "selection" is the nth special element you want to select (n>=1)
-    def choose_extended_character(self, long_press_key, selection, movement=True):
-        self._switch_to_keyboard()
-        action = Actions(self.marionette)
-
-        # after switching to correct keyboard, set long press if the key is there
-        self._switch_to_correct_layout(long_press_key)
-        if self.is_element_present(*key):
-            keyobj = self.marionette.find_element(*key)
-            action.press(keyobj).perform()
-            time.sleep(1)
+        while time.time() < timeout:
+            time.sleep(0.5)
+            try:
+                return self.marionette.find_element(by, locator)
+            except NoSuchElementException:
+                pass
         else:
-            assert False, 'Key %s not found on the keyboard' % long_press_key
-
-        # find the extended key and perform the action chain
-        extend_keys = self.marionette.find_elements(*self._highlight_key_locator)
-        if movement == True:
-            action.move(extend_keys[selection - 1]).perform()
-        action.release().perform()
-
-        self.marionette.switch_to_frame()
+            raise TimeoutException(
+                'Element %s not found before timeout' % locator)
