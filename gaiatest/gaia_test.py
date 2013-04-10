@@ -683,6 +683,7 @@ class Keyboard(object):
 
         # after switching to correct keyboard, set long press if the key is there
         self._switch_to_correct_layout(long_press_key)
+        key = _key_locator(long_press_key)
         if self.is_element_present(*key):
             keyobj = self.marionette.find_element(*key)
             action.press(keyobj).perform()
