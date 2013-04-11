@@ -199,6 +199,10 @@ class GaiaData(object):
         self.marionette.switch_to_frame()
         self.marionette.execute_async_script('return GaiaDataLayer.unpairAllBluetoothDevices()')
 
+    @property
+    def is_bluetooth_enabled(self):
+        return self.marionette.execute_script("return window.navigator.mozBluetooth.enabled")
+
     def enable_wifi(self):
         self.marionette.switch_to_frame()
         result = self.marionette.execute_async_script("return GaiaDataLayer.enableWiFi()", special_powers=True)
