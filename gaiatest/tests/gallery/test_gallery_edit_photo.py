@@ -3,15 +3,11 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from gaiatest import GaiaTestCase
+from gaiatest.apps.gallery.app import Gallery
 
 
 class TestGalleryEditPhoto(GaiaTestCase):
 
-    _gallery_items_locator = ('css selector', 'li.thumbnail')
-    _current_image_locator = ('css selector', '#frame2 > img')
-    _photos_toolbar_locator = ('id', 'fullscreen-toolbar')
-
-    _edit_photo_locator = ('id', 'fullscreen-edit-button')
     _edit_effect_button_locator = ('id', 'edit-effect-button')
     _effect_options_locator = ('css selector', '#edit-effect-options a')
     _edit_save_locator = ('id', 'edit-save-button')
@@ -26,47 +22,27 @@ class TestGalleryEditPhoto(GaiaTestCase):
         self.app = self.apps.launch('Gallery')
 
     def test_gallery_edit_photo(self):
+        gallery = Gallery(self.marionette)
+        gallery.launch()
+        gallery.wait_for_files_to_load(1)
 
-        self.wait_for_element_displayed(*self._gallery_items_locator)
+        self.assertTrue(gallery.gallery_items_number > 0)
 
-        gallery_items = self.marionette.find_elements(*self._gallery_items_locator)
-        old_count = len(gallery_items)
-        self.assertTrue(old_count > 0)
+        image = gallery.tap_first_gallery_item()
 
-        self.marionette.tap(gallery_items[0])
-        self.wait_for_element_displayed(*self._current_image_locator)
+        # Tap on Edit button.
+        edit_image = image.tap_edit_button()
 
-        current_image = self.marionette.find_element(*self._current_image_locator)
-        photos_toolbar = self.marionette.find_element(*self._photos_toolbar_locator)
+        # Tap on Effects button.
+        edit_image.tap_edit_effects_button()
 
-        self.assertIsNotNone(current_image.get_attribute('src'))
-        self.assertTrue(photos_toolbar.is_displayed())
+        # Change effects.
+        [effect.tap() for effect in edit_image.effects]
 
-        # Tap on Edit button
-        self.wait_for_element_displayed(*self._edit_photo_locator)
-        edit_photo_button = self.marionette.find_element(*self._edit_photo_locator)
-        self.marionette.tap(edit_photo_button)
+        # TBD. Verify the photo is changed.
 
-        # Tap on Effects button
-        self.wait_for_element_displayed(*self._edit_effect_button_locator)
-        edit_effect_button = self.marionette.find_element(*self._edit_effect_button_locator)
-        self.marionette.tap(edit_effect_button)
-
-        # Change effects
-        self.wait_for_element_displayed(*self._effect_options_locator)
-        effects = self.marionette.find_elements(*self._effect_options_locator)
-
-        previous_image_source = None
-        for e in effects:
-            self.marionette.tap(e)
-            # Wait until the current effect is selected.
-            self.wait_for_condition(lambda m: 'selected' in e.get_attribute('class'))
-
-            # TBD. Verify the photo is changed.
-
-        edit_save_button = self.marionette.find_element(*self._edit_save_locator)
-        self.marionette.tap(edit_save_button)
+        gallery = edit_image.tap_edit_save_button()
+        gallery.wait_for_files_to_load(2)
 
         # Verify new Photo is created
-        self.wait_for_element_displayed(*self._gallery_items_locator)
-        self.wait_for_condition(lambda m: len(self.marionette.find_elements(*self._gallery_items_locator)) == 2)
+        self.assertEqual(2, gallery.gallery_items_number)
