@@ -31,7 +31,6 @@ class TestKeyboard(GaiaTestCase):
     def test_keyboard_basic(self):
         # initialize the keyboard app
         kbapp = Keyboard(self.marionette)
-        kbapp.launch()
 
         # wait for app to load
         self.wait_for_element_displayed(*self._test_keyboard_link_locator)

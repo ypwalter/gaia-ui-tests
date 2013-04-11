@@ -13,36 +13,33 @@ class Keyboard(Base):
 
     name = "Keyboard"
 
-    # special characters look-up table
-    character_lookup_table = {}
-    lists = [['á', 'à', 'â', 'ä', 'å', 'ã', 'ā', 'æ'],
-             ['ç', 'ć', 'č'],
-             ['é', 'è', 'ê', 'ë', 'ē', 'ę', '€', 'ɞ'],
-             ['į', 'ī', 'î', 'ì', 'í', 'ï'],
-             ['£', 'ł'],
-             ['ń', 'ñ'],
-             ['ɵ', 'ø', 'œ', 'ō', 'ô', 'ò', 'ó', 'ö'],
-             ['ß', 'ś', 'š', '$'],
-             ['ū', 'û', 'ù', 'ú', 'ü'],
-             ['¥', 'ÿ'],
-             ['ž', 'ź', 'ż'],
-             ['Á', 'À', 'Â', 'Ä', 'Å', 'Ã', 'Ā', 'Æ'],
-             ['Ç', 'Ć', 'Č'],
-             ['É', 'È', 'Ê', 'Ë', 'Ē', 'Ę', '€', 'Ɛ'],
-             ['Į', 'Ī', 'Î', 'Ì', 'Í', 'Ï'],
-             ['£', 'Ł'],
-             ['Ń', 'Ñ'],
-             ['Ɵ', 'Ø', 'Œ', 'Ō', 'Ô', 'Ò', 'Ó', 'Ö'],
-             ['Ś', 'Š', 'Ş'],
-             ['Ū', 'Û', 'Ù', 'Ú', 'Ü'],
-             ['¥', 'Ÿ'],
-             ['Ž', 'Ź', 'Ż']]
-    keys = ['a', 'c', 'e', 'i',
-            'l', 'n', 'o', 's',
-            'u', 'y', 'z',
-            'A', 'C', 'E', 'I',
-            'L', 'N', 'O', 'S',
-            'U', 'Y', 'Z']
+    # special characters look-up table in English standard keyboard
+    lookup_table = {'0': 'º',
+                    '?': '¿',
+                    '$': '€£¥',
+                    '!': '¡',
+                    'a': 'áàâäåãāæ',
+                    'c': 'çćč',
+                    'e': 'éèêëēę€ɛ',
+                    'i': 'įīîìíï',
+                    'l': '£ł',
+                    'n': 'ńñ',
+                    'o': 'ɵøœōôòóö',
+                    's':'ßśš$',
+                    'u': 'ūûùúü',
+                    'y': '¥ÿ',
+                    'z': 'žźż',
+                    'A': 'ÁÀÂÄÅÃĀÆ',
+                    'C': 'ÇĆČ',
+                    'E': 'ÉÈÊËĒĘ€Ɛ',
+                    'I': 'ĮĪÎÌÍÏ',
+                    'L': '£Ł',
+                    'N': 'ŃÑ',
+                    'O': 'ƟØŒŌÔÒÓÖ',
+                    'S': 'ŚŠŞ',
+                    'U': 'ŪÛÙÚÜ',
+                    'Y': '¥Ÿ',
+                    'Z': 'ŽŹŻ'}
 
     # special keys locators
     _language_key = '-3'
@@ -60,11 +57,11 @@ class Keyboard(Base):
     _button_locator = ('css selector', 'button.keyboard-key[data-keycode="%s"]')
     _highlight_key_locator = ('css selector', 'div.highlighted button')
 
-    # constructor
-    def launch(self):
-        for index, list in enumerate(self.lists):
-            for item in list:
-                self.character_lookup_table[item] = self.keys[index]
+    # find the key to long press and return
+    def _find_key_for_longpress(self, input_value):
+        for key_to_press, extended_values in self.lookup_table.iteritems():
+            if input_value in extended_values:
+                return key_to_press
 
     # trying to switch to right layout
     def _switch_to_correct_layout(self, val):
@@ -158,7 +155,7 @@ class Keyboard(Base):
         for val in string:
             if ord(val) > 127:
                 # this would get the right key to long press and switch to the right keyboard
-                middle_key_val = self.character_lookup_table.get(val.encode('UTF-8'))
+                middle_key_val = self._find_key_for_longpress(val.encode('UTF-8'))
                 self._switch_to_correct_layout(middle_key_val)
 
                 # find the key to long press and press it to get the extended characters list
