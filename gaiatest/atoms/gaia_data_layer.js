@@ -40,7 +40,8 @@ var GaiaDataLayer = {
     var bluetooth = window.navigator.mozBluetooth;
     if (bluetooth.enabled) {
       console.log('trying to disable bluetooth');
-      this.setSetting('bluetooth.enabled', false);
+      this.setSetting('bluetooth.enabled', false, false);
+      window.setInterval(function(){if(bluetooth.enabled === false){marionetteScriptFinished(true);}}, 2000);
     }
     else {
       console.log('bluetooth already disabled');
@@ -52,7 +53,8 @@ var GaiaDataLayer = {
     var bluetooth = window.navigator.mozBluetooth;
     if (!bluetooth.enabled) {
       console.log('trying to enable bluetooth');
-      this.setSetting('bluetooth.enabled', true);
+      this.setSetting('bluetooth.enabled', true, false);
+      window.setInterval(function(){if(bluetooth.enabled === true){marionetteScriptFinished(true);}}, 2000);
     }
     else {
       console.log('bluetooth already enabled');
