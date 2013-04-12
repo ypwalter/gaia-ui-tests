@@ -12,6 +12,10 @@ class TestSearchMarketplaceAndInstallApp(GaiaTestCase):
     APP_DEVELOPER = 'Lanyrd'
     APP_INSTALLED = False
 
+    # Label identifier for all homescreen apps
+    _app_icon_locator = ('xpath', "//li[@class='icon']//span[text()='%s']" % APP_NAME)
+    _homescreen_iframe_locator = ('css selector', 'div.homescreen iframe')
+
     def setUp(self):
         GaiaTestCase.setUp(self)
 
@@ -22,6 +26,8 @@ class TestSearchMarketplaceAndInstallApp(GaiaTestCase):
     def test_search_and_install_app(self):
         marketplace = Marketplace(self.marionette)
         marketplace.launch()
+
+        print self.marionette.page_source
 
         marketplace.search(self.APP_NAME)
 
@@ -40,9 +46,11 @@ class TestSearchMarketplaceAndInstallApp(GaiaTestCase):
         marketplace.confirm_installation()
         self.APP_INSTALLED = True
 
-        # Confirm the installation of the web app
-        marketplace.go_to_homescreen()
-        self.assertTrue(marketplace.is_app_on_homescreen)
+        # Check that the icon of the app is on the homescreen
+        self.marionette.switch_to_frame()
+        homescreen_frame = self.marionette.find_element(*self._homescreen_iframe_locator)
+        self.marionette.switch_to_frame(homescreen_frame)
+        self.assertTrue(marketplace.self.marionette.find_element(*self._app_icon_locator))
 
     def tearDown(self):
 

@@ -9,7 +9,6 @@ from gaiatest.apps.base import PageRegion
 
 class Marketplace(Base):
 
-    APP_NAME = 'Lanyrd'
     name = 'Marketplace'
 
     _loading_fragment_locator = ('css selector', 'div.loading-fragment')
@@ -25,11 +24,6 @@ class Marketplace(Base):
 
     # System app confirmation button to confirm installing an app
     _yes_button_locator = ('id', 'app-install-install-button')
-
-    # TODO move this locators to homescreen obj when we have one
-    # Label identifier for all homescreen apps
-    _app_icon_locator = ('xpath', "//li[@class='icon']//span[text()='%s']" % APP_NAME)
-    _homescreen_iframe_locator = ('css selector', 'div.homescreen iframe')
 
     def launch(self):
         Base.launch(self)
@@ -64,16 +58,6 @@ class Marketplace(Base):
         self.wait_for_element_displayed(*self._yes_button_locator)
         self.marionette.tap(self.marionette.find_element(*self._yes_button_locator))
         self.wait_for_element_not_displayed(*self._yes_button_locator)
-        self.marionette.switch_to_frame()
-
-    # TODO modify method to import the homescreen obj when we have one
-    def go_to_homescreen(self):
-        homescreen_frame = self.marionette.find_element(*self._homescreen_iframe_locator)
-        self.marionette.switch_to_frame(homescreen_frame)
-
-    @property
-    def is_app_on_homescreen(self):
-        return self.marionette.find_element(*self._app_icon_locator)
 
     class Result(PageRegion):
 
