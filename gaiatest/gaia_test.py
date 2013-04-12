@@ -184,23 +184,23 @@ class GaiaData(object):
     def disable_cell_roaming(self):
         self.set_setting('ril.data.roaming_enabled', False)
 
-    def enable_bluetooth(self):
+    def bt_enable_bluetooth(self):
         self.marionette.switch_to_frame()
         return self.marionette.execute_async_script("return GaiaDataLayer.enableBluetooth()")
 
-    def disable_bluetooth(self):
+    def bt_disable_bluetooth(self):
         self.marionette.switch_to_frame()
         return self.marionette.execute_async_script("return GaiaDataLayer.disableBluetooth()")
 
-    def pair_bluetooth_device(self, device_name):
+    def bt_pair_bluetooth_device(self, device_name):
         return self.marionette.execute_async_script('return GaiaDataLayer.pairBluetoothDevice("%s")' % device_name)
 
-    def unpair_all_bluetooth_devices(self):
+    def bt_unpair_all_bluetooth_devices(self):
         self.marionette.switch_to_frame()
         self.marionette.execute_async_script('return GaiaDataLayer.unpairAllBluetoothDevices()')
 
     @property
-    def is_bluetooth_enabled(self):
+    def bt_is_bluetooth_enabled(self):
         return self.marionette.execute_script("return window.navigator.mozBluetooth.enabled")
 
     def enable_wifi(self):
