@@ -85,7 +85,6 @@ class TestSms(GaiaTestCase):
         # go into the new message
         unread_message = self.marionette.find_element(*self._unread_message_locator)
         self.marionette.tap(unread_message)
-        self.wait_for_element_not_displayed(*self._unread_icon_locator)
 
         self.wait_for_element_displayed(*self._received_message_content_locator)
         # get the most recent listed and most recent received text message
