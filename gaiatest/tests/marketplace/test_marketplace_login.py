@@ -8,6 +8,9 @@ import time
 
 class TestMarketplaceLogin(GaiaTestCase):
 
+    # Marketplace iframe
+    _marketplace_iframe_locator = ('css selector', "iframe[src*='marketplace']")
+
     # Marketplace locators
     _login_button = ('css selector', 'a.button.browserid')
     _logged_in_locator = ('css selector', 'div.account.authenticated')
@@ -25,6 +28,9 @@ class TestMarketplaceLogin(GaiaTestCase):
 
         # Launch the app
         self.app = self.apps.launch('Marketplace')
+
+        # Switch to marketplace iframe
+        self.marionette.switch_to_frame(self.marionette.find_element(*self._marketplace_iframe_locator))
 
     def test_login_marketplace(self):
         # https://moztrap.mozilla.org/manage/case/4134/
