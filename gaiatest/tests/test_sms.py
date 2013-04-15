@@ -57,7 +57,8 @@ class TestSms(GaiaTestCase):
         create_new_message = self.marionette.find_element(*self._create_new_message_locator)
         self.marionette.tap(create_new_message)
 
-        self.wait_for_element_present(*self._receiver_input_locator)
+        self.wait_for_element_displayed(*self._receiver_input_locator)
+
         # type phone number
         contact_field = self.marionette.find_element(
             *self._receiver_input_locator)
