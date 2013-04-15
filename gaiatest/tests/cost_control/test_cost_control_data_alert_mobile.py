@@ -39,7 +39,7 @@ class TestCostControlDataAlertMobile(GaiaTestCase):
     _done_button_locator = ('css selector', 'section#settings-view button#close-settings')
 
     # data alert section locators
-    _data_alert_label_locator = ('css selector', 'ul.settings label.switch')
+    _data_alert_label_locator = ('xpath', "//ul[preceding-sibling::header[@id='data-usage-settings']][1]")
     _data_alert_switch_locator = ('css selector', 'input[data-option="dataLimit"]')
     _capacity_button_locator = ('css selector', '#data-limit-dialog form button')
     _size_input_locator = ('css selector', '#data-limit-dialog form input')
@@ -115,7 +115,8 @@ class TestCostControlDataAlertMobile(GaiaTestCase):
         switch = self.marionette.find_element(*self._data_alert_switch_locator)
 
         if not switch.is_selected():
-            self.marionette.tap(switch)
+            switch_label =  self.marionette.find_element(*self._data_alert_label_locator)
+            self.marionette.tap(switch_label)
 
         # make sure the data alert is 0.1MB, or we would set it to 0.1MB
         detail_section = self.marionette.find_element('css selector', 'ul.settings button span')
