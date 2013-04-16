@@ -12,6 +12,9 @@ class TestSearchMarketplaceAndInstallApp(GaiaTestCase):
     APP_DEVELOPER = 'Lanyrd'
     APP_INSTALLED = False
 
+    # Marketplace iframe
+    _marketplace_iframe_locator = ('css selector', "iframe[src*='marketplace']")
+
     # Label identifier for all homescreen apps
     _app_icon_locator = ('xpath', "//li[@class='icon']//span[text()='%s']" % APP_NAME)
     _homescreen_iframe_locator = ('css selector', 'div.homescreen iframe')
@@ -27,7 +30,8 @@ class TestSearchMarketplaceAndInstallApp(GaiaTestCase):
         marketplace = Marketplace(self.marionette)
         marketplace.launch()
 
-        print self.marionette.page_source
+        # Switch to marketplace iframe
+        self.marionette.switch_to_frame(self.marionette.find_element(*self._marketplace_iframe_locator))
 
         marketplace.search(self.APP_NAME)
 
@@ -50,7 +54,7 @@ class TestSearchMarketplaceAndInstallApp(GaiaTestCase):
         self.marionette.switch_to_frame()
         homescreen_frame = self.marionette.find_element(*self._homescreen_iframe_locator)
         self.marionette.switch_to_frame(homescreen_frame)
-        self.assertTrue(marketplace.self.marionette.find_element(*self._app_icon_locator))
+        self.assertTrue(self.marionette.find_element(*self._app_icon_locator))
 
     def tearDown(self):
 

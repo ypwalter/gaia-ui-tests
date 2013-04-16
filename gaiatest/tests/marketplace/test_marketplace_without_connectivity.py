@@ -11,6 +11,9 @@ class TestMarketplaceWithoutConnectivity(GaiaTestCase):
     expected_error_title = u'Network connection unavailable'
     expected_error_message = u'Marketplace requires a network connection. Try connecting to a Wi-Fi or mobile data network.'
 
+    # Marketplace iframe
+    _marketplace_iframe_locator = ('css selector', "iframe[src*='marketplace']")
+
     def setUp(self):
         GaiaTestCase.setUp(self)
 
@@ -22,7 +25,8 @@ class TestMarketplaceWithoutConnectivity(GaiaTestCase):
         marketplace = Marketplace(self.marionette)
         marketplace.launch()
 
-        self.marionette.switch_to_frame()
+        # Switch to marketplace iframe
+        self.marionette.switch_to_frame(self.marionette.find_element(*self._marketplace_iframe_locator))
 
         self.assertEqual(marketplace.error_title_text, self.expected_error_title)
         self.assertEqual(marketplace.error_message_text, self.expected_error_message)
