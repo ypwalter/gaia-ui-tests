@@ -121,7 +121,7 @@ class TestCalendar(GaiaTestCase):
             self.wait_for_element_displayed(*self._edit_event_button_locator)
             self.marionette.tap(self.marionette.find_element(*self._edit_event_button_locator))
 
-            self.wait_for_element_displayed(*self._event_title_input_locator)
+            self.wait_for_element_displayed(*self._delete_event_button_locator)
             delete_event_button = self.marionette.find_element(*self._delete_event_button_locator)
             self.marionette.tap(delete_event_button)
 
