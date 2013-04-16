@@ -114,7 +114,7 @@ class TestCostControlDataAlertMobile(GaiaTestCase):
         switch = self.marionette.find_element(*self._data_alert_switch_locator)
 
         if not switch.is_selected():
-            switch_label =  self.marionette.find_element(*self._data_alert_label_locator)
+            switch_label = self.marionette.find_element(*self._data_alert_label_locator)
             self.marionette.tap(switch_label)
 
         # make sure the data alert is 0.1MB, or we would set it to 0.1MB
@@ -165,4 +165,4 @@ class TestCostControlDataAlertMobile(GaiaTestCase):
         # make sure the color changed
         bar = self.marionette.find_element(*self._data_usage_view_locator)
         self.wait_for_condition(lambda m: 'reached-limit' in bar.get_attribute('class'),
-            message='Data usage bar did not breach limit')
+                                message='Data usage bar did not breach limit')
