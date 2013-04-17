@@ -4,12 +4,13 @@
 
 from marionette.keys import Keys
 from gaiatest.apps.base import Base
-from gaiatest.apps.base import PageRegion
 
 
 class Marketplace(Base):
 
     name = 'Marketplace'
+
+    _marketplace_iframe_locator = ('css selector', 'iframe[src*="marketplace"]')
 
     _loading_fragment_locator = ('css selector', 'div.loading-fragment')
     _error_title_locator = ('css selector', '#appError-appframe1 h3[data-l10n-id="error-title"]')
@@ -18,12 +19,11 @@ class Marketplace(Base):
     # Marketplace search on home page
     _search_locator = ('id', 'search-q')
 
-    # Marketplace search results area and a specific result item
-    _search_results_area_locator = ('id', 'search-results')
-    _search_result_locator = ('css selector', '#search-results li.item')
-
     # System app confirmation button to confirm installing an app
     _yes_button_locator = ('id', 'app-install-install-button')
+
+    def switch_to_marketplace_frame(self):
+        self.marionette.switch_to_frame(self.marionette.find_element(*self._marketplace_iframe_locator))
 
     def launch(self):
         Base.launch(self)
@@ -47,36 +47,10 @@ class Marketplace(Base):
         # search for the app
         search_box.send_keys(term)
         search_box.send_keys(Keys.RETURN)
-        self.wait_for_element_displayed(*self._search_results_area_locator)
-
-    @property
-    def search_results(self):
-        return [self.Result(marionette=self.marionette, element=result)
-                for result in self.marionette.find_elements(*self._search_result_locator)]
+        from gaiatest.apps.marketplace.regions.searach_results import Results
+        return Results(self.marionette)
 
     def confirm_installation(self):
         self.wait_for_element_displayed(*self._yes_button_locator)
         self.marionette.tap(self.marionette.find_element(*self._yes_button_locator))
         self.wait_for_element_not_displayed(*self._yes_button_locator)
-
-    class Result(PageRegion):
-
-        _name_locator = ('css selector', '.info > h3')
-        _author_locator = ('css selector', '.info .author')
-        _install_button_locator = ('css selector', '.button.product.install')
-
-        @property
-        def name(self):
-            return self.root_element.find_element(*self._name_locator).text
-
-        @property
-        def author(self):
-            return self.root_element.find_element(*self._author_locator).text
-
-        @property
-        def install_button_text(self):
-            return self.root_element.find_element(*self._install_button_locator).text
-
-        def tap_install_button(self):
-            self.marionette.tap(self.root_element.find_element(*self._install_button_locator))
-            self.marionette.switch_to_frame()

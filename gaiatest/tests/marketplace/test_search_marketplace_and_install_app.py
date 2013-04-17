@@ -12,9 +12,6 @@ class TestSearchMarketplaceAndInstallApp(GaiaTestCase):
     APP_DEVELOPER = 'Lanyrd'
     APP_INSTALLED = False
 
-    # Marketplace iframe
-    _marketplace_iframe_locator = ('css selector', "iframe[src*='marketplace']")
-
     # Label identifier for all homescreen apps
     _app_icon_locator = ('xpath', "//li[@class='icon']//span[text()='%s']" % APP_NAME)
     _homescreen_iframe_locator = ('css selector', 'div.homescreen iframe')
@@ -31,14 +28,14 @@ class TestSearchMarketplaceAndInstallApp(GaiaTestCase):
         marketplace.launch()
 
         # Switch to marketplace iframe
-        self.marionette.switch_to_frame(self.marionette.find_element(*self._marketplace_iframe_locator))
+        marketplace.switch_to_marketplace_frame()
 
-        marketplace.search(self.APP_NAME)
+        results = marketplace.search(self.APP_NAME)
 
         # validate the first result is the official lanyrd mobile app
-        self.assertGreater(len(marketplace.search_results), 0, 'No results found.')
+        self.assertGreater(len(results.search_results), 0, 'No results found.')
 
-        first_result = marketplace.search_results[0]
+        first_result = results.search_results[0]
 
         self.assertEquals(first_result.name, self.APP_NAME, 'First app has the wrong name.')
         self.assertEquals(first_result.author, self.APP_DEVELOPER, 'First app has the wrong author.')
