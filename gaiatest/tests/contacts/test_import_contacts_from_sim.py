@@ -15,6 +15,7 @@ class TestImportContactsFromSIM(GaiaTestCase):
 
         """
 
+        self.assertGreater(len(self.data_layer.sim_contacts), 0, "There is no SIM contacts on SIM card.")
         contacts_app = Contacts(self.marionette)
         contacts_app.launch()
 
