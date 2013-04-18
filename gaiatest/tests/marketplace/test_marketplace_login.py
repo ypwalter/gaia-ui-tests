@@ -21,12 +21,7 @@ class TestMarketplaceLogin(GaiaTestCase):
 
     def setUp(self):
         GaiaTestCase.setUp(self)
-
-        if self.wifi:
-            self.data_layer.enable_wifi()
-            self.data_layer.connect_to_wifi(self.testvars['wifi'])
-
-        # Launch the app
+        self.connect_to_network()
         self.app = self.apps.launch('Marketplace')
 
         # Switch to marketplace iframe
@@ -53,6 +48,7 @@ class TestMarketplaceLogin(GaiaTestCase):
         # switch back to Marketplace
         self.marionette.switch_to_frame()
         self.marionette.switch_to_frame(self.app.frame)
+        self.marionette.switch_to_frame(self.marionette.find_element(*self._marketplace_iframe_locator))
 
         # tap on the signed-in notification at the bottom of the screen to dismiss it
         self.wait_for_element_displayed(*self._signed_in_notification_locator)
@@ -108,7 +104,10 @@ class TestMarketplaceLogin(GaiaTestCase):
             email_field = self.marionette.find_element(*_email_input_locator)
             email_field.send_keys(username)
 
-            self.marionette.tap(self.marionette.find_element(*_next_button_locator))
+            next_button = self.marionette.find_element(*_next_button_locator)
+            # TODO:  Remove workaround after bug 845849
+            self.marionette.execute_script("arguments[0].scrollIntoView(false);", [next_button])
+            self.marionette.tap(next_button)
 
             self.wait_for_element_displayed(*_password_input_locator)
             password_field = self.marionette.find_element(*_password_input_locator)
