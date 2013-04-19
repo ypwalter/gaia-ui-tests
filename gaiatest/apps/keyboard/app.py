@@ -149,7 +149,7 @@ class Keyboard(Base):
             time.sleep(timeout / 1000 + 1)
             self.marionette.switch_to_frame()
 
-    # this would go through fastest way to tap/click thru a string
+    # this would go through fastest way to tap/click through a string
     def send(self, string):
         self._switch_to_keyboard()
         for val in string:
