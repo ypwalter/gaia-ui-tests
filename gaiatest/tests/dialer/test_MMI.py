@@ -17,7 +17,7 @@ class TestMMI(GaiaTestCase):
     _call_bar_locator = ('id', 'keypad-callbar-call-action')
 
     # Attention frame
-    _attention_frame_locator = ('xpath', '//*[@id="attention-screen"]/iframe')
+    _attention_frame_locator = ('css selector', 'iframe[src^="app://communications"][src$="index.html#keyboard-view"]')
     _message_locator = ('id', 'message')
     _loading_overlay_locator = ('id', 'loading-overlay')
 
@@ -31,13 +31,6 @@ class TestMMI(GaiaTestCase):
         self.wait_for_element_displayed(*self._keyboard_container_locator)
 
         self._dial_number(IMEI_CODE)
-
-        # Assert that the number was entered correctly.
-        phone_view = self.marionette.find_element(*self._phone_number_view_locator)
-        self.assertEqual(phone_view.get_attribute('value'), IMEI_CODE)
-
-        # Click the call button
-        self.marionette.tap(self.marionette.find_element(*self._call_bar_locator))
 
         self.marionette.switch_to_frame()
 
