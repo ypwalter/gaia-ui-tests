@@ -341,7 +341,7 @@ class GaiaTestCase(MarionetteTestCase):
         self.marionette.set_search_timeout(self._search_timeout)
         self.lockscreen = LockScreen(self.marionette)
         self.apps = GaiaApps(self.marionette)
-        self.data_layer = GaiaData(self.marionette)
+        self.data_layer = GaiaData(self.marionette, self.testvars)
         self.keyboard = Keyboard(self.marionette, self) 
 
         # wifi is true if testvars includes wifi details and wifi manager is defined
