@@ -6,7 +6,7 @@ from gaiatest.apps.base import Base
 from gaiatest.apps.base import PageRegion
 
 
-class Results(Base):
+class SearchResults(Base):
 
     _search_results_area_locator = ('id', 'search-results')
     _search_result_locator = ('css selector', '#search-results li.item')

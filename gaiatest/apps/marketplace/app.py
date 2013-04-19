@@ -23,6 +23,7 @@ class Marketplace(Base):
     _yes_button_locator = ('id', 'app-install-install-button')
 
     def switch_to_marketplace_frame(self):
+        """Only Marketplace production has a frame for the app."""
         self.marionette.switch_to_frame(self.marionette.find_element(*self._marketplace_iframe_locator))
 
     def launch(self):
@@ -47,8 +48,8 @@ class Marketplace(Base):
         # search for the app
         search_box.send_keys(term)
         search_box.send_keys(Keys.RETURN)
-        from gaiatest.apps.marketplace.regions.searach_results import Results
-        return Results(self.marionette)
+        from gaiatest.apps.marketplace.regions.searach_results import SearchResults
+        return SearchResults(self.marionette)
 
     def confirm_installation(self):
         self.wait_for_element_displayed(*self._yes_button_locator)
