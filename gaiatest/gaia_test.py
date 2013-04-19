@@ -367,7 +367,6 @@ class GaiaTestCase(MarionetteTestCase):
         self.lockscreen = LockScreen(self.marionette)
         self.apps = GaiaApps(self.marionette)
         self.data_layer = GaiaData(self.marionette, self.testvars)
-        self.keyboard = Keyboard(self.marionette, self) 
 
         self.cleanUp()
 
