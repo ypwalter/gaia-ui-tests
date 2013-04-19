@@ -342,6 +342,7 @@ class GaiaTestCase(MarionetteTestCase):
         self.lockscreen = LockScreen(self.marionette)
         self.apps = GaiaApps(self.marionette)
         self.data_layer = GaiaData(self.marionette)
+        self.keyboard = Keyboard(self.marionette, self) 
 
         # wifi is true if testvars includes wifi details and wifi manager is defined
         self.wifi = self.testvars and \
