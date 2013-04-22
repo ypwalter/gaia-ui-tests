@@ -363,7 +363,7 @@ var GaiaDataLayer = {
     request.onsuccess = function(event) {
       cursor = event.target.result;
       // Check if message was found
-      if (cursor.message) {
+      if (cursor && cursor.message) {
         msgList.push(cursor.message.id);
         // Now get next message in the list
         cursor.continue();
