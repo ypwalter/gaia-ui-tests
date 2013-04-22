@@ -48,7 +48,7 @@ class Marketplace(Base):
         # search for the app
         search_box.send_keys(term)
         search_box.send_keys(Keys.RETURN)
-        from gaiatest.apps.marketplace.regions.searach_results import SearchResults
+        from gaiatest.apps.marketplace.regions.search_results import SearchResults
         return SearchResults(self.marionette)
 
     def confirm_installation(self):
