@@ -16,6 +16,9 @@ class TestSearchMarketplaceAndInstallApp(GaiaTestCase):
     _app_icon_locator = ('xpath', "//li[@class='icon']//span[text()='%s']" % APP_NAME)
     _homescreen_iframe_locator = ('css selector', 'div.homescreen iframe')
 
+    # System app confirmation button to confirm installing an app
+    _yes_button_locator = ('id', 'app-install-install-button')
+
     def setUp(self):
         GaiaTestCase.setUp(self)
         self.connect_to_network()
@@ -41,7 +44,7 @@ class TestSearchMarketplaceAndInstallApp(GaiaTestCase):
         self.assertEquals(first_result.install_button_text, 'Free', 'Incorrect button label.')
 
         first_result.tap_install_button()
-        marketplace.confirm_installation()
+        self.confirm_installation()
         self.APP_INSTALLED = True
 
         # Check that the icon of the app is on the homescreen
@@ -49,6 +52,12 @@ class TestSearchMarketplaceAndInstallApp(GaiaTestCase):
         homescreen_frame = self.marionette.find_element(*self._homescreen_iframe_locator)
         self.marionette.switch_to_frame(homescreen_frame)
         self.assertTrue(self.marionette.find_element(*self._app_icon_locator))
+
+    def confirm_installation(self):
+        # TODO add this to the system app object when we have one
+        self.wait_for_element_displayed(*self._yes_button_locator)
+        self.marionette.tap(self.marionette.find_element(*self._yes_button_locator))
+        self.wait_for_element_not_displayed(*self._yes_button_locator)
 
     def tearDown(self):
 

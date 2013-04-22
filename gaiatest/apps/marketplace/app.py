@@ -19,9 +19,6 @@ class Marketplace(Base):
     # Marketplace search on home page
     _search_locator = ('id', 'search-q')
 
-    # System app confirmation button to confirm installing an app
-    _yes_button_locator = ('id', 'app-install-install-button')
-
     def switch_to_marketplace_frame(self):
         """Only Marketplace production has a frame for the app."""
         self.marionette.switch_to_frame(self.marionette.find_element(*self._marketplace_iframe_locator))
@@ -41,17 +38,8 @@ class Marketplace(Base):
     def search(self, term):
         search_box = self.marionette.find_element(*self._search_locator)
 
-        if not search_box.is_displayed():
-            # Scroll a little to make the search box appear
-            self.marionette.execute_script('window.scrollTo(0, 10)')
-
         # search for the app
         search_box.send_keys(term)
         search_box.send_keys(Keys.RETURN)
         from gaiatest.apps.marketplace.regions.search_results import SearchResults
         return SearchResults(self.marionette)
-
-    def confirm_installation(self):
-        self.wait_for_element_displayed(*self._yes_button_locator)
-        self.marionette.tap(self.marionette.find_element(*self._yes_button_locator))
-        self.wait_for_element_not_displayed(*self._yes_button_locator)
