@@ -170,6 +170,25 @@ class GaiaData(object):
     def set_volume(self, value):
         self.set_setting('audio.volume.master', value)
 
+    def bt_enable_bluetooth(self):
+        self.marionette.switch_to_frame()
+        return self.marionette.execute_async_script("return GaiaDataLayer.enableBluetooth()")
+
+    def bt_disable_bluetooth(self):
+        self.marionette.switch_to_frame()
+        return self.marionette.execute_async_script("return GaiaDataLayer.disableBluetooth()")
+
+    def bt_pair_bluetooth_device(self, device_name):
+        return self.marionette.execute_async_script('return GaiaDataLayer.pairBluetoothDevice("%s")' % device_name)
+
+    def bt_unpair_all_bluetooth_devices(self):
+        self.marionette.switch_to_frame()
+        self.marionette.execute_async_script('return GaiaDataLayer.unpairAllBluetoothDevices()')
+
+    @property
+    def bt_is_bluetooth_enabled(self):
+        return self.marionette.execute_script("return window.navigator.mozBluetooth.enabled")
+
     @property
     def is_cell_data_enabled(self):
         return self.get_setting('ril.data.enabled')
