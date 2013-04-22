@@ -41,7 +41,15 @@ var GaiaDataLayer = {
     if (bluetooth.enabled) {
       console.log('trying to disable bluetooth');
       this.setSetting('bluetooth.enabled', false, false);
-      window.setInterval(function(){if(bluetooth.enabled === false){marionetteScriptFinished(true);}}, 2000);
+      waitFor(
+        function() {
+          marionetteScriptFinished(true);
+        },
+        function() {
+          console.log('bluetooth enable status: ' + bluetooth.enabled);
+          return bluetooth.enabled === false;
+        }
+      );
     }
     else {
       console.log('bluetooth already disabled');
@@ -54,7 +62,15 @@ var GaiaDataLayer = {
     if (!bluetooth.enabled) {
       console.log('trying to enable bluetooth');
       this.setSetting('bluetooth.enabled', true, false);
-      window.setInterval(function(){if(bluetooth.enabled === true){marionetteScriptFinished(true);}}, 2000);
+      waitFor(
+        function() {
+          marionetteScriptFinished(true);
+        },
+        function() {
+          console.log('bluetooth enable status: ' + bluetooth.enabled);
+          return bluetooth.enabled === true;
+        }
+      );
     }
     else {
       console.log('bluetooth already enabled');
