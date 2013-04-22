@@ -7,6 +7,8 @@ from gaiatest import GaiaTestCase
 
 class TestEverythingMeInstallApp(GaiaTestCase):
 
+    app_installed = False
+
     # Everything.Me locators
     _shortcut_items_locator = ('css selector', '#shortcuts-items li')
     _apps_icon_locator = ('css selector', 'div.evme-apps li.cloud')
@@ -20,15 +22,12 @@ class TestEverythingMeInstallApp(GaiaTestCase):
     _modal_dialog_ok_locator = ('id', 'modal-dialog-confirm-ok')
 
     def setUp(self):
-
         GaiaTestCase.setUp(self)
 
         # Turn off geolocation prompt
         self.apps.set_permission('Homescreen', 'geolocation', 'deny')
 
-        if self.wifi:
-            self.data_layer.enable_wifi()
-            self.data_layer.connect_to_wifi(self.testvars['wifi'])
+        self.connect_to_network()
 
     def test_installing_everything_me_app(self):
         # https://github.com/mozilla/gaia-ui-tests/issues/67
@@ -75,7 +74,6 @@ class TestEverythingMeInstallApp(GaiaTestCase):
         self.marionette.switch_to_frame(hs_frame)
 
         # check whether app is installed
-        self.app_installed = False
         while self._homescreen_has_more_pages:
             if self.is_element_displayed(self._homescreen_icon_locator[0], self._homescreen_icon_locator[1] % self.first_app_name):
                 self.app_installed = True

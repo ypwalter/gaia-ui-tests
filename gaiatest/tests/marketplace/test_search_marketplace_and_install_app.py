@@ -14,6 +14,9 @@ class TestSearchMarketplaceAndInstallApp(GaiaTestCase):
 
     _loading_fragment_locator = ('css selector', 'div.loading-fragment')
 
+    # Marketplace iframe
+    _marketplace_iframe_locator = ('css selector', "iframe[src*='marketplace']")
+
     # Marketplace search on home page
     _search_locator = ('id', 'search-q')
 
@@ -35,13 +38,11 @@ class TestSearchMarketplaceAndInstallApp(GaiaTestCase):
 
     def setUp(self):
         GaiaTestCase.setUp(self)
-
-        if self.wifi:
-            self.data_layer.enable_wifi()
-            self.data_layer.connect_to_wifi(self.testvars['wifi'])
-
-        # launch the app
+        self.connect_to_network()
         self.app = self.apps.launch('Marketplace')
+
+        # Switch to marketplace iframe
+        self.marionette.switch_to_frame(self.marionette.find_element(*self._marketplace_iframe_locator))
 
     def test_search_and_install_app(self):
         # select to search for an app
