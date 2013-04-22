@@ -691,6 +691,7 @@ class Keyboard(object):
         if len(key) == 1:
             self._switch_to_keyboard()
             key_obj = self.marionette.find_element(*self._key_locator(key))
-            self.marionette.long_press(key_obj, timeout)
+            from marionette.marionette import Actions
+            Actions(self.marionette).long_press(key_obj, timeout).perform()
             time.sleep(timeout / 1000 + 1)
             self.marionette.switch_to_frame()
