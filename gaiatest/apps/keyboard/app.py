@@ -145,8 +145,8 @@ class Keyboard(Base):
         if len(key) == 1:
             self._switch_to_keyboard()
             key_obj = self.marionette.find_element(*self._key_locator(key))
-            self.marionette.long_press(key_obj, timeout)
-            time.sleep(timeout / 1000 + 1)
+            action = Actions(self.marionette)
+            action.press(key_obj).wait(2).release().perform()
             self.marionette.switch_to_frame()
 
     # this would go through fastest way to tap/click through a string
