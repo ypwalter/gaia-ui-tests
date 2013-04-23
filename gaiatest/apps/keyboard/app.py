@@ -129,9 +129,10 @@ class Keyboard(Base):
         self.marionette.switch_to_frame()
 
     # this is to detect if the element is present in a shorter time
-    def is_element_present(self, by, locator):
+    # default timeout to 600 and allow people to set a higher timeout
+    def is_element_present(self, by, locator, timeout=600):
         try:
-            self.marionette.set_search_timeout(500)
+            self.marionette.set_search_timeout(timeout)
             self.marionette.find_element(by, locator)
             return True
         except:
