@@ -18,10 +18,6 @@ class SearchResults(Base):
 
     def tap_filter(self):
         self.marionette.tap(self.marionette.find_element(*self._filter_button_locator))
-        return self.filter
-
-    @property
-    def filter(self):
         return FilterResults(self.marionette)
 
     @property

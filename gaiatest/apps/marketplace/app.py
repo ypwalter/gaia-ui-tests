@@ -19,7 +19,7 @@ class Marketplace(Base):
     # Marketplace search on home page
     _search_locator = ('id', 'search-q')
 
-    def __init__(self, marionette, app_name):
+    def __init__(self, marionette, app_name=False):
         Base.__init__(self, marionette)
         if app_name:
             self.name = app_name

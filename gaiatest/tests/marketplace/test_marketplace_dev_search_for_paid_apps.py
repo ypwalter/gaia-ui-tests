@@ -12,8 +12,6 @@ class TestSearchMarketplacePaidApp(GaiaTestCase):
     MARKETPLACE_DEV_NAME = 'Marketplace Dev'
     MARKETPLACE_DEV_MANIFEST = 'https://marketplace-dev.allizom.org/manifest.webapp'
 
-    MARKETPLACE_DEV_INSTALLED = False
-
     # System app confirmation button to confirm installing an app
     _yes_button_locator = ('id', 'app-install-install-button')
 
@@ -28,7 +26,6 @@ class TestSearchMarketplacePaidApp(GaiaTestCase):
 
         results = marketplace.search('')
 
-        # validate the first result is the official lanyrd mobile app
         self.assertGreater(len(results.search_results), 0, 'No results found.')
 
         filter = results.tap_filter()
@@ -41,18 +38,14 @@ class TestSearchMarketplacePaidApp(GaiaTestCase):
          for result in results.search_results]
 
     def install_marketplace_dev(self):
-        # install the marketplace dev app
-        self.marionette.execute_script('navigator.mozApps.install("%s")' % self.MARKETPLACE_DEV_MANIFEST)
+        if not self.apps.is_app_installed(self.MARKETPLACE_DEV_NAME):
+            # install the marketplace dev app
+            self.marionette.execute_script('navigator.mozApps.install("%s")' % self.MARKETPLACE_DEV_MANIFEST)
 
-        # TODO add this to the system app object when we have one
-        self.wait_for_element_displayed(*self._yes_button_locator)
-        self.marionette.tap(self.marionette.find_element(*self._yes_button_locator))
-        self.wait_for_element_not_displayed(*self._yes_button_locator)
-        self.MARKETPLACE_DEV_INSTALLED = True
+            # TODO add this to the system app object when we have one
+            self.wait_for_element_displayed(*self._yes_button_locator)
+            self.marionette.tap(self.marionette.find_element(*self._yes_button_locator))
+            self.wait_for_element_not_displayed(*self._yes_button_locator)
 
     def tearDown(self):
-
-        if self.MARKETPLACE_DEV_INSTALLED:
-            self.apps.uninstall(self.MARKETPLACE_DEV_NAME)
-
         GaiaTestCase.tearDown(self)
