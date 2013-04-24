@@ -26,37 +26,14 @@ class TestGallery(GaiaTestCase):
         #  Verify that the screen orientation is in portrait mode
         self.assertIsNotNone(image.current_image_source)
         self.assertTrue(image.is_photo_toolbar_displayed)
-        self.assertEqual('portrait-primary', self.marionette.execute_script('return window.screen.mozOrientation'))
-        self.assertEqual(320, self.marionette.execute_script('return window.screen.width'))
+        self.assertEqual('portrait-primary', image.screen_orientation)
+        self.assertEqual(image.screen_width, image.photo_toolbar_width)
 
         #  Change the screen orientation to landscape mode and verify that the screen is in landscape mode
         self.change_orientation('landscape-primary')
         self.assertTrue(image.is_photo_toolbar_displayed)
-        self.assertEqual('landscape-primary', self.marionette.execute_script('return window.screen.mozOrientation'))
-        self.assertEqual(480, self.marionette.execute_script('return window.screen.width'))
-
-    def change_orientation(self, orientation):
-        self.marionette.execute_async_script("""
-            if (arguments[0] === arguments[1]) {
-              marionetteScriptFinished();
-            }
-            else {
-              var expected = arguments[1];
-              window.screen.onmozorientationchange = function(e) {
-                console.log("Received 'onmozorientationchange' event.");
-                waitFor(
-                  function() {
-                    window.screen.onmozorientationchange = null;
-                    marionetteScriptFinished();
-                  },
-                  function() {
-                    return window.screen.mozOrientation === expected;
-                  }
-                );
-              };
-              console.log("Changing orientation to '" + arguments[1] + "'.");
-              window.screen.mozLockOrientation(arguments[1]);
-            };""", script_args=['portrait-primary', orientation])
+        self.assertEqual('landscape-primary', image.screen_orientation)
+        self.assertEqual(image.screen_width, image.photo_toolbar_width)
 
     def tearDown(self):
         self.marionette.execute_script('window.screen.mozUnlockRotation')
