@@ -4,6 +4,7 @@
 
 import time
 from gaiatest import GaiaTestCase
+from marionette.marionette import Actions
 
 IMEI_CODE = "*#06#"
 CALL_FORWARDING_CODE = "*#21#"
@@ -54,11 +55,7 @@ class TestMMI(GaiaTestCase):
         for i in phone_number:
             if i == "+":
                 zero_button = self.marionette.find_element('css selector', 'div.keypad-key[data-value="0"]')
-                self.marionette.long_press(zero_button, 1200)
-                # Wait same time as the long_press to bust the asynchronous
-                # TODO https://bugzilla.mozilla.org/show_bug.cgi?id=815115
-                time.sleep(2)
-
+                Actions(self.marionette).long_press(zero_button, 1.2).perform()
             else:
                 self.marionette.tap(self.marionette.find_element('css selector', 'div.keypad-key[data-value="%s"]' % i))
                 time.sleep(0.25)
