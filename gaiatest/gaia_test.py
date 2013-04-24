@@ -374,13 +374,18 @@ class GaiaTestCase(MarionetteTestCase):
     # deafult timeout in seconds for the wait_for methods
     _default_timeout = 30
 
+    def __init__(self, *args, **kwargs):
+        self.restart = kwargs.pop('restart', False)
+        MarionetteTestCase.__init__(self, *args, **kwargs)
+
     def setUp(self):
         MarionetteTestCase.setUp(self)
         self.marionette.__class__ = type('Marionette', (Marionette, MarionetteTouchMixin), {})
 
         self.device = GaiaDevice(self.marionette)
-        if self.device.is_android_build:
-            self.device.restart_b2g()
+
+        if self.restart and self.device.is_android_build:
+                self.device.restart_b2g()
 
         self.marionette.setup_touch()
 

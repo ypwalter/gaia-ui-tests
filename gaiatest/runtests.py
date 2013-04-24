@@ -3,8 +3,21 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from gaiatest import GaiaTestCase
+from marionette import MarionetteTestOptions
 from marionette import MarionetteTestRunner
 from marionette.runtests import cli
+
+
+class GaiaTestOptions(MarionetteTestOptions):
+
+    def __init__(self, **kwargs):
+        MarionetteTestOptions.__init__(self, **kwargs)
+        group = self.add_option_group('gaiatest')
+        group.add_option('--restart',
+                         action='store_true',
+                         dest='restart',
+                         default=False,
+                         help='restart target instance between tests')
 
 
 class GaiaTestRunner(MarionetteTestRunner):
@@ -14,7 +27,7 @@ class GaiaTestRunner(MarionetteTestRunner):
 
 
 def main():
-    cli(runner_class=GaiaTestRunner)
+    cli(runner_class=GaiaTestRunner, parser_class=GaiaTestOptions)
 
 
 if __name__ == "__main__":
