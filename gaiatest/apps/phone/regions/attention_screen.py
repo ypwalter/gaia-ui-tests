@@ -12,6 +12,7 @@ class AttentionScreen(Phone):
 
     def __init__(self, marionette):
         Phone.__init__(self, marionette)
+        self.marionette.switch_to_frame()
         self.marionette.switch_to_frame(self.marionette.find_element(*self._attention_frame_locator))
 
     @property
