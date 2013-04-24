@@ -6,7 +6,6 @@
 import time
 
 from gaiatest import GaiaTestCase
-from gaiatest.apps.keyboard.app import Keyboard
 
 class TestKeyboard(GaiaTestCase):
 
@@ -15,9 +14,7 @@ class TestKeyboard(GaiaTestCase):
     _new_message_icon_locator = ('id', 'icon-add')
     _text_input_locator = ('id', 'messages-recipient')
 
-    _test_string = "aG1D2s3~!=@.#$^"
-    _test_string2 = "aśZïd"
-    _final_string = "aG1D2s3~!=@.#$ aśZïdÆ"
+    _string = "aG1D2s3~!=@.#$^aśZïd".decode("UTF-8")
 
     def setUp(self):
         GaiaTestCase.setUp(self)
@@ -27,7 +24,7 @@ class TestKeyboard(GaiaTestCase):
 
     def test_keyboard_basic(self):
         # initialize the keyboard app
-        kbapp = Keyboard(self.marionette)
+        kbapp = self.keyboard
 
         # wait for app to load
         self.wait_for_element_displayed(*self._test_message_title_locator)
@@ -41,13 +38,11 @@ class TestKeyboard(GaiaTestCase):
         message_composition = self.marionette.find_element(*self._text_input_locator)
         self.marionette.tap(message_composition)
 
-        # send first string and delete last character
-        kbapp.send(self._test_string)
+        # send first 15 characters, delete last character, send a space, and send all others
+        kbapp.send(self._string[:15])
         kbapp.tap_backspace()
         kbapp.tap_space()
-
-        # send second string
-        kbapp.send(self._test_string2.decode('UTF-8'))
+        kbapp.send(self._string[15:])
 
         # select special character using extended character selector
         kbapp.choose_extended_character('A', 8)
@@ -58,4 +53,4 @@ class TestKeyboard(GaiaTestCase):
         self.wait_for_element_displayed(*self._text_input_locator)
         output_text = self.marionette.find_element(*self._text_input_locator).get_attribute("value")
 
-        self.assertEqual(self._final_string, output_text.encode('UTF-8'))
+        self.assertEqual(self._string[:14] + ' ' + self._string[15:] + 'Æ'.decode("UTF-8"), output_text)
