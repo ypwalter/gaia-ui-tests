@@ -10,10 +10,15 @@ class SearchResults(Base):
 
     _search_results_area_locator = ('id', 'search-results')
     _search_result_locator = ('css selector', '#search-results li.item')
+    _filter_button_locator = ('css selector', '#site-header .header-button.filter')
 
     def __init__(self, marionette):
         Base.__init__(self, marionette)
         self.wait_for_element_displayed(*self._search_results_area_locator)
+
+    def tap_filter(self):
+        self.marionette.tap(self.marionette.find_element(*self._filter_button_locator))
+        return FilterResults(self.marionette)
 
     @property
     def search_results(self):
@@ -25,6 +30,7 @@ class SearchResults(Base):
         _name_locator = ('css selector', '.info > h3')
         _author_locator = ('css selector', '.info .author')
         _install_button_locator = ('css selector', '.button.product.install')
+        _price_locator = ('css selector', '.premium.button.product')
 
         @property
         def name(self):
@@ -41,3 +47,28 @@ class SearchResults(Base):
         def tap_install_button(self):
             self.marionette.tap(self.root_element.find_element(*self._install_button_locator))
             self.marionette.switch_to_frame()
+
+        @property
+        def price(self):
+            return self.root_element.find_element(*self._price_locator).text
+
+
+class FilterResults(Base):
+
+    _apply_locator = ('css selector', '.footer-action > .apply')
+    _all_price_filter_locator = ('css selector', '#filter-prices > li:nth-child(1) > a')
+    _free_price_filter_locator = ('css selector', '#filter-prices > li:nth-child(2) > a')
+    _paid_price_filter_locator = ('css selector', '#filter-prices > li:nth-child(3) > a')
+
+    def __init__(self, marionette):
+        Base.__init__(self, marionette)
+        self.wait_for_element_displayed(*self._apply_locator)
+
+    def by_price(self, filter_name):
+        self.marionette.tap(
+            self.marionette.find_element(
+                *getattr(self, '_%s_price_filter_locator' % filter_name)))
+
+    def tap_apply(self):
+        self.marionette.tap(self.marionette.find_element(*self._apply_locator))
+        return SearchResults(self.marionette)
