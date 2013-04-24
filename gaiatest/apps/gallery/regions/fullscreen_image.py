@@ -67,13 +67,5 @@ class FullscreenImage(Base):
         return Gallery(self.marionette)
 
     @property
-    def screen_width(self):
-        return self.marionette.execute_script('return window.screen.width')
-
-    @property
-    def screen_orientation(self):
-        return self.marionette.execute_script('return window.screen.mozOrientation')
-
-    @property
     def photo_toolbar_width(self):
         return self.marionette.execute_script('return document.getElementById("fullscreen-toolbar").offsetWidth')

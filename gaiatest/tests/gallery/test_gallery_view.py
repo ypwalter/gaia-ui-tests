@@ -26,14 +26,14 @@ class TestGallery(GaiaTestCase):
         #  Verify that the screen orientation is in portrait mode
         self.assertIsNotNone(image.current_image_source)
         self.assertTrue(image.is_photo_toolbar_displayed)
-        self.assertEqual('portrait-primary', image.screen_orientation)
-        self.assertEqual(image.screen_width, image.photo_toolbar_width)
+        self.assertEqual('portrait-primary', self.screen_orientation)
+        self.assertEqual(self.screen_width, image.photo_toolbar_width)
 
         #  Change the screen orientation to landscape mode and verify that the screen is in landscape mode
         self.change_orientation('landscape-primary')
         self.assertTrue(image.is_photo_toolbar_displayed)
-        self.assertEqual('landscape-primary', image.screen_orientation)
-        self.assertEqual(image.screen_width, image.photo_toolbar_width)
+        self.assertEqual('landscape-primary', self.screen_orientation)
+        self.assertEqual(self.screen_width, image.photo_toolbar_width)
 
     def tearDown(self):
         self.marionette.execute_script('window.screen.mozUnlockRotation')
