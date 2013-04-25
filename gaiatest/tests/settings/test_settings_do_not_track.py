@@ -8,9 +8,9 @@ from gaiatest import GaiaTestCase
 class TestSettingsDoNotTrack(GaiaTestCase):
 
     # Do Not Track Settings locators
-    _donottrack_menu_item_locator = ('id', "menuItem-doNotTrack")
-    _donottrack_label_locator = ('css selector', "#doNotTrack label")
-    _donottrack_checkbox_locator = ('css selector', "#doNotTrack input")
+    _donottrack_menu_item_locator = ('id', 'menuItem-doNotTrack')
+    _donottrack_label_locator = ('css selector', '#doNotTrack label')
+    _donottrack_checkbox_locator = ('css selector', '#doNotTrack input')
 
     def setUp(self):
 
@@ -22,15 +22,21 @@ class TestSettingsDoNotTrack(GaiaTestCase):
         # launch the Settings app
         self.app = self.apps.launch('Settings')
 
+    def tearDown(self):
+
+        # make sure Do Not Track is off at the end of the test
+        self.data_layer.set_setting('privacy.donottrackheader.enabled', False)
+
     def test_enable_do_not_track_via_settings_app(self):
-        """ Enable do not track via the Settings app"""
+        """Enable do not track via the Settings app"""
 
         # navigate to Do Not Track settings
         self.wait_for_element_present(*self._donottrack_menu_item_locator)
         donottrack_menu_item = self.marionette.find_element(*self._donottrack_menu_item_locator)
 
-        # scroll to the menu item
-        self.marionette.execute_script("arguments[0].scrollIntoView(false);",
+        # TODO: remove the explicit scroll once bug 833370 is fixed
+        # see https://bugzilla.mozilla.org/show_bug.cgi?id=833370
+        self.marionette.execute_script('arguments[0].scrollIntoView(false);',
                                        [donottrack_menu_item])
         self.marionette.tap(donottrack_menu_item)
 
@@ -48,7 +54,7 @@ class TestSettingsDoNotTrack(GaiaTestCase):
 
         # should be on
         self.assertTrue(self.data_layer.get_setting('privacy.donottrackheader.enabled'),
-                        "Do Not Track was not enabled via Settings app")
+                        'Do Not Track was not enabled via Settings app')
 
         # turn back off
         self.marionette.tap(donottrack_label)
@@ -56,4 +62,4 @@ class TestSettingsDoNotTrack(GaiaTestCase):
 
         # should be off
         self.assertFalse(self.data_layer.get_setting('privacy.donottrackheader.enabled'),
-                         "Do Not Track was not disabled via Settings app")
+                         'Do Not Track was not disabled via Settings app')
