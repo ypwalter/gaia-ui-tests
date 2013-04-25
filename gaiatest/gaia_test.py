@@ -381,6 +381,10 @@ class GaiaTestCase(MarionetteTestCase):
             for filename in self.data_layer.media_files:
                 self.device.manager.removeFile('/'.join(['sdcard', filename]))
 
+        if self.data_layer.get_setting('ril.radio.disabled'):
+            # enable the device radio, disable Airplane mode
+            self.data_layer.set_setting('ril.radio.disabled', False)
+
         # disable passcode before restore settings from testvars
         self.data_layer.set_setting('lockscreen.passcode-lock.code', '1111')
         self.data_layer.set_setting('lockscreen.passcode-lock.enabled', False)
@@ -402,9 +406,6 @@ class GaiaTestCase(MarionetteTestCase):
 
         # disable sound completely
         self.data_layer.set_volume(0)
-
-        # enable the device radio, disable Airplane mode
-        self.data_layer.set_setting('ril.radio.disabled', False)
 
         # disable carrier data connection
         if self.device.has_mobile_connection:

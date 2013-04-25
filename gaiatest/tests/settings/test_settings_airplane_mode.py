@@ -53,3 +53,7 @@ class TestAirplaneMode(GaiaTestCase):
 
         # check GPS is enabled
         self.assertTrue(self.data_layer.get_setting('geolocation.enabled'), "GPS was not enabled after switching off Airplane mode")
+
+    def tearDown(self):
+        # enable the device radio, disable Airplane mode
+        self.data_layer.set_setting('ril.radio.disabled', False)
