@@ -444,9 +444,10 @@ class GaiaTestCase(MarionetteTestCase):
     def resource(self, filename):
         return os.path.abspath(os.path.join(os.path.dirname(__file__), 'resources', filename))
 
-    """  There are 4 orientation states which the phone can be passed in:
-            portrait-primary(which is the default orientation), landscape-primary, portrait-secondary and landscape-secondary"""
     def change_orientation(self, orientation):
+        """  There are 4 orientation states which the phone can be passed in:
+        portrait-primary(which is the default orientation), landscape-primary, portrait-secondary and landscape-secondary
+        """
         self.marionette.execute_async_script("""
             if (arguments[0] === arguments[1]) {
               marionetteScriptFinished();
@@ -467,7 +468,7 @@ class GaiaTestCase(MarionetteTestCase):
               };
               console.log("Changing orientation to '" + arguments[1] + "'.");
               window.screen.mozLockOrientation(arguments[1]);
-            };""", script_args=['portrait-primary', orientation])
+            };""", script_args=[self.screen_orientation, orientation])
 
     @property
     def screen_width(self):
