@@ -40,7 +40,6 @@ class Browser(Base):
     _add_bookmark_to_home_screen_dialog_button_locator = ('id', 'button-bookmark-add')
     _bookmark_title_input_locator = ('id', 'bookmark-title')
 
-
     def launch(self):
         Base.launch(self)
         self.wait_for_condition(lambda m: m.execute_script("return window.wrappedJSObject.Browser.hasLoaded;"))
@@ -70,6 +69,7 @@ class Browser(Base):
     def tap_go_button(self):
         self.marionette.tap(self.marionette.find_element(*self._url_button_locator))
         self.wait_for_throbber_not_visible()
+        self.wait_for_element_displayed(*self._bookmark_button_locator)
 
     def tap_back_button(self):
         current_url = self.url
@@ -118,11 +118,13 @@ class Browser(Base):
     def tap_tab_badge_button(self):
         self.marionette.tap(self.marionette.find_element(*self._tab_badge_locator))
 
-        # Marionette can not detect the visible state of the tab list correctly
+        # TODO Wait for visibility when Marionette can detect the state of the tab list correctly
         self.wait_for_condition(lambda m: self._current_screen == 'tabs-screen')
 
     def tap_add_new_tab_button(self):
         self.marionette.tap(self.marionette.find_element(*self._new_tab_button_locator))
+
+        # TODO Wait for visibility when Marionette can detect the state of the tab list correctly
         self.wait_for_condition(lambda m: self._current_screen == 'awesome-screen')
 
     @property
