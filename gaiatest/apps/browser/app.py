@@ -64,7 +64,8 @@ class Browser(Base):
                 break
 
     def switch_to_chrome(self):
-        Base.launch(self)
+        self.marionette.switch_to_frame()
+        self.marionette.switch_to_frame(self.app.frame)
 
     def tap_go_button(self):
         self.marionette.tap(self.marionette.find_element(*self._url_button_locator))
