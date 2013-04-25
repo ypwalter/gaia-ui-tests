@@ -7,7 +7,7 @@ from gaiatest import GaiaTestCase
 
 class TestSettingsDoNotTrack(GaiaTestCase):
 
-    # donottrack Settings locators
+    # Do Not Track Settings locators
     _donottrack_menu_item_locator = ('id', "menuItem-doNotTrack")
     _donottrack_label_locator = ('css selector', "#doNotTrack label")
     _donottrack_checkbox_locator = ('css selector', "#doNotTrack input")
@@ -16,7 +16,7 @@ class TestSettingsDoNotTrack(GaiaTestCase):
 
         GaiaTestCase.setUp(self)
 
-        # make sure donottrack is off for the beginning of the test
+        # make sure Do Not Track is off for the beginning of the test
         self.data_layer.set_setting('privacy.donottrackheader.enabled', False)
 
         # launch the Settings app
@@ -25,7 +25,7 @@ class TestSettingsDoNotTrack(GaiaTestCase):
     def test_enable_do_not_track_via_settings_app(self):
         """ Enable do not track via the Settings app"""
 
-        # navigate to donodonottrack_checkbox_locatorttrack settings
+        # navigate to Do Not Track settings
         self.wait_for_element_present(*self._donottrack_menu_item_locator)
         donottrack_menu_item = self.marionette.find_element(*self._donottrack_menu_item_locator)
 
@@ -34,7 +34,7 @@ class TestSettingsDoNotTrack(GaiaTestCase):
                                        [donottrack_menu_item])
         self.marionette.tap(donottrack_menu_item)
 
-        # locate the do-not-track label and checkbox
+        # locate the Do Not Track label and checkbox
         self.wait_for_element_displayed(*self._donottrack_label_locator)
         donottrack_label = self.marionette.find_element(*self._donottrack_label_locator)
         donottrack_checkbox = self.marionette.find_element(*self._donottrack_checkbox_locator)
@@ -54,6 +54,6 @@ class TestSettingsDoNotTrack(GaiaTestCase):
         self.marionette.tap(donottrack_label)
         self.wait_for_condition(lambda m: donottrack_checkbox.get_attribute('checked') is None)
 
-        # should be on
+        # should be off
         self.assertFalse(self.data_layer.get_setting('privacy.donottrackheader.enabled'),
                          "Do Not Track was not disabled via Settings app")
