@@ -13,10 +13,7 @@ class TestBrowserBookmark(GaiaTestCase):
 
     def setUp(self):
         GaiaTestCase.setUp(self)
-
-        if self.wifi:
-            self.data_layer.enable_wifi()
-            self.data_layer.connect_to_wifi(self.testvars['wifi'])
+        self.connect_to_network()
 
         import time
         curr_time = repr(time.time()).replace('.', '')
@@ -31,7 +28,6 @@ class TestBrowserBookmark(GaiaTestCase):
 
         browser.tap_bookmark_button()
         browser.tap_add_bookmark_to_home_screen_choice_button()
-        browser.switch_to_bookmark_edit_dialog()
         browser.type_bookmark_title(self.bookmark_title)
         browser.tap_add_bookmark_to_home_screen_dialog_button()
 
@@ -52,8 +48,6 @@ class TestBrowserBookmark(GaiaTestCase):
 
     def tearDown(self):
         self.delete_bookmark(self.bookmark_title)
-        if self.wifi:
-            self.data_layer.disable_wifi()
         GaiaTestCase.tearDown(self)
 
     def _go_to_next_page(self):
@@ -67,6 +61,8 @@ class TestBrowserBookmark(GaiaTestCase):
         return pageHelper.getCurrentPageNumber() < (pageHelper.getTotalPagesNumber() - 1);""")
 
     def delete_bookmark(self, bookmark_name):
+        # ensure we are in the homescreen app
+        self.apps.launch('Homescreen')
         self.marionette.execute_script("""
                                           name = arguments[0];
                                           let apps = window.wrappedJSObject.GridManager.getApps();

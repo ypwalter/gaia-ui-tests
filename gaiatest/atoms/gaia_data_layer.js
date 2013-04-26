@@ -39,6 +39,22 @@ var GaiaDataLayer = {
     };
   },
 
+  getSIMContacts: function(aCallback) {
+    var callback = aCallback || marionetteScriptFinished;
+    SpecialPowers.addPermission('contacts-read', true, document);
+    var req = window.navigator.mozContacts.getSimContacts('ADN');
+    req.onsuccess = function () {
+      console.log('success finding contacts');
+      SpecialPowers.removePermission('contacts-read', document);
+      callback(req.result);
+    };
+    req.onerror = function () {
+      console.error('error finding contacts', req.error.name);
+      SpecialPowers.removePermission('contacts-read', document);
+      callback([]);
+    };
+  },
+
   removeAllContacts: function() {
     var self = this;
     this.getAllContacts(function (aContacts) {
@@ -77,13 +93,14 @@ var GaiaDataLayer = {
     };
   },
 
-  getSetting: function(aName) {
+  getSetting: function(aName, aCallback) {
+    var callback = aCallback || marionetteScriptFinished;
     SpecialPowers.addPermission('settings-read', true, document);
     var req = window.navigator.mozSettings.createLock().get(aName);
     req.onsuccess = function() {
       console.log('setting retrieved');
       let result = aName === '*' ? req.result : req.result[aName];
-      marionetteScriptFinished(result);
+      callback(result);
     };
     req.onerror = function() {
       console.log('error getting setting', req.error.name);
@@ -255,7 +272,7 @@ var GaiaDataLayer = {
     return window.navigator.mozTelephony.active.state;
   },
 
-  enableCellData: function() {
+  connectToCellData: function() {
     var manager = window.navigator.mozMobileConnection;
 
     if (!manager.data.connected) {
@@ -269,32 +286,30 @@ var GaiaDataLayer = {
       this.setSetting('ril.data.enabled', true, false);
     }
     else {
-      console.log('cell data already enabled');
+      console.log('cell data already connected');
       marionetteScriptFinished(true);
     }
   },
 
   disableCellData: function() {
-    var manager = window.navigator.mozMobileConnection;
-
-    if (manager.data.connected) {
-      waitFor(
-        function() {
-          console.log('cell data disabled');
-          marionetteScriptFinished(true);
-        },
-        function() { return !manager.data.connected; }
-      );
-      this.setSetting('ril.data.enabled', false, false);
-    }
-    else {
-      console.log('cell data already disabled');
-      marionetteScriptFinished(true);
-    }
-  },
-
-  isCellDataConnected: function() {
-      return window.navigator.mozMobileConnection.data.connected;
+    var self = this;
+    this.getSetting('ril.data.enabled', function(aCellDataEnabled) {
+      var manager = window.navigator.mozMobileConnection;
+      if (aCellDataEnabled) {
+        waitFor(
+          function() {
+            console.log('cell data disabled');
+            marionetteScriptFinished(true);
+          },
+          function() { return !manager.data.connected; }
+        );
+        self.setSetting('ril.data.enabled', false, false);
+      }
+      else {
+        console.log('cell data already disabled');
+        marionetteScriptFinished(true);
+      }
+    });
   },
 
   getAllMediaFiles: function (aCallback) {
@@ -348,7 +363,7 @@ var GaiaDataLayer = {
     request.onsuccess = function(event) {
       cursor = event.target.result;
       // Check if message was found
-      if (cursor.message) {
+      if (cursor && cursor.message) {
         msgList.push(cursor.message.id);
         // Now get next message in the list
         cursor.continue();
