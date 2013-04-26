@@ -19,6 +19,11 @@ class Marketplace(Base):
     # Marketplace search on home page
     _search_locator = ('id', 'search-q')
 
+    def __init__(self, marionette, app_name=False):
+        Base.__init__(self, marionette)
+        if app_name:
+            self.name = app_name
+
     def switch_to_marketplace_frame(self):
         """Only Marketplace production has a frame for the app."""
         self.marionette.switch_to_frame(self.marionette.find_element(*self._marketplace_iframe_locator))

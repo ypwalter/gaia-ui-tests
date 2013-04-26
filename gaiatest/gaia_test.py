@@ -82,6 +82,10 @@ class GaiaApps(object):
             self.switch_to_frame(app.frame_id, url)
         return app
 
+    def is_app_installed(self, app_name):
+        self.marionette.switch_to_frame()
+        return self.marionette.execute_async_script("GaiaApps.locateWithName('%s')" % app_name)
+
     def uninstall(self, name):
         self.marionette.switch_to_frame()
         self.marionette.execute_async_script("GaiaApps.uninstallWithName('%s')" % name)
@@ -441,6 +445,40 @@ class GaiaTestCase(MarionetteTestCase):
     def resource(self, filename):
         return os.path.abspath(os.path.join(os.path.dirname(__file__), 'resources', filename))
 
+    def change_orientation(self, orientation):
+        """  There are 4 orientation states which the phone can be passed in:
+        portrait-primary(which is the default orientation), landscape-primary, portrait-secondary and landscape-secondary
+        """
+        self.marionette.execute_async_script("""
+            if (arguments[0] === arguments[1]) {
+              marionetteScriptFinished();
+            }
+            else {
+              var expected = arguments[1];
+              window.screen.onmozorientationchange = function(e) {
+                console.log("Received 'onmozorientationchange' event.");
+                waitFor(
+                  function() {
+                    window.screen.onmozorientationchange = null;
+                    marionetteScriptFinished();
+                  },
+                  function() {
+                    return window.screen.mozOrientation === expected;
+                  }
+                );
+              };
+              console.log("Changing orientation to '" + arguments[1] + "'.");
+              window.screen.mozLockOrientation(arguments[1]);
+            };""", script_args=[self.screen_orientation, orientation])
+
+    @property
+    def screen_width(self):
+        return self.marionette.execute_script('return window.screen.width')
+
+    @property
+    def screen_orientation(self):
+        return self.marionette.execute_script('return window.screen.mozOrientation')
+
     def wait_for_element_present(self, by, locator, timeout=_default_timeout):
         timeout = float(timeout) + time.time()
 
@@ -564,3 +602,139 @@ class GaiaTestCase(MarionetteTestCase):
         self.apps = None
         self.data_layer = None
         MarionetteTestCase.tearDown(self)
+<<<<<<< HEAD
+=======
+
+
+class Keyboard(object):
+    _language_key = '-3'
+    _numeric_sign_key = '-2'
+    _alpha_key = '-1'
+    _backspace_key = '8'
+    _enter_key = '13'
+    _alt_key = '18'
+    _upper_case_key = '20'
+    _space_key = '32'
+
+    # Keyboard app
+    _keyboard_frame_locator = ('css selector', '#keyboard-frame iframe')
+    _keyboard_locator = ('css selector', '#keyboard')
+
+    _button_locator = ('css selector', 'button.keyboard-key[data-keycode="%s"]')
+
+    def __init__(self, marionette, GaiaTestCase):
+        self.testcase = GaiaTestCase
+        self.marionette = marionette
+
+    def _switch_to_keyboard(self):
+        self.marionette.switch_to_frame()
+        keybframe = self.marionette.find_element(*self._keyboard_frame_locator)
+        self.marionette.switch_to_frame(keybframe, focus=False)
+
+    def _key_locator(self, val):
+        if len(val) == 1:
+            val = ord(val)
+        return (self._button_locator[0], self._button_locator[1] % val)
+
+    def _tap(self, val):
+        self.testcase.wait_for_element_displayed(*self._key_locator(val))
+        key = self.marionette.find_element(*self._key_locator(val))
+        self.marionette.tap(key)
+
+    def is_element_present(self, by, locator):
+        try:
+            self.marionette.set_search_timeout(500)
+            self.marionette.find_element(by, locator)
+            return True
+        except:
+            return False
+        finally:
+            # set the search timeout to the default value
+            self.marionette.set_search_timeout(10000)
+
+    def send(self, string):
+        self._switch_to_keyboard()
+
+        for val in string:
+            # alpha is in on keyboard
+            if val.isalpha():
+                if self.is_element_present(*self._key_locator(self._alpha_key)):
+                    self._tap(self._alpha_key)
+                if not self.is_element_present(*self._key_locator(val)):
+                    self._tap(self._upper_case_key)
+            # numbers and symbols are in another keyboard
+            else:
+                if self.is_element_present(*self._key_locator(self._numeric_sign_key)):
+                    self._tap(self._numeric_sign_key)
+                if not self.is_element_present(*self._key_locator(val)):
+                    self._tap(self._alt_key)
+
+            # after switching to correct keyboard, tap/click if the key is there
+            if self.is_element_present(*self._key_locator(val)):
+                self._tap(val)
+            else:
+                assert False, 'Key %s not found on the keyboard' % val
+
+            # after tap/click space key, it might get screwed up due to timing issue. adding 0.7sec for it.
+            if ord(val) == int(self._space_key):
+                time.sleep(0.7)
+
+        self.marionette.switch_to_frame()
+
+    def switch_to_number_keyboard(self):
+        self._switch_to_keyboard()
+        self._tap(self._numeric_sign_key)
+        self.marionette.switch_to_frame()
+
+    def switch_to_alpha_keyboard(self):
+        self._switch_to_keyboard()
+        self._tap(self._alpha_key)
+        self.marionette.switch_to_frame()
+
+    def tap_shift(self):
+        self._switch_to_keyboard()
+        if self.is_element_present(*self._key_locator(self._alpha_key)):
+            self._tap(self._alpha_key)
+        self._tap(self._upper_case_key)
+        self.marionette.switch_to_frame()
+
+    def tap_backspace(self):
+        self._switch_to_keyboard()
+        bs = self.marionette.find_element(self._button_locator[0], self._button_locator[1] % self._backspace_key)
+        self.marionette.tap(bs)
+        self.marionette.switch_to_frame()
+
+    def tap_space(self):
+        self._switch_to_keyboard()
+        self._tap(self._space_key)
+        self.marionette.switch_to_frame()
+
+    def tap_enter(self):
+        self._switch_to_keyboard()
+        self._tap(self._enter_key)
+        self.marionette.switch_to_frame()
+
+    def tap_alt(self):
+        self._switch_to_keyboard()
+        if self.is_element_present(*self._key_locator(self._numeric_sign_key)):
+            self._tap(self._numeric_sign_key)
+        self._tap(self._alt_key)
+        self.marionette.switch_to_frame()
+
+    def enable_caps_lock(self):
+        self._switch_to_keyboard()
+        if self.is_element_present(*self._key_locator(self._alpha_key)):
+            self._tap(self._alpha_key)
+        key_obj = self.marionette.find_element(*self._key_locator(self._upper_case_key))
+        self.marionette.double_tap(key_obj)
+        self.marionette.switch_to_frame()
+
+    def long_press(self, key, timeout=2000):
+        if len(key) == 1:
+            self._switch_to_keyboard()
+            key_obj = self.marionette.find_element(*self._key_locator(key))
+            from marionette.marionette import Actions
+            Actions(self.marionette).long_press(key_obj, timeout).perform()
+            time.sleep(timeout / 1000 + 1)
+            self.marionette.switch_to_frame()
+>>>>>>> e8996551f5769a921e2c7b653a1701cac45fae5a
