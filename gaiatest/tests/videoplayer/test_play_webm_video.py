@@ -7,7 +7,7 @@ import time
 from gaiatest import GaiaTestCase
 
 
-class TestWebMVideo(GaiaTestCase):
+class TestPlayWebMVideo(GaiaTestCase):
 
     # Video list/summary view
     _video_items_locator = ('css selector', 'ul#thumbnails li[data-name]')
@@ -28,7 +28,7 @@ class TestWebMVideo(GaiaTestCase):
         self.app = self.apps.launch('Video')
         self.wait_for_element_displayed(*self._video_items_locator)
 
-    def test_play_video(self):
+    def test_play_webm_video(self):
         # https://moztrap.mozilla.org/manage/case/2478/
 
         all_videos = self.marionette.find_elements(*self._video_items_locator)
