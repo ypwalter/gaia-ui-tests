@@ -25,7 +25,7 @@ class TestDialerAirplaneMode(GaiaTestCase):
         # Make a call
         test_phone_number = self.testvars['remote_phone_number']
         phone.keypad.phone_number = test_phone_number
-        phone.keypad.switch_to_call_screen(wait_for_call_screen=False)
+        phone.keypad.tap_call_button(switch_to_call_screen=False)
 
         # Check for the Airplane mode dialog
         phone.wait_for_confirmation_dialog()
