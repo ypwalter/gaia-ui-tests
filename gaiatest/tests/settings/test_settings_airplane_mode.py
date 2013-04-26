@@ -25,7 +25,7 @@ class TestAirplaneMode(GaiaTestCase):
         self.marionette.tap(self.marionette.find_element(*self._airplane_switch_locator))
 
         # wait for Cell Data to be disabled, this takes the longest when airplane mode is switched on
-        self.wait_for_condition(lambda s: 'No SIM card' in self.marionette.find_element(*self._data_text_locator).text)
+        self.wait_for_condition(lambda s: 'SIM card not ready' in self.marionette.find_element(*self._data_text_locator).text)
 
         # check Wifi is disabled
         self.assertFalse(self.data_layer.is_wifi_connected(self.testvars['wifi']), "WiFi was still connected after switching on Airplane mode")
@@ -53,7 +53,3 @@ class TestAirplaneMode(GaiaTestCase):
 
         # check GPS is enabled
         self.assertTrue(self.data_layer.get_setting('geolocation.enabled'), "GPS was not enabled after switching off Airplane mode")
-
-    def tearDown(self):
-        # enable the device radio, disable Airplane mode
-        self.data_layer.set_setting('ril.radio.disabled', False)
