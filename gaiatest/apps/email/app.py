@@ -61,7 +61,8 @@ class Header(Base):
 
     def tap_menu(self):
         self.marionette.tap(self.marionette.find_element(*self._menu_button_locator))
-        self.wait_for_condition(lambda m: self.toolbar.is_settings_visible)
+        toolbar = ToolBar(self.marionette)
+        self.wait_for_condition(lambda m: toolbar.is_settings_visible)
 
     def tap_compose(self):
         self.marionette.tap(self.marionette.find_element(*self._compose_button_locator))

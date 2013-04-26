@@ -12,9 +12,7 @@ class TestSetupGmail(GaiaTestCase):
 
     def setUp(self):
         GaiaTestCase.setUp(self)
-        if self.wifi:
-            self.data_layer.enable_wifi()
-            self.data_layer.connect_to_wifi(self.testvars['wifi'])
+        self.connect_to_network()
 
         self.email = Email(self.marionette)
         self.email.launch()
@@ -41,7 +39,6 @@ class TestSetupGmail(GaiaTestCase):
         self.assertGreater(len(self.email.mails), 0)
 
     def tearDown(self):
-
         if self.email_configured:
-            self.email.delete_email_account()
+            self.email.delete_email_account(0)
         GaiaTestCase.tearDown(self)
