@@ -5,11 +5,7 @@
 from gaiatest.apps.base import Base
 from gaiatest.apps.base import PageRegion
 from gaiatest.apps.email.regions.setup import SetupEmail
-from gaiatest.apps.email.regions.setup import SetupProgress
-from gaiatest.apps.email.regions.setup import MailSetupDone
 from gaiatest.apps.email.regions.settings import Settings
-from gaiatest.apps.email.regions.settings import EmailAccountSettings
-from gaiatest.apps.email.regions.settings import DeleteConfirmation
 
 
 class Email(Base):
@@ -28,24 +24,18 @@ class Email(Base):
         setup.type_password(password)
         setup.tap_next()
 
-        setup_progress = SetupProgress(self.marionette)
-        setup_progress.wait_for_progress_screen_visible()
-        setup_progress.wait_for_progress_screen_not_visible()
+        setup.wait_for_setup_complete()
 
-        mail_setup_done = MailSetupDone(self.marionette)
-        mail_setup_done.tap_continue()
+        setup.tap_continue()
         self.wait_for_condition(lambda m: self.is_element_displayed(*self._header_area_locator))
 
-    def delete_email_account(self):
+    def delete_email_account(self, index):
 
         self.header.tap_menu()
-        self.wait_for_condition(lambda m: self.toolbar.is_settings_visible)
         self.toolbar.tap_settings()
         settings = Settings(self.marionette)
-        settings.email_accounts[0].tap()
-        account_settings = EmailAccountSettings(self.marionette)
-        account_settings.tap_delete()
-        delete_confirmation = DeleteConfirmation(self.marionette)
+        account_settings = settings.email_accounts[index].tap()
+        delete_confirmation = account_settings.tap_delete()
         delete_confirmation.tap_delete()
 
     @property
@@ -71,6 +61,7 @@ class Header(Base):
 
     def tap_menu(self):
         self.marionette.tap(self.marionette.find_element(*self._menu_button_locator))
+        self.wait_for_condition(lambda m: self.toolbar.is_settings_visible)
 
     def tap_compose(self):
         self.marionette.tap(self.marionette.find_element(*self._compose_button_locator))

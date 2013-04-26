@@ -11,6 +11,7 @@ class SetupEmail(Base):
     _email_locator = ('css selector', 'input.sup-info-email')
     _password_locator = ('css selector', 'input.sup-info-password')
     _next_locator = ('css selector', '.sup-info-next-btn')
+    _continue_button_locator = ('class name', 'sup-show-mail-btn sup-form-btn recommend')
 
     def type_name(self, value):
         self.marionette.find_element(*self._name_locator).send_keys(value)
@@ -24,19 +25,8 @@ class SetupEmail(Base):
     def tap_next(self):
         self.marionette.tap(self.marionette.find_element(*self._next_locator))
 
-
-class SetupProgress(Base):
-    _progress_locator = ('css selector', '.sup-progress-label')
-
-    def wait_for_progress_screen_visible(self):
-        self.wait_for_element_displayed(*self._progress_locator)
-
-    def wait_for_progress_screen_not_visible(self):
-        self.wait_for_element_not_displayed(*self._progress_locator)
-
-
-class MailSetupDone(Base):
-    _continue_button_locator = ('class name', 'sup-show-mail-btn sup-form-btn recommend')
+    def wait_for_setup_complete(self):
+        self.wait_for_element_displayed(*self._continue_button_locator)
 
     def tap_continue(self):
         self.marionette.tap(self.marionette.find_element(*self._continue_button_locator))

@@ -23,6 +23,7 @@ class Settings(Base):
 
         def tap(self):
             self.marionette.tap(self.root_element)
+            return EmailAccountSettings(self.marionette)
 
 
 class EmailAccountSettings(Base):
@@ -36,6 +37,7 @@ class EmailAccountSettings(Base):
 
     def tap_delete(self):
         self.marionette.tap(self.marionette.find_element(*self._delete_account_locator))
+        return DeleteConfirmation(self.marionette)
 
 
 class DeleteConfirmation(Base):
