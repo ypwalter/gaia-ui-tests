@@ -27,8 +27,6 @@ class TestDialerAirplaneMode(GaiaTestCase):
         phone.keypad.phone_number = test_phone_number
         phone.keypad.tap_call_button(wait_for_call_screen=False)
 
-        self.marionette.switch_to_frame()
-
         # Check for the Airplane mode dialog
         phone.wait_for_confirmation_dialog()
 
