@@ -24,7 +24,10 @@ class TestDialerAirplaneMode(GaiaTestCase):
 
         # Make a call
         test_phone_number = self.testvars['remote_phone_number']
-        phone.keypad.call_number(test_phone_number)
+        phone.keypad.phone_number = test_phone_number
+        phone.keypad.tap_call_button(wait_for_call_screen=False)
+
+        self.marionette.switch_to_frame()
 
         # Check for the Airplane mode dialog
         phone.wait_for_confirmation_dialog()
@@ -33,5 +36,5 @@ class TestDialerAirplaneMode(GaiaTestCase):
         self.assertEqual("Airplane mode activated", phone.confirmation_dialog_text)
 
         # Verify that there is no active telephony state; window.navigator.mozTelephony.active is null
-        self.assertRaises(JavascriptException, self.marionette.execute_script, 
+        self.assertRaises(JavascriptException, self.marionette.execute_script,
             "return window.navigator.mozTelephony.active.state;")
