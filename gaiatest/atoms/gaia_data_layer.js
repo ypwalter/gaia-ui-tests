@@ -29,7 +29,7 @@ var GaiaDataLayer = {
       req.onsuccess = function() {
         var total = req.result.slice().length;
         for (var i = total; i > 0; i--) {
-          var up = adapter.unpair(req.result.slice()[0]);
+          var up = adapter.unpair(req.result.slice()[i-1]);
         }
       };
     };
