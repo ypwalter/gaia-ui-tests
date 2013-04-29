@@ -364,9 +364,9 @@ class GaiaDevice(object):
         if self.is_android_build:
             self.marionette.set_script_timeout(60000)
             self.marionette.execute_async_script("""
-window.addEventListener('mozbrowserloadend', function ftuLoaded(aEvent) {
-  if (aEvent.target.src.indexOf('ftu') != -1) {
-    window.removeEventListener('mozbrowserloadend', ftuLoaded);
+window.addEventListener('mozbrowserloadend', function loaded(aEvent) {
+  if (aEvent.target.src.indexOf('ftu') != -1 || aEvent.target.src.indexOf('homescreen') != -1) {
+    window.removeEventListener('mozbrowserloadend', loaded);
     marionetteScriptFinished();
   }
 });""")
