@@ -21,21 +21,16 @@ class TestYouTube(GaiaTestCase):
     _video_loaded_locator = ('css selector', 'video[style]')
 
     # YouTube
-    _video_container_locator = ('id', 'koya_elem_12_4')
+    _video_container_locator = ('id', 'koya_elem_0_6')
     _video_URL = 'http://m.youtube.com/watch?v=5MzuGWFIfio'
 
     def setUp(self):
         GaiaTestCase.setUp(self)
-
-        if self.wifi:
-            self.data_layer.enable_wifi()
-            self.data_layer.connect_to_wifi(self.testvars['wifi'])
-
-        # Launch Firefox
+        self.connect_to_network()
         self.app = self.apps.launch('Browser')
         self.wait_for_condition(lambda m: m.execute_script("return window.wrappedJSObject.Browser.hasLoaded;"))
 
-    def test_youtube(self):
+    def test_play_youtube_video(self):
         """ Confirm YouTube video playback
 
         https://moztrap.mozilla.org/manage/case/6073/

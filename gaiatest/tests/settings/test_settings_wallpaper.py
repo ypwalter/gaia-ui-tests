@@ -25,9 +25,6 @@ class TestWallpaper(GaiaTestCase):
     def setUp(self):
         GaiaTestCase.setUp(self)
 
-        # unlock the lockscreen if it's locked
-        self.lockscreen.unlock()
-
     def test_change_wallpaper(self):
         # https://moztrap.mozilla.org/manage/case/3449/
 

@@ -82,6 +82,10 @@ class GaiaApps(object):
             self.switch_to_frame(app.frame_id, url)
         return app
 
+    def is_app_installed(self, app_name):
+        self.marionette.switch_to_frame()
+        return self.marionette.execute_async_script("GaiaApps.locateWithName('%s')" % app_name)
+
     def uninstall(self, name):
         self.marionette.switch_to_frame()
         self.marionette.execute_async_script("GaiaApps.uninstallWithName('%s')" % name)
@@ -120,8 +124,9 @@ class GaiaApps(object):
 
 class GaiaData(object):
 
-    def __init__(self, marionette):
+    def __init__(self, marionette, testvars=None):
         self.marionette = marionette
+        self.testvars = testvars or {}
         js = os.path.abspath(os.path.join(__file__, os.path.pardir, 'atoms', "gaia_data_layer.js"))
         self.marionette.import_script(js)
         self.marionette.set_search_timeout(10000)
@@ -136,12 +141,17 @@ class GaiaData(object):
         self.marionette.switch_to_frame()
         return self.marionette.execute_async_script('return GaiaDataLayer.getAllContacts();', special_powers=True)
 
+    @property
+    def sim_contacts(self):
+        self.marionette.switch_to_frame()
+        return self.marionette.execute_async_script('return GaiaDataLayer.getSIMContacts();', special_powers=True)
+
     def insert_contact(self, contact):
         self.marionette.switch_to_frame()
         result = self.marionette.execute_async_script('return GaiaDataLayer.insertContact(%s);' % json.dumps(contact), special_powers=True)
         assert result, 'Unable to insert contact %s' % contact
 
-    def remove_all_contacts(self, default_script_timeout):
+    def remove_all_contacts(self, default_script_timeout=60000):
         self.marionette.switch_to_frame()
         self.marionette.set_script_timeout(max(default_script_timeout, 1000 * len(self.all_contacts)))
         result = self.marionette.execute_async_script('return GaiaDataLayer.removeAllContacts();', special_powers=True)
@@ -164,21 +174,33 @@ class GaiaData(object):
     def set_volume(self, value):
         self.set_setting('audio.volume.master', value)
 
-    def enable_cell_data(self):
+    @property
+    def is_cell_data_enabled(self):
+        return self.get_setting('ril.data.enabled')
+
+    def connect_to_cell_data(self):
         self.marionette.switch_to_frame()
-        result = self.marionette.execute_async_script("return GaiaDataLayer.enableCellData()", special_powers=True)
-        assert result, 'Unable to enable cell data'
+        result = self.marionette.execute_async_script("return GaiaDataLayer.connectToCellData()", special_powers=True)
+        assert result, 'Unable to connect to cell data'
 
     def disable_cell_data(self):
         self.marionette.switch_to_frame()
         result = self.marionette.execute_async_script("return GaiaDataLayer.disableCellData()", special_powers=True)
         assert result, 'Unable to disable cell data'
 
+    @property
+    def is_cell_data_connected(self):
+        return self.marionette.execute_script("return window.navigator.mozMobileConnection.data.connected;")
+
     def enable_cell_roaming(self):
         self.set_setting('ril.data.roaming_enabled', True)
 
     def disable_cell_roaming(self):
         self.set_setting('ril.data.roaming_enabled', False)
+
+    @property
+    def is_wifi_enabled(self):
+        return self.get_setting('wifi.enabled')
 
     def enable_wifi(self):
         self.marionette.switch_to_frame()
@@ -190,7 +212,10 @@ class GaiaData(object):
         result = self.marionette.execute_async_script("return GaiaDataLayer.disableWiFi()", special_powers=True)
         assert result, 'Unable to disable WiFi'
 
-    def connect_to_wifi(self, network):
+    def connect_to_wifi(self, network=None):
+        network = network or self.testvars.get('wifi')
+        assert network, 'No WiFi network provided'
+        self.enable_wifi()
         self.marionette.switch_to_frame()
         result = self.marionette.execute_async_script("return GaiaDataLayer.connectToWiFi(%s)" % json.dumps(network))
         assert result, 'Unable to connect to WiFi network'
@@ -199,7 +224,9 @@ class GaiaData(object):
         self.marionette.switch_to_frame()
         self.marionette.execute_async_script('return GaiaDataLayer.forgetAllNetworks()')
 
-    def is_wifi_connected(self, network):
+    def is_wifi_connected(self, network=None):
+        network = network or self.testvars.get('wifi')
+        assert network, 'No WiFi network provided'
         self.marionette.switch_to_frame()
         return self.marionette.execute_script("return GaiaDataLayer.isWiFiConnected(%s)" % json.dumps(network))
 
@@ -235,6 +262,10 @@ class GaiaData(object):
     def delete_all_alarms(self):
         self.marionette.execute_script('GaiaDataLayer.deleteAllAlarms();')
 
+    def delete_all_call_log_entries(self):
+        """The call log needs to be open and focused in order for this to work."""
+        self.marionette.execute_script('window.wrappedJSObject.RecentsDBManager.deleteAll();')
+
     def kill_active_call(self):
         self.marionette.execute_script("var telephony = window.navigator.mozTelephony; " +
                                        "if(telephony.active) telephony.active.hangUp();")
@@ -268,6 +299,16 @@ class GaiaDevice(object):
     @property
     def is_android_build(self):
         return 'Android' in self.marionette.session_capabilities['platform']
+
+    @property
+    def has_mobile_connection(self):
+        return self.marionette.execute_script('return window.navigator.mozMobileConnection !== undefined')
+
+    @property
+    def has_wifi(self):
+        if not hasattr(self, '_has_wifi'):
+            self._has_wifi = self.marionette.execute_script('return window.navigator.mozWifiManager !== undefined')
+        return self._has_wifi
 
     def push_file(self, source, count=1, destination='', progress=None):
         if not destination.count('.') > 0:
@@ -329,13 +370,9 @@ class GaiaTestCase(MarionetteTestCase):
         self.marionette.set_search_timeout(self._search_timeout)
         self.lockscreen = LockScreen(self.marionette)
         self.apps = GaiaApps(self.marionette)
-        self.data_layer = GaiaData(self.marionette)
-        self.keyboard = Keyboard(self.marionette)
-
-        # wifi is true if testvars includes wifi details and wifi manager is defined
-        self.wifi = self.testvars and \
-            'wifi' in self.testvars and \
-            self.marionette.execute_script('return window.navigator.mozWifiManager !== undefined')
+        self.data_layer = GaiaData(self.marionette, self.testvars)
+        from gaiatest.apps.keyboard.app import Keyboard
+        self.keyboard = Keyboard(self.marionette) 
 
         self.cleanUp()
 
@@ -345,12 +382,19 @@ class GaiaTestCase(MarionetteTestCase):
             for filename in self.data_layer.media_files:
                 self.device.manager.removeFile('/'.join(['sdcard', filename]))
 
+        if self.data_layer.get_setting('ril.radio.disabled'):
+            # enable the device radio, disable Airplane mode
+            self.data_layer.set_setting('ril.radio.disabled', False)
+
         # disable passcode before restore settings from testvars
         self.data_layer.set_setting('lockscreen.passcode-lock.code', '1111')
         self.data_layer.set_setting('lockscreen.passcode-lock.enabled', False)
 
         # Change language back to English
         self.data_layer.set_setting("language.current", "en-US")
+
+        # Change timezone back to PST
+        self.data_layer.set_setting("time.timezone", "America/Los_Angeles")
 
         # restore settings from testvars
         [self.data_layer.set_setting(name, value) for name, value in self.testvars.get('settings', {}).items()]
@@ -364,14 +408,13 @@ class GaiaTestCase(MarionetteTestCase):
         # disable sound completely
         self.data_layer.set_volume(0)
 
-        # enable the device radio, disable Airplane mode
-        self.data_layer.set_setting('ril.radio.disabled', False)
-
         # disable carrier data connection
-        self.data_layer.disable_cell_data()
+        if self.device.has_mobile_connection:
+            self.data_layer.disable_cell_data()
 
-        if self.wifi:
-            # forget any known networks
+        self.data_layer.disable_cell_roaming()
+
+        if self.device.has_wifi:
             self.data_layer.enable_wifi()
             self.data_layer.forget_all_networks()
             self.data_layer.disable_wifi()
@@ -382,11 +425,60 @@ class GaiaTestCase(MarionetteTestCase):
         # reset to home screen
         self.marionette.execute_script("window.wrappedJSObject.dispatchEvent(new Event('home'));")
 
+    def connect_to_network(self):
+        # TODO determine if we are online already
+        # TODO only enable cell data if lan failed
+        if self.testvars.get('wifi') and self.device.has_wifi:
+            self.data_layer.connect_to_wifi()
+        elif self.device.has_mobile_connection:
+            self.data_layer.connect_to_cell_data()
+        # TODO assert that we are online
+
+    def connect_to_local_area_network(self):
+        # TODO determine if we are online already
+        if self.testvars.get('wifi') and self.device.has_wifi:
+            self.data_layer.connect_to_wifi()
+        # TODO assert that we are online
+
     def push_resource(self, filename, count=1, destination=''):
         self.device.push_file(self.resource(filename), count, '/'.join(['sdcard', destination]))
 
     def resource(self, filename):
         return os.path.abspath(os.path.join(os.path.dirname(__file__), 'resources', filename))
+
+    def change_orientation(self, orientation):
+        """  There are 4 orientation states which the phone can be passed in:
+        portrait-primary(which is the default orientation), landscape-primary, portrait-secondary and landscape-secondary
+        """
+        self.marionette.execute_async_script("""
+            if (arguments[0] === arguments[1]) {
+              marionetteScriptFinished();
+            }
+            else {
+              var expected = arguments[1];
+              window.screen.onmozorientationchange = function(e) {
+                console.log("Received 'onmozorientationchange' event.");
+                waitFor(
+                  function() {
+                    window.screen.onmozorientationchange = null;
+                    marionetteScriptFinished();
+                  },
+                  function() {
+                    return window.screen.mozOrientation === expected;
+                  }
+                );
+              };
+              console.log("Changing orientation to '" + arguments[1] + "'.");
+              window.screen.mozLockOrientation(arguments[1]);
+            };""", script_args=[self.screen_orientation, orientation])
+
+    @property
+    def screen_width(self):
+        return self.marionette.execute_script('return window.screen.width')
+
+    @property
+    def screen_orientation(self):
+        return self.marionette.execute_script('return window.screen.mozOrientation')
 
     def wait_for_element_present(self, by, locator, timeout=_default_timeout):
         timeout = float(timeout) + time.time()
@@ -497,6 +589,10 @@ class GaiaTestCase(MarionetteTestCase):
                 traceback.print_exc()
 
             # settings
+            # Switch to top frame in case we are in a 3rd party app
+            # There is no more debug gathering is not specific to the app
+            self.marionette.switch_to_frame()
+
             try:
                 with open(os.path.join(debug_path, '%s_settings.json' % test_name), 'w') as f:
                     f.write(json.dumps(self.data_layer.all_settings))
@@ -507,132 +603,3 @@ class GaiaTestCase(MarionetteTestCase):
         self.apps = None
         self.data_layer = None
         MarionetteTestCase.tearDown(self)
-
-class Keyboard(object):
-    _language_key = '-3'
-    _numeric_sign_key = '-2'
-    _alpha_key = '-1'
-    _backspace_key = '8'
-    _enter_key = '13'
-    _alt_key = '18'
-    _upper_case_key = '20'
-    _space_key = '32'
-
-    # Keyboard app
-    _keyboard_frame_locator = ('css selector', '#keyboard-frame iframe')
-    _keyboard_locator = ('css selector', '#keyboard')
-
-    _button_locator = ('css selector', 'button.keyboard-key[data-keycode="%s"]')
-
-    def __init__(self, marionette):
-        self.marionette = marionette
-
-    def _switch_to_keyboard(self):
-        self.marionette.switch_to_frame()
-        keybframe = self.marionette.find_element(*self._keyboard_frame_locator)
-        self.marionette.switch_to_frame(keybframe, focus=False)
-
-    def _key_locator(self, val):
-        if len(val) == 1:
-            val = ord(val)
-        return (self._button_locator[0], self._button_locator[1] % val)
-
-    def _tap(self, val):
-        key = self.marionette.find_element(*self._key_locator(val))
-        self.marionette.tap(key)
-
-    def is_element_present(self, by, locator):
-        try:
-            self.marionette.set_search_timeout(500)
-            self.marionette.find_element(by, locator)
-            return True
-        except:
-            return False
-        finally:
-            # set the search timeout to the default value
-            self.marionette.set_search_timeout(10000)
-
-    def send(self, string):
-        self._switch_to_keyboard()
-
-        for val in string:
-            # alpha is in on keyboard
-            if val.isalpha():
-                if self.is_element_present(*self._key_locator(self._alpha_key)):
-                    self._tap(self._alpha_key)
-                if not self.is_element_present(*self._key_locator(val)):
-                    self._tap(self._upper_case_key)
-            # numbers and symbols are in another keyboard
-            else:
-                if self.is_element_present(*self._key_locator(self._numeric_sign_key)):
-                    self._tap(self._numeric_sign_key)
-                if not self.is_element_present(*self._key_locator(val)):
-                    self._tap(self._alt_key)
-
-            # after switching to correct keyboard, tap/click if the key is there
-            if self.is_element_present(*self._key_locator(val)):
-                self._tap(val)
-            else:
-                assert False, 'Key %s not found on the keyboard' % val
-
-            # after tap/click space key, it might get screwed up due to timing issue. adding 0.7sec for it.
-            if ord(val) == int(self._space_key):
-                time.sleep(0.7)
-
-        self.marionette.switch_to_frame()
-
-    def switch_to_number_keyboard(self):
-        self._switch_to_keyboard()
-        self._tap(self._numeric_sign_key)
-        self.marionette.switch_to_frame()
-
-    def switch_to_alpha_keyboard(self):
-        self._switch_to_keyboard()
-        self._tap(self._alpha_key)
-        self.marionette.switch_to_frame()
-
-    def tap_shift(self):
-        self._switch_to_keyboard()
-        if self.is_element_present(*self._key_locator(self._alpha_key)):
-            self._tap(self._alpha_key)
-        self._tap(self._upper_case_key)
-        self.marionette.switch_to_frame()
-
-    def tap_backspace(self):
-        self._switch_to_keyboard()
-        bs = self.marionette.find_element(self._button_locator[0], self._button_locator[1] % self._backspace_key)
-        self.marionette.tap(bs)
-        self.marionette.switch_to_frame()
-
-    def tap_space(self):
-        self._switch_to_keyboard()
-        self._tap(self._space_key)
-        self.marionette.switch_to_frame()
-
-    def tap_enter(self):
-        self._switch_to_keyboard()
-        self._tap(self._enter_key)
-        self.marionette.switch_to_frame()
-
-    def tap_alt(self):
-        self._switch_to_keyboard()
-        if self.is_element_present(*self._key_locator(self._numeric_sign_key)):
-            self._tap(self._numeric_sign_key)
-        self._tap(self._alt_key)
-        self.marionette.switch_to_frame()
-
-    def enable_caps_lock(self):
-        self._switch_to_keyboard()
-        if self.is_element_present(*self._key_locator(self._alpha_key)):
-            self._tap(self._alpha_key)
-        key_obj = self.marionette.find_element(*self._key_locator(self._upper_case_key))
-        self.marionette.double_tap(key_obj)
-        self.marionette.switch_to_frame()
-
-    def long_press(self, key, timeout=2000):
-        if len(key) == 1:
-            self._switch_to_keyboard()
-            key_obj = self.marionette.find_element(*self._key_locator(key))
-            self.marionette.long_press(key_obj, timeout)
-            time.sleep(timeout / 1000 + 1)
-            self.marionette.switch_to_frame()

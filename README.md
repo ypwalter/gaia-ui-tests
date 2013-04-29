@@ -59,8 +59,67 @@ ADB is available in emulator packages under out/host/linux_x86/bin.
 Alternatively, it may be downloaded as part of the
 [Android SDK](http://developer.android.com/sdk/index.html).
 
-Testvars
-========
+Testing on Desktop build
+========================
+
+You can download the latest build of the desktop client from [this location](http://ftp.mozilla.org/pub/mozilla.org/b2g/nightly/latest-mozilla-b2g18/), 
+but make sure you download the appropriate file for your operating system.
+
+Note : Unfortunately, due to [Bug 832469](https://bugzilla.mozilla.org/show_bug.cgi?id=832469) the nightly desktop builds do not currently work on Windows, so you will 
+need either Mac or Linux to continue :
+
+  * **Mac**: b2g-[VERSION].multi.mac64.dmg
+  * **Linux (32bit)**: b2g-[VERSION].multi.linux-i686.tar.bz2
+  * **Linux (64bit)**: b2g-[VERSION].multi.linux-x86_64.tar.bz2
+
+Note : If you do not have the operating systems installed on your machine, a virtual machine is fine as well.
+
+Once downloaded, you will need to extract the contents to a local folder. For the purposes of the rest 
+of this guide, I’ll refer to this location as `$B2G_HOME`.
+
+
+Add the line `user_pref('marionette.force-local', true);` to your gaia/profile/user.js file, which on :
+
+  * **Mac** is located in $B2G_HOME/B2G.app/Contents/MacOS 
+  * **Linux** is located in $B2G_HOME/b2g
+ 
+Because we’re running against the desktop client we must filter out all tests that are unsuitable. To run the tests, use the following command:
+
+`gaiatest --address=localhost:2828 --type=b2g-antenna-bluetooth-carrier-camera-sdcard-wifi-xfail gaiatest/tests/manifest.ini`
+
+You should then start to see the tests running.
+
+Test Types
+==========
+Tests can be filtered by type, and the types are defined in the manifest files. Tests can belong to multiple types, some
+types imply others, and some are mutually exclusive - for example a test cannot be both 'online' and 'offline' but a
+test that is 'lan' is by definition 'online'. Be warned that despite these rules, there is no error checking on types,
+so you must take care when assigning them. Default types are set in the [DEFAULT] section of a manifest file, and are
+inherited by manifest files referenced by an include.
+
+Here is a list of the types used, and when to use them:
+
+* b2g - this means the test is a B2G (Firefox OS) test. All tests must include this type.
+* antenna - these tests require an antenna (headphones) to be connected.
+* bluetooth - requires bluetooth to be available.
+* camera - these tests require use of a camera.
+* carrier - an active SIM card with carrier connection is required.
+* lan - a local area connection (not cell data) is required by these tests (see note below).
+* offline - specifically requires no online connection.
+* online - some sort of online connection (lan or carrier) is required.
+* qemu - these tests require the Firefox OS emulator to run.
+* sdcard - a storage device must be present.
+* wifi - this means a WiFi connection is required.
+* xfail - a special type that indicates the test is expected to fail.
+
+You may be thinking that there is only WiFi or cell data, and why the need for the 'lan' test type. Well, these tests
+aren't only run on mobile devices... We also run then on single-board computers known as
+[pandaboards](https://en.wikipedia.org/wiki/Panda_Board), which have an ethernet port, and on desktop builds, which
+share the host computer's connection. It is for this reason that we need 'lan' to indicate a connection that is not cell
+data. For an example of where online/lan/carrier are used take a look at the browser tests.
+
+Test Variables
+==============
 We use the --testvars option to pass in local variables, particularly those that cannot be checked into the repository. For example in gaia-ui-tests these variables can be your private login credentials, phone number or details of your WiFi connection.
 
 To use it, copy testvars_template.json to a different filename but add it into .gitignore so you don't check it into your repository.
@@ -74,7 +133,7 @@ Variables:
 
 `remote_phone_number (string)` A phone number that your device can call during the tests (try not to be a nuisance!). Prefix the number with '+' and your international dialing code.
 
-`wifi.ssid (string)` This is the SSID/name of your WiFi connection. Currently this supports WPA/WEP/etc. You can add wifi networks by doing the following (remember to replace "KeyManagement" and "wep" with the value your network supports) :
+`wifi.ssid (string)` This is the SSID/name of your WiFi connection. Currently this supports WPA/WEP/etc. You can add WiFi networks by doing the following (remember to replace "KeyManagement" and "wep" with the value your network supports) :
 
 `
 "wifi": {
@@ -125,3 +184,5 @@ prevailing style of the existing tests. Use them as a template for writing
 your tests.
 We follow [PEP8](http://www.python.org/dev/peps/pep-0008/) for formatting, although we're pretty lenient on the
 80-character line length.
+
+
