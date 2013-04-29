@@ -22,11 +22,6 @@ class TestSettingsDoNotTrack(GaiaTestCase):
         # launch the Settings app
         self.app = self.apps.launch('Settings')
 
-    def tearDown(self):
-
-        # make sure Do Not Track is off at the end of the test
-        self.data_layer.set_setting('privacy.donottrackheader.enabled', False)
-
     def test_enable_do_not_track_via_settings_app(self):
         """Enable do not track via the Settings app"""
 
@@ -63,3 +58,10 @@ class TestSettingsDoNotTrack(GaiaTestCase):
         # should be off
         self.assertFalse(self.data_layer.get_setting('privacy.donottrackheader.enabled'),
                          'Do Not Track was not disabled via Settings app')
+
+    def tearDown(self):
+
+        # make sure Do Not Track is off at the end of the test
+        self.data_layer.set_setting('privacy.donottrackheader.enabled', False)
+
+        GaiaTestCase.tearDown(self)
