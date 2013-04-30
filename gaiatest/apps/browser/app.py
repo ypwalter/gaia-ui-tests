@@ -40,6 +40,16 @@ class Browser(Base):
     _add_bookmark_to_home_screen_dialog_button_locator = ('id', 'button-bookmark-add')
     _bookmark_title_input_locator = ('id', 'bookmark-title')
 
+    # YouTube video
+    _video_container_locator = ('id', 'koya_elem_0_6')
+
+    # Video player fullscreen
+    _video_frame_locator = ('css selector', "iframe[src^='app://video'][src$='view.html']")
+    _video_spinner_locator = ('id', 'spinner-overlay')
+    _video_player_locator = ('id', 'player')
+    _video_player_frame_locator = ('id', 'videoFrame')
+    _video_loaded_locator = ('css selector', 'video[style]')
+
     def launch(self):
         Base.launch(self)
         self.wait_for_condition(lambda m: m.execute_script("return window.wrappedJSObject.Browser.hasLoaded;"))
@@ -145,6 +155,21 @@ class Browser(Base):
     @property
     def _current_screen(self):
         return self.marionette.execute_script("return window.wrappedJSObject.Browser.currentScreen;")
+
+    def tap_video(self):
+        self.wait_for_element_present(*self._video_container_locator)
+        self.marionette.tap(self.marionette.find_element(*self._video_container_locator))
+        self.marionette.switch_to_frame()
+        self.wait_for_element_present(*self._video_frame_locator)
+
+    def switch_to_video_frame(self):
+        self.marionette.switch_to_frame(self.marionette.find_element(*self._video_frame_locator))
+        self.wait_for_element_displayed(*self._video_player_frame_locator)
+        self.wait_for_element_displayed(*self._video_loaded_locator)
+
+    @property
+    def is_video_playing(self):
+        return self.marionette.find_element(*self._video_player_locator).get_attribute('paused') == 'false'
 
     class Tab(PageRegion):
 

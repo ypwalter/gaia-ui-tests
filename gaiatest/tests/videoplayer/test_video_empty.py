@@ -15,12 +15,12 @@ class TestVideoEmpty(GaiaTestCase):
         # https://moztrap.mozilla.org/manage/case/3660/
         # Requires there to be no videos on SDCard which is the default
 
-        gallery = VideoPlayer(self.marionette)
-        gallery.launch()
+        video_gallery = VideoPlayer(self.marionette)
+        video_gallery.launch()
 
         # Verify title when no videos
-        self.assertEqual(gallery.empty_video_title, 'Add videos to get started')
+        self.assertEqual(video_gallery.empty_video_title, 'Add videos to get started')
 
         # Verify text when no videos
         # Note: Text will need to be updated if/when Bug 834477 is fixed
-        self.assertEqual(gallery.empty_video_text, 'Load videos on to the memory card.')
+        self.assertEqual(video_gallery.empty_video_text, 'Load videos on to the memory card.')
