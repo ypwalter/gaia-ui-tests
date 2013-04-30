@@ -35,21 +35,7 @@ class TestBluetoothPairWithoutPin(GaiaTestCase):
         self.assertTrue(self.data_layer.get_setting('bluetooth.enabled'))
 
         # unpair all bluetooth devices if possible
-        try:
-            self.wait_for_element_displayed('id', 'bluetooth-paired-devices')
-            paired_device = self.marionette.find_elements("css selector", "#bluetooth-paired-devices li")
-            while len(paired_device) > 0:
-                self.marionette.tap(paired_device[0])
-                self.wait_for_element_displayed('id', 'unpair-option')
-                unpair = self.marionette.find_element('id', 'unpair-option')
-                self.marionette.tap(unpair)
-                self.switch_to_frame()
-                ok = self.marionette.find_element('id', 'modal-dialog-confirm-ok')
-                self.marionette.tap(ok)
-                self.marionette.wait_for_element_not_present('id', 'unpair-option')
-                self.switch_to_frame(self.app.frame)
-        except:
-            pass
+        self.data_layer.bt_unpair_all_bluetooth_devices()
 
         # select the chosen devices to connect
         self.wait_for_element_displayed(self._device_list_locator[0], self._device_list_locator[1] % self.testvars['bluetooth']['device'])
@@ -64,6 +50,6 @@ class TestBluetoothPairWithoutPin(GaiaTestCase):
 
     def tearDown(self):
         # Disable Bluetooth
-        self.data_layer.set_setting('bluetooth.enabled', False)
+        self.data_layer.bt_disable_bluetooth()
 
         GaiaTestCase.tearDown(self)
