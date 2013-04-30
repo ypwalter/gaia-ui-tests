@@ -19,7 +19,6 @@ class TestMarketplaceWithoutConnectivity(GaiaTestCase):
         self.install_marketplace()
 
         # Disable wifi connectivity
-        self.marionette.switch_to_frame()
         self.marionette.execute_async_script("return GaiaDataLayer.disableWiFi()", special_powers=True)
 
     def test_marketplace_without_connectivity(self):
