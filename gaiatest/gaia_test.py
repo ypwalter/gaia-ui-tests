@@ -429,15 +429,6 @@ class GaiaTestCase(MarionetteTestCase):
         _yes_button_locator = ('id', 'app-install-install-button')
         mk = {"name": "Marketplace Dev",
               "manifest": "https://marketplace-dev.allizom.org/manifest.webapp ",
-              "settings": {
-                  "dom.payment.skipHTTPSCheck": True,
-                  "dom.identity.enabled": True,
-                  "toolkit.identity.debug": True,
-                  "dom.payment.provider.1.name": "firefoxmarketdev",
-                  "dom.payment.provider.1.description": "marketplace-dev.allizom.org",
-                  "dom.payment.provider.1.uri": "https://marketplace-dev.allizom.org/mozpay/?req=",
-                  "dom.payment.provider.1.type": "mozilla-dev/payments/pay/v1",
-                  "dom.payment.provider.1.requestMethod": "GET"},
               }
 
         if not self.apps.is_app_installed(mk['name']):
