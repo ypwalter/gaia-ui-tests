@@ -418,7 +418,7 @@ class GaiaTestCase(MarionetteTestCase):
         self.apps = GaiaApps(self.marionette)
         self.data_layer = GaiaData(self.marionette, self.testvars)
         from gaiatest.apps.keyboard.app import Keyboard
-        self.keyboard = Keyboard(self.marionette) 
+        self.keyboard = Keyboard(self.marionette)
 
         self.cleanUp()
 
@@ -470,6 +470,21 @@ class GaiaTestCase(MarionetteTestCase):
 
         # reset to home screen
         self.marionette.execute_script("window.wrappedJSObject.dispatchEvent(new Event('home'));")
+
+    def install_marketplace(self):
+        _yes_button_locator = ('id', 'app-install-install-button')
+        mk = {"name": "Marketplace Dev",
+              "manifest": "https://marketplace-dev.allizom.org/manifest.webapp ",
+              }
+
+        if not self.apps.is_app_installed(mk['name']):
+            # install the marketplace dev app
+            self.marionette.execute_script('navigator.mozApps.install("%s")' % mk['manifest'])
+
+            # TODO add this to the system app object when we have one
+            self.wait_for_element_displayed(*_yes_button_locator)
+            self.marionette.tap(self.marionette.find_element(*_yes_button_locator))
+            self.wait_for_element_not_displayed(*_yes_button_locator)
 
     def connect_to_network(self):
         # TODO determine if we are online already
