@@ -322,6 +322,11 @@ class GaiaDevice(object):
         return self._is_android_build
 
     @property
+    def is_online(self):
+        # Returns true if the device has a network connection established (cell data, wifi, etc)
+        return self.marionette.execute_script('return window.navigator.onLine;')
+
+    @property
     def has_mobile_connection(self):
         return self.marionette.execute_script('return window.navigator.mozMobileConnection !== undefined')
 
@@ -487,19 +492,23 @@ class GaiaTestCase(MarionetteTestCase):
             self.wait_for_element_not_displayed(*_yes_button_locator)
 
     def connect_to_network(self):
-        # TODO determine if we are online already
-        # TODO only enable cell data if lan failed
-        if self.testvars.get('wifi') and self.device.has_wifi:
-            self.data_layer.connect_to_wifi()
-        elif self.device.has_mobile_connection:
-            self.data_layer.connect_to_cell_data()
-        # TODO assert that we are online
+        if not self.device.is_online:
+            try:
+                self.connect_to_local_area_network()
+            except:
+                if self.device.has_mobile_connection:
+                    self.data_layer.connect_to_cell_data()
+                else:
+                    raise Exception('Unable to connect to network')
+        assert self.device.is_online
 
     def connect_to_local_area_network(self):
-        # TODO determine if we are online already
-        if self.testvars.get('wifi') and self.device.has_wifi:
-            self.data_layer.connect_to_wifi()
-        # TODO assert that we are online
+        if not self.device.is_online:
+            if self.testvars.get('wifi') and self.device.has_wifi:
+                self.data_layer.connect_to_wifi()
+                assert self.device.is_online
+            else:
+                raise Exception('Unable to connect to local area network')
 
     def push_resource(self, filename, count=1, destination=''):
         self.device.push_file(self.resource(filename), count, '/'.join(['sdcard', destination]))
