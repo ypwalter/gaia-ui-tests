@@ -172,7 +172,9 @@ class GaiaData(object):
         assert result, "Unable to change setting with name '%s' to '%s'" % (name, value)
 
     def set_volume(self, value):
-        self.set_setting('audio.volume.master', value)
+        channels = ['master', 'content', 'notification', 'alarm', 'telephony', 'bt_sco']
+        for channel in channels:
+            self.set_setting('audio.volume.%s' % channel, value)
 
     def bt_enable_bluetooth(self):
         self.marionette.switch_to_frame()
