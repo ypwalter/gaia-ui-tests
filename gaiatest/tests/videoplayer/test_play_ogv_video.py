@@ -22,7 +22,7 @@ class TestPlayOgvVideo(GaiaTestCase):
         video_player.wait_for_files_to_load(1)
 
         # Assert that there is at least one video available
-        self.assertGreater(video_player.video_items_number, 0)
+        self.assertGreater(video_player.total_video_count, 0)
 
         #first_video = all_videos[0]
         first_video_name = video_player.first_video_name

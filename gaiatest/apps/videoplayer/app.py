@@ -25,7 +25,7 @@ class VideoPlayer(Base):
         self.wait_for_element_displayed(*self._video_items_locator)
 
     @property
-    def video_items_number(self):
+    def total_video_count(self):
         return len(self.marionette.find_elements(*self._video_items_locator))
 
     @property

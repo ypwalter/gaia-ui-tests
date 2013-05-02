@@ -43,10 +43,8 @@ class Browser(Base):
     # YouTube video
     _video_container_locator = ('id', 'koya_elem_0_6')
 
-    # Video player fullscreen
+    # Video player
     _video_frame_locator = ('css selector', "iframe[src^='app://video'][src$='view.html']")
-
-    #_video_spinner_locator = ('id', 'spinner-overlay')
     _video_player_frame_locator = ('id', 'videoFrame')
     _video_loaded_locator = ('css selector', 'video[style]')
 
