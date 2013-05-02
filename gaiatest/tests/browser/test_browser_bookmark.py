@@ -77,7 +77,7 @@ class TestBrowserBookmark(GaiaTestCase):
                                             if (aApp.isBookmark) {
                                               if (aApp.manifest.name == name) {
                                                 console.log('uninstalling app with name ' + aApp.manifest.name);
-                                                aApp.uninstall();
+                                                window.wrappedJSObject.GridManager.uninstall(aApp);
                                               };
                                             };
                                           });
