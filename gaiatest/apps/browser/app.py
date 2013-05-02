@@ -45,8 +45,8 @@ class Browser(Base):
 
     # Video player fullscreen
     _video_frame_locator = ('css selector', "iframe[src^='app://video'][src$='view.html']")
-    _video_spinner_locator = ('id', 'spinner-overlay')
-    _video_player_locator = ('id', 'player')
+
+    #_video_spinner_locator = ('id', 'spinner-overlay')
     _video_player_frame_locator = ('id', 'videoFrame')
     _video_loaded_locator = ('css selector', 'video[style]')
 
@@ -161,16 +161,13 @@ class Browser(Base):
         self.wait_for_element_present(*self._video_container_locator)
         self.marionette.tap(self.marionette.find_element(*self._video_container_locator))
         self.marionette.switch_to_frame()
-        self.wait_for_element_present(*self._video_frame_locator)
+        from gaiatest.apps.videoplayer.regions.fullscreen_video import FullscreenVideo
+        return FullscreenVideo(self.marionette)
 
     def switch_to_video_frame(self):
         self.marionette.switch_to_frame(self.marionette.find_element(*self._video_frame_locator))
         self.wait_for_element_displayed(*self._video_player_frame_locator)
         self.wait_for_element_displayed(*self._video_loaded_locator)
-
-    @property
-    def is_video_playing(self):
-        return self.marionette.find_element(*self._video_player_locator).get_attribute('paused') == 'false'
 
     class Tab(PageRegion):
 
