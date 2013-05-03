@@ -30,7 +30,7 @@ class TestYouTube(GaiaTestCase):
         fullscreen_video = browser.tap_video()
 
         # Switch to video player
-        browser.switch_to_video_frame()
+        fullscreen_video.switch_to_video_frame()
 
         # Check for playback
         self.assertTrue(fullscreen_video.is_video_playing)

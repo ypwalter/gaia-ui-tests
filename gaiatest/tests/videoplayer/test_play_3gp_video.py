@@ -15,19 +15,17 @@ class TestPlay3GPVideo(GaiaTestCase):
         self.push_resource('VID_0001.3gp', destination='DCIM/100MZLLA')
 
     def test_play_3gp_video(self):
-        # https://moztrap.mozilla.org/manage/case/2478/
+        """https://moztrap.mozilla.org/manage/case/2478/"""
 
         video_player = VideoPlayer(self.marionette)
         video_player.launch()
-        video_player.wait_for_files_to_load(1)
 
         # Assert that there is at least one video available
         self.assertGreater(video_player.total_video_count, 0)
 
-        #first_video = all_videos[0]
         first_video_name = video_player.first_video_name
 
-        # click on the first video
+        # Click on the first video.
         fullscreen_video = video_player.tap_first_video_item()
 
         # Video will play automatically
@@ -37,5 +35,5 @@ class TestPlay3GPVideo(GaiaTestCase):
         # The elapsed time != 0:00 is the only indication of the toolbar visible
         self.assertNotEqual(fullscreen_video.elapsed_time, '00:00')
 
-        # Check the name too. This will only work if the toolbar is visible
+        # Check the name too. This will only work if the toolbar is visible.
         self.assertEqual(first_video_name, fullscreen_video.name)

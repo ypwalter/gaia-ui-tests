@@ -12,6 +12,9 @@ class FullscreenVideo(Base):
     _elapsed_text_locator = ('id', 'elapsed-text')
     _video_title_locator = ('id', 'video-title')
     _video_player_locator = ('id', 'player')
+    _video_frame_locator = ('css selector', "iframe[src^='app://video'][src$='view.html']")
+    _video_player_frame_locator = ('id', 'videoFrame')
+    _video_loaded_locator = ('css selector', 'video[style]')
 
     def tap_control_bar(self):
         self.wait_for_element_displayed(*self._video_controls_locator)
@@ -29,3 +32,8 @@ class FullscreenVideo(Base):
     @property
     def is_video_playing(self):
         return self.marionette.find_element(*self._video_player_locator).get_attribute('paused') == 'false'
+
+    def switch_to_video_frame(self):
+        self.marionette.switch_to_frame(self.marionette.find_element(*self._video_frame_locator))
+        self.wait_for_element_displayed(*self._video_player_frame_locator)
+        self.wait_for_element_displayed(*self._video_loaded_locator)

@@ -15,19 +15,17 @@ class TestPlayWebMVideo(GaiaTestCase):
         self.push_resource('VID_0001.webm', destination='DCIM/100MZLLA')
 
     def test_play_webm_video(self):
-        # https://moztrap.mozilla.org/manage/case/2478/
+        """https://moztrap.mozilla.org/manage/case/2478/"""
 
         video_player = VideoPlayer(self.marionette)
         video_player.launch()
-        video_player.wait_for_files_to_load(1)
 
         # Assert that there is at least one video available
         self.assertGreater(video_player.total_video_count, 0)
 
-        #first_video = all_videos[0]
         first_video_name = video_player.first_video_name
 
-        # click on the first video
+        # Click on the first video
         fullscreen_video = video_player.tap_first_video_item()
 
         # Video will play automatically

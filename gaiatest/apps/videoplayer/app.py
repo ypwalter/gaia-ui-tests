@@ -10,6 +10,7 @@ class VideoPlayer(Base):
     name = 'Video'
 
     _progress_bar_locator = ('id', 'progress')
+
     # Video list/summary view
     _video_items_locator = ('css selector', 'ul#thumbnails li[data-name]')
     _video_name_locator = ('css selector', 'div.details')
@@ -20,9 +21,6 @@ class VideoPlayer(Base):
     def launch(self):
         Base.launch(self)
         self.wait_for_element_not_displayed(*self._progress_bar_locator)
-
-    def wait_for_files_to_load(self, files_number):
-        self.wait_for_element_displayed(*self._video_items_locator)
 
     @property
     def total_video_count(self):

@@ -43,11 +43,6 @@ class Browser(Base):
     # YouTube video
     _video_container_locator = ('id', 'koya_elem_0_6')
 
-    # Video player
-    _video_frame_locator = ('css selector', "iframe[src^='app://video'][src$='view.html']")
-    _video_player_frame_locator = ('id', 'videoFrame')
-    _video_loaded_locator = ('css selector', 'video[style]')
-
     def launch(self):
         Base.launch(self)
         self.wait_for_condition(lambda m: m.execute_script("return window.wrappedJSObject.Browser.hasLoaded;"))
@@ -161,11 +156,6 @@ class Browser(Base):
         self.marionette.switch_to_frame()
         from gaiatest.apps.videoplayer.regions.fullscreen_video import FullscreenVideo
         return FullscreenVideo(self.marionette)
-
-    def switch_to_video_frame(self):
-        self.marionette.switch_to_frame(self.marionette.find_element(*self._video_frame_locator))
-        self.wait_for_element_displayed(*self._video_player_frame_locator)
-        self.wait_for_element_displayed(*self._video_loaded_locator)
 
     class Tab(PageRegion):
 
