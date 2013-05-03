@@ -68,6 +68,8 @@ class TestBrowserBookmark(GaiaTestCase):
         return pageHelper.getCurrentPageNumber() < (pageHelper.getTotalPagesNumber() - 1);""")
 
     def _delete_bookmark(self, bookmark_name):
+        # TODO move this snippet to the Homescreen app object
+
         # ensure we are in the homescreen app
         self.apps.launch('Homescreen')
         self.marionette.execute_script("""
