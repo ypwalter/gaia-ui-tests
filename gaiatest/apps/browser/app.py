@@ -40,9 +40,6 @@ class Browser(Base):
     _add_bookmark_to_home_screen_dialog_button_locator = ('id', 'button-bookmark-add')
     _bookmark_title_input_locator = ('id', 'bookmark-title')
 
-    # YouTube video
-    _video_container_locator = ('id', 'koya_elem_0_6')
-
     def launch(self):
         Base.launch(self)
         self.wait_for_condition(lambda m: m.execute_script("return window.wrappedJSObject.Browser.hasLoaded;"))
@@ -149,13 +146,6 @@ class Browser(Base):
     @property
     def _current_screen(self):
         return self.marionette.execute_script("return window.wrappedJSObject.Browser.currentScreen;")
-
-    def tap_video(self):
-        self.wait_for_element_present(*self._video_container_locator)
-        self.marionette.tap(self.marionette.find_element(*self._video_container_locator))
-        self.marionette.switch_to_frame()
-        from gaiatest.apps.videoplayer.regions.fullscreen_video import FullscreenVideo
-        return FullscreenVideo(self.marionette)
 
     class Tab(PageRegion):
 

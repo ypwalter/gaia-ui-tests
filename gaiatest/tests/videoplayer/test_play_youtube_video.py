@@ -9,6 +9,8 @@ from gaiatest.apps.browser.app import Browser
 class TestYouTube(GaiaTestCase):
 
     video_URL = 'http://m.youtube.com/watch?v=5MzuGWFIfio'
+    # YouTube video
+    _video_container_locator = ('id', 'koya_elem_0_6')
 
     def setUp(self):
         GaiaTestCase.setUp(self)
@@ -27,10 +29,17 @@ class TestYouTube(GaiaTestCase):
         browser.switch_to_content()
 
         # Tap the video
-        fullscreen_video = browser.tap_video()
+        fullscreen_video = self.tap_video()
 
         # Switch to video player
         fullscreen_video.switch_to_video_frame()
 
         # Check for playback
         self.assertTrue(fullscreen_video.is_video_playing)
+
+    def tap_video(self):
+        self.wait_for_element_present(*self._video_container_locator)
+        self.marionette.tap(self.marionette.find_element(*self._video_container_locator))
+        self.marionette.switch_to_frame()
+        from gaiatest.apps.videoplayer.regions.fullscreen_video import FullscreenVideo
+        return FullscreenVideo(self.marionette)
