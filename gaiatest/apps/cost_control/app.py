@@ -36,8 +36,8 @@ class CostControl(Base):
     @property
     def is_wifi_data_tracking_on(self):
         self.wait_for_element_displayed(*self._wifi_data_item_locator)
-        mobileswitch = self.marionette.find_element(*self._wifi_data_tracking_locator)
-        return mobileswitch.is_selected()
+        wifiswitch = self.marionette.find_element(*self._wifi_data_tracking_locator)
+        return wifiswitch.is_selected()
 
     @property
     def mobile_data_usage_figure(self):
