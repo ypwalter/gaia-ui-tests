@@ -13,6 +13,9 @@ class TestCostControlDataAlertMobile(GaiaTestCase):
     _cost_control_widget_locator = ('css selector', 'iframe[data-frame-origin="app://costcontrol.gaiamobile.org"]')
     _data_usage_view_locator = ('id', 'datausage-limit-view')
 
+    # locator for page loaded in browser
+    _page_body_locator = ("id", "home")
+
     def test_cost_control_data_alert_mobile(self):
 
         self.data_layer.connect_to_cell_data()
@@ -28,14 +31,16 @@ class TestCostControlDataAlertMobile(GaiaTestCase):
         settings.select_when_use_is_above_unit_and_value('MB', '0.1')
         settings.reset_data_usage()
         settings.tap_done()
-
-        self.assertEqual(cost_control.mobile_data_usage_figure, '0.00 B')
+        self.assertTrue(cost_control.is_mobile_data_tracking_on)
 
         # open browser to get some data downloaded
         # please remove this once there is a better way than launching browser app/obj to do so
         browser = Browser(self.marionette)
         browser.launch()
         browser.go_to_url('http://developer.mozilla.org/')
+        browser.switch_to_content()
+        self.wait_for_element_present(*self._page_body_locator, timeout=120)
+        browser.switch_to_chrome()
 
         # get the notification bar
         self.marionette.switch_to_frame()
