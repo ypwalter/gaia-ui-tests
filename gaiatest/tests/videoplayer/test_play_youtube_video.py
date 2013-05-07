@@ -4,6 +4,7 @@
 
 from gaiatest import GaiaTestCase
 from gaiatest.apps.browser.app import Browser
+from gaiatest.apps.videoplayer.regions.fullscreen_video import FullscreenVideo
 
 
 class TestYouTube(GaiaTestCase):
@@ -29,7 +30,10 @@ class TestYouTube(GaiaTestCase):
         browser.switch_to_content()
 
         # Tap the video
-        fullscreen_video = self.tap_video()
+        self.wait_for_element_present(*self._video_container_locator)
+        self.marionette.tap(self.marionette.find_element(*self._video_container_locator))
+        self.marionette.switch_to_frame()
+        fullscreen_video = FullscreenVideo(self.marionette)
 
         # Switch to video player
         fullscreen_video.switch_to_video_frame()
