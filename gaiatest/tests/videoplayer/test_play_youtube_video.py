@@ -40,10 +40,3 @@ class TestYouTube(GaiaTestCase):
 
         # Check for playback
         self.assertTrue(fullscreen_video.is_video_playing)
-
-    def tap_video(self):
-        self.wait_for_element_present(*self._video_container_locator)
-        self.marionette.tap(self.marionette.find_element(*self._video_container_locator))
-        self.marionette.switch_to_frame()
-        from gaiatest.apps.videoplayer.regions.fullscreen_video import FullscreenVideo
-        return FullscreenVideo(self.marionette)
