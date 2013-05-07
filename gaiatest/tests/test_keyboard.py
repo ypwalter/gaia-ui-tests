@@ -3,16 +3,15 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import time
-
 from gaiatest import GaiaTestCase
+
 
 class TestKeyboard(GaiaTestCase):
 
     # UI Tests app locators
     _test_message_title_locator = ('css selector', 'h1[data-l10n-id="messages"]')
     _new_message_icon_locator = ('id', 'icon-add')
-    _text_input_locator = ('id', 'messages-recipient')
+    _text_input_locator = ('id', 'messages-input')
 
     _string = "aG1D2s3~!=@.#$^aśZïd".decode("UTF-8")
 
@@ -36,7 +35,8 @@ class TestKeyboard(GaiaTestCase):
         # tap the message composition area
         self.wait_for_element_displayed(*self._text_input_locator)
         message_composition = self.marionette.find_element(*self._text_input_locator)
-        self.marionette.tap(message_composition)
+        # TODO: Switch this back to using tap when bug #869688 is fixed
+        message_composition.click()
 
         # send first 15 characters, delete last character, send a space, and send all others
         kbapp.send(self._string[:15])
