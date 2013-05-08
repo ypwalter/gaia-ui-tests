@@ -87,7 +87,7 @@ class Base(object):
                 value = method(self.marionette)
                 if value:
                     return value
-            except NoSuchElementException:
+            except (NoSuchElementException, StaleElementException):
                 pass
             time.sleep(0.5)
         else:
