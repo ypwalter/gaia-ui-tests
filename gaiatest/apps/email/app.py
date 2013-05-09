@@ -31,8 +31,8 @@ class Email(Base):
 
     def delete_email_account(self, index):
 
-        self.header.tap_menu()
-        self.toolbar.tap_settings()
+        toolbar = self.header.tap_menu()
+        toolbar.tap_settings()
         settings = Settings(self.marionette)
         account_settings = settings.email_accounts[index].tap()
         delete_confirmation = account_settings.tap_delete()
@@ -63,6 +63,7 @@ class Header(Base):
         self.marionette.tap(self.marionette.find_element(*self._menu_button_locator))
         toolbar = ToolBar(self.marionette)
         self.wait_for_condition(lambda m: toolbar.is_settings_visible)
+        return toolbar
 
     def tap_compose(self):
         self.marionette.tap(self.marionette.find_element(*self._compose_button_locator))

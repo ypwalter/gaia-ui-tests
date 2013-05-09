@@ -13,6 +13,10 @@ class SetupEmail(Base):
     _next_locator = ('css selector', '.sup-info-next-btn')
     _continue_button_locator = ('class name', 'sup-show-mail-btn sup-form-btn recommend')
 
+    def __init__(self, marionette):
+        Base.__init__(self, marionette)
+        self.wait_for_element_displayed(*self._name_locator)
+
     def type_name(self, value):
         self.marionette.find_element(*self._name_locator).send_keys(value)
 

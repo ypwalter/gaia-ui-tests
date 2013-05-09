@@ -32,7 +32,6 @@ class TestSetupGmail(GaiaTestCase):
         # check toolbar area
         self.assertTrue(self.email.toolbar.is_edit_visible)
         self.assertTrue(self.email.toolbar.is_refresh_visible)
-        self.assertTrue(self.email.toolbar.is_edit_visible)
 
         # check account has emails
         self.email.wait_for_emails_to_sync()
