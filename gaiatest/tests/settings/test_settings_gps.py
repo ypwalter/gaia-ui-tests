@@ -33,7 +33,7 @@ class TestSettingsGPS(GaiaTestCase):
 
         # should be on by default
         self.wait_for_condition(
-            lambda m: self.marionette.find_element(*self._gps_enabled_input_locator).get_attribute('checked')
+            lambda m: m.find_element(*self._gps_enabled_input_locator).get_attribute('checked')
         )
 
         # turn off - we have to tap on the label rather than the input
@@ -51,7 +51,7 @@ class TestSettingsGPS(GaiaTestCase):
         self.marionette.tap(enabled_label)
         enabled_switch = self.marionette.find_element(*self._gps_enabled_input_locator)
         self.wait_for_condition(
-            lambda m: self.marionette.find_element(*self._gps_enabled_input_locator).get_attribute('checked') == 'true'
+            lambda m: m.find_element(*self._gps_enabled_input_locator).get_attribute('checked') == 'true'
         )
 
         # should be on

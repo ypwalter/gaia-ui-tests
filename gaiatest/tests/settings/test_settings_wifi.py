@@ -44,7 +44,7 @@ class TestSettingsWifi(GaiaTestCase):
 
         # Wait for some networks to be found
         self.wait_for_condition(lambda m: len(m.find_elements(*self._available_networks_locator)) > 0,
-            message="No networks listed on screen")
+                                message="No networks listed on screen")
 
         this_network_locator = ('xpath', "//li/a[text()='%s']" % self.testvars['wifi']['ssid'])
         wifi_network = self.marionette.find_element(*this_network_locator)
@@ -62,7 +62,7 @@ class TestSettingsWifi(GaiaTestCase):
             self.marionette.tap(ok)
 
         self.wait_for_condition(
-            lambda m: self.marionette.find_element(*self._connected_message_locator).text == "Connected")
+            lambda m: m.find_element(*self._connected_message_locator).text == "Connected")
 
         # verify that wifi is now on
         self.assertTrue(self.data_layer.is_wifi_connected(self.testvars['wifi']), "WiFi was not connected via Settings app")

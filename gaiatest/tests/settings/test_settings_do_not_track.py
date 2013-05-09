@@ -42,13 +42,13 @@ class TestSettingsDoNotTrack(GaiaTestCase):
 
         # turned off by default
         self.wait_for_condition(
-            lambda m: self.marionette.find_element(*self._donottrack_checkbox_locator).get_attribute('checked') is None
+            lambda m: m.find_element(*self._donottrack_checkbox_locator).get_attribute('checked') is None
         )
 
         # turn on - tap on the label
         self.marionette.tap(donottrack_label)
         self.wait_for_condition(
-            lambda m: self.marionette.find_element(*self._donottrack_checkbox_locator).get_attribute('checked')
+            lambda m: m.find_element(*self._donottrack_checkbox_locator).get_attribute('checked')
         )
 
         # should be on
@@ -58,7 +58,7 @@ class TestSettingsDoNotTrack(GaiaTestCase):
         # turn back off
         self.marionette.tap(donottrack_label)
         self.wait_for_condition(
-            lambda m: self.marionette.find_element(*self._donottrack_checkbox_locator).get_attribute('checked') is None
+            lambda m: m.find_element(*self._donottrack_checkbox_locator).get_attribute('checked') is None
         )
 
         # should be off

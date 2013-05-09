@@ -58,7 +58,7 @@ class TestSettingsCellData(GaiaTestCase):
             self.marionette.tap(turn_on_prompt_button)
 
         self.wait_for_condition(
-            lambda m: self.marionette.find_element(*self._cell_data_enabled_input_locator).get_attribute('checked') == 'true'
+            lambda m: m.find_element(*self._cell_data_enabled_input_locator).get_attribute('checked') == 'true'
         )
 
         # verify that cell data is now on
