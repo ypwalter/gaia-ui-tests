@@ -55,7 +55,7 @@ class TestSms(GaiaTestCase):
 
         self.wait_for_element_displayed(*self._receiver_input_locator)
         contact_field = self.marionette.find_element(*self._receiver_input_locator)
-        contact_field.send_keys(self.testvars['this_phone_number'])
+        contact_field.send_keys(self.testvars['carrier']['phone_number'])
 
         message_field = self.marionette.find_element(*self._message_field_locator)
         message_field.send_keys(_text_message_content)
