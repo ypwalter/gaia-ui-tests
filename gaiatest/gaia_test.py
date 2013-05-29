@@ -495,7 +495,7 @@ class GaiaTestCase(MarionetteTestCase):
 
             # TODO add this to the system app object when we have one
             self.wait_for_element_displayed(*_yes_button_locator)
-            self.marionette.tap(self.marionette.find_element(*_yes_button_locator))
+            self.marionette.find_element(*_yes_button_locator).tap()
             self.wait_for_element_not_displayed(*_yes_button_locator)
 
     def connect_to_network(self):

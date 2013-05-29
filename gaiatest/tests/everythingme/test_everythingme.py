@@ -53,7 +53,7 @@ class TestEverythingMe(GaiaTestCase):
 
         # Tap the available Facebook application shortcut
         app = self.marionette.find_element(*self._facebook_app_locator)
-        self.marionette.tap(app)
+        app.tap()
 
         # Switch to top level frame then look for the Facebook app
         self.marionette.switch_to_frame()

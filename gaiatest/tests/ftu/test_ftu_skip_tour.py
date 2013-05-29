@@ -107,8 +107,7 @@ class TestFtu(GaiaTestCase):
         self.wait_for_element_displayed(*self._section_cell_data_locator)
 
         # Tap enable data
-        # TODO: Convert to el.tap() when bug #876695 is fixed
-        self.marionette.tap(self.marionette.find_element(*self._enable_data_checkbox_locator))
+        self.marionette.find_element(*self._enable_data_checkbox_locator).tap()
 
         self.wait_for_condition(lambda m: self.data_layer.is_cell_data_connected,
                                 message="Cell data was not connected by FTU app")
@@ -122,8 +121,7 @@ class TestFtu(GaiaTestCase):
                                 message="No networks listed on screen")
 
         wifi_network = self.marionette.find_element('id', self.testvars['wifi']['ssid'])
-        # TODO: Convert to el.tap() when bug #876697 is fixed
-        self.marionette.tap(wifi_network)
+        wifi_network.tap()
 
         # This is in the event we are using a Wifi Network that requires a password
         # We cannot be sure of this thus need the logic
@@ -237,8 +235,7 @@ class TestFtu(GaiaTestCase):
         # Loop options until we find the match
         for li in options:
             if li.text == match_string:
-                # TODO: Convert to el.tap() when bug #876704 is fixed
-                li.click()
+                li.tap()
                 break
 
         close_button.tap()
