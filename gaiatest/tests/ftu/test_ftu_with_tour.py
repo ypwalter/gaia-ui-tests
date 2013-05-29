@@ -14,6 +14,7 @@ class TestFtu(GaiaTestCase):
     _section_languages_locator = ('id', 'languages')
     _section_cell_data_locator = ('id', 'data_3g')
     _section_wifi_locator = ('id', 'wifi')
+    _found_wifi_networks_locator = ('css selector', 'ul#networks-list li')
     _section_date_time_locator = ('id', 'date_and_time')
     _section_import_contacts_locator = ('id', 'import_contacts')
     _section_ayr_locator = ('id', 'about-your-rights')
@@ -52,6 +53,8 @@ class TestFtu(GaiaTestCase):
         # Tap next
         self.marionette.find_element(*self._next_button_locator).tap()
         self.wait_for_element_displayed(*self._section_wifi_locator)
+        # The scanning for networks messes with the timing of taps
+        self.wait_for_condition(lambda m: len(m.find_elements(*self._found_wifi_networks_locator)) > 0)
         # Tap next
         self.marionette.find_element(*self._next_button_locator).tap()
         self.wait_for_element_displayed(*self._section_date_time_locator)

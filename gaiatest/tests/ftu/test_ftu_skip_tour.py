@@ -238,7 +238,7 @@ class TestFtu(GaiaTestCase):
         for li in options:
             if li.text == match_string:
                 # TODO: Convert to el.tap() when bug #876704 is fixed
-                self.marionette.tap(li)
+                li.click()
                 break
 
         close_button.tap()
