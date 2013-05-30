@@ -56,7 +56,7 @@ class TestNotificationBar(GaiaTestCase):
 
         # Clear the notification by "Clear all"
         notification_clear = self.marionette.find_element(*self._notification_clear_locator)
-        self.marionette.tap(notification_clear)
+        notification_clear.tap()
 
         # Assert there is no notification is listed in notifications-container
         time.sleep(1)

@@ -434,7 +434,8 @@ class GaiaTestCase(MarionetteTestCase):
         # remove media
         if self.device.is_android_build and self.data_layer.media_files:
             for filename in self.data_layer.media_files:
-                self.device.manager.removeFile('/'.join(['sdcard', filename]))
+                # filename is a fully qualified path
+                self.device.manager.removeFile(filename)
 
         if self.data_layer.get_setting('ril.radio.disabled'):
             # enable the device radio, disable Airplane mode
@@ -446,6 +447,9 @@ class GaiaTestCase(MarionetteTestCase):
 
         # Change language back to English
         self.data_layer.set_setting("language.current", "en-US")
+
+        # Switch off spanish keyboard before test
+        self.data_layer.set_setting("keyboard.layouts.spanish", False)
 
         # Change timezone back to PST
         self.data_layer.set_setting("time.timezone", "America/Los_Angeles")
@@ -491,7 +495,7 @@ class GaiaTestCase(MarionetteTestCase):
 
             # TODO add this to the system app object when we have one
             self.wait_for_element_displayed(*_yes_button_locator)
-            self.marionette.tap(self.marionette.find_element(*_yes_button_locator))
+            self.marionette.find_element(*_yes_button_locator).tap()
             self.wait_for_element_not_displayed(*_yes_button_locator)
 
     def connect_to_network(self):

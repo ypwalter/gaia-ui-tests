@@ -39,7 +39,7 @@ class TestEverythingMe(GaiaTestCase):
         self.marionette.execute_script("window.wrappedJSObject.GridManager.goToPreviousPage();")
 
         # Check for the available application shortcut categories
-        self.wait_for_element_present(*self._shortcut_items_locator)
+        self.wait_for_element_displayed(*self._shortcut_items_locator)
 
         # Check that there are shortcut application categories available
         shortcuts = self.marionette.find_elements(*self._shortcut_items_locator)
@@ -53,7 +53,7 @@ class TestEverythingMe(GaiaTestCase):
 
         # Tap the available Facebook application shortcut
         app = self.marionette.find_element(*self._facebook_app_locator)
-        self.marionette.tap(app)
+        app.tap()
 
         # Switch to top level frame then look for the Facebook app
         self.marionette.switch_to_frame()
