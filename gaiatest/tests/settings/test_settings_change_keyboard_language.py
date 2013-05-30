@@ -32,6 +32,8 @@ class TestChangeKeyboardLanguage(GaiaTestCase):
         # Navigate to keyboard settings
         self.wait_for_element_displayed(*self._keyboard_settings_locator)
         keyboard_setting = self.marionette.find_element(*self._keyboard_settings_locator)
+        # TODO: remove the explicit scroll once bug 833370 is fixed
+        self.marionette.execute_script("arguments[0].scrollIntoView(false);", [keyboard_setting])
         self.marionette.tap(keyboard_setting)
 
         # Select keyboard language
