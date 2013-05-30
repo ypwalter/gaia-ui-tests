@@ -121,6 +121,8 @@ class Base(object):
         # loop options until we find the match
         for li in options:
             if li.text == match_string:
+                # TODO: remove the explicit scroll once bug 833370 is fixed
+                self.marionette.execute_script("arguments[0].scrollIntoView(false);", [li])
                 li.click()
                 break
 
