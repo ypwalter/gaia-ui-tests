@@ -81,7 +81,10 @@ class ManualSetupEmail(Base):
         el.send_keys(value)
 
     def select_account_type(self, value):
-        self.marionette.find_element(*self._account_type_locator).click()
+        account_type = self.marionette.find_element(*self._account_type_locator)
+        # TODO: remove the explicit scroll once bug 833370 is fixed
+        self.marionette.execute_script("arguments[0].scrollIntoView(false);", [account_type])
+        account_type.click()
         self.select(value)
 
     def type_imap_name(self, value):
