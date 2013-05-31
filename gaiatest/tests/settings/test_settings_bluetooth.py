@@ -32,7 +32,7 @@ class TestBluetoothSettings(GaiaTestCase):
         bluetooth_menu_item.tap()
 
         # Enable Bluetooth
-        self.wait_for_element_present(*self._bluetooth_checkbox_locator)
+        self.wait_for_element_displayed(*self._bluetooth_label_locator)
         checkbox = self.marionette.find_element(*self._bluetooth_checkbox_locator)
         self.assertIsNone(checkbox.get_attribute('checked'))
 

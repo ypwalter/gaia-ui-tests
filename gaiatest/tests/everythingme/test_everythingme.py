@@ -17,7 +17,7 @@ class TestEverythingMe(GaiaTestCase):
     _homescreen_landing_locator = ('id', 'landing-page')
 
     # Facebook app locator
-    _facebook_iframe_locator = ('css selector', "iframe[data-url*='http://touch.facebook.com/']")
+    _facebook_iframe_locator = ('css selector', "iframe[data-url*='facebook.com']")
     _facebook_app_locator = ('xpath', "//li[@data-name='Facebook']")
 
     def setUp(self):

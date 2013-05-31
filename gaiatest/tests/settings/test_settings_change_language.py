@@ -65,6 +65,8 @@ class TestChangeLanguage(GaiaTestCase):
         # Loop options until we find the match
         for option in options:
             if option.text == match_string:
+                # TODO: remove the explicit scroll once bug 833370 is fixed
+                self.marionette.execute_script("arguments[0].scrollIntoView(false);", [option])
                 option.click()
                 break
 
