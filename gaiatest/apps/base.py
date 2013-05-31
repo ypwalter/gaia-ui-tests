@@ -19,6 +19,7 @@ class Base(object):
     def __init__(self, marionette):
         self.marionette = marionette
         self.apps = GaiaApps(self.marionette)
+        self.frame = None
 
     def launch(self):
         self.app = self.apps.launch(self.name)
@@ -131,6 +132,14 @@ class Base(object):
 
         # now back to app
         self.launch()
+
+    def dismiss_keyboard(self):
+        # TODO: Switch back to the 'current' frame once bug 855327 is resolved
+        frame = self.frame or self.apps.displayed_app.frame
+        self.marionette.switch_to_frame()
+        self.marionette.execute_script('navigator.mozKeyboard.removeFocus();')
+        self.wait_for_condition(lambda m: m.find_element('css selector', '#keyboard-frame iframe').location['y'] == 480)
+        self.marionette.switch_to_frame(frame)
 
 
 class PageRegion(Base):

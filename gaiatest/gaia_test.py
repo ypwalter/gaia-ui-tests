@@ -83,6 +83,15 @@ class GaiaApps(object):
             self.switch_to_frame(app.frame_id, url)
         return app
 
+    @property
+    def displayed_app(self):
+        self.marionette.switch_to_frame()
+        result = self.marionette.execute_async_script('return GaiaApps.displayedApp();')
+        return GaiaApp(frame=result.get('frame'),
+                       src=result.get('src'),
+                       name=result.get('name'),
+                       origin=result.get('origin'))
+
     def is_app_installed(self, app_name):
         self.marionette.switch_to_frame()
         return self.marionette.execute_async_script("GaiaApps.locateWithName('%s')" % app_name)
