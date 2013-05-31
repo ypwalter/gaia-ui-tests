@@ -10,7 +10,7 @@ class TestBluetoothSettings(GaiaTestCase):
     # Bluetooth settings locators
     _bluetooth_settings_locator = ('id', 'menuItem-bluetooth')
     _bluetooth_checkbox_locator = ('css selector', '#bluetooth-status input')
-    _bluetooth_label_locator = ('css selector', '#bluetooth-status label')
+    _bluetooth_label_locator = ('css selector', '#bluetooth-status span')
 
     def setUp(self):
 
