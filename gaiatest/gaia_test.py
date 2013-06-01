@@ -568,7 +568,7 @@ class GaiaTestCase(MarionetteTestCase):
                 pass
         else:
             raise TimeoutException(
-                'Element %s not found before timeout' % locator)
+                'Element %s not present before timeout' % locator)
 
     def wait_for_element_not_present(self, by, locator, timeout=_default_timeout):
         timeout = float(timeout) + time.time()
@@ -585,17 +585,20 @@ class GaiaTestCase(MarionetteTestCase):
 
     def wait_for_element_displayed(self, by, locator, timeout=_default_timeout):
         timeout = float(timeout) + time.time()
-
+        e = None
         while time.time() < timeout:
             time.sleep(0.5)
             try:
                 if self.marionette.find_element(by, locator).is_displayed():
                     break
-            except (NoSuchElementException, StaleElementException):
+            except (NoSuchElementException, StaleElementException) as e:
                 pass
         else:
-            raise TimeoutException(
-                'Element %s not visible before timeout' % locator)
+            # This is an effortless way to give extra debugging information
+            if isinstance(e, NoSuchElementException):
+                raise TimeoutException('Element %s not present before timeout' % locator)
+            else:
+                raise TimeoutException('Element %s present but not displayed before timeout' % locator)
 
     def wait_for_element_not_displayed(self, by, locator, timeout=_default_timeout):
         timeout = float(timeout) + time.time()
