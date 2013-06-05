@@ -137,7 +137,7 @@ When running your tests add the argument:
 
 Variables:
 
-`"carrier": {} (dict)` The carrier information of the test phone. this contains the phone number, country and network of the SIM card
+`"carrier": {} (dict)` The carrier information of the test phone. This contains the phone number, country and network of the SIM card.
 
 ```
 "carrier":{
@@ -148,7 +148,7 @@ Variables:
 ```
 `"imei": "" (string)` The 12 digit IMEI code of the test phone.
 `"remote_phone_number": "" (string)` A phone number that your device can call during the tests (try not to be a nuisance!). Prefix the number with '+' and your international dialing code.
-`"wifi":{}{ (dict)` This is the settings of your WiFi connection. Currently this supports WPA/WEP/etc. You can add WiFi networks by doing the following (remember to replace "KeyManagement" and "wep" with the value your network supports) :
+`"wifi":{}{ (dict)` This are the settings of your WiFi connection. Currently this supports WPA/WEP/etc. You can add WiFi networks by doing the following (remember to replace "KeyManagement" and "wep" with the value your network supports) :
 
 ```
 "wifi": {
@@ -203,7 +203,7 @@ Or:
     "active_sync_username": ""
 }
 ```
-`"settings": {} (dict)` Settings information that need to be set before test run.
+`"settings": {} (dict)` Custom settings to override the Gaia default settings. These will be set before each test run but are not mandatory.
 ```
 "settings:{
     "<setting>":<value>
