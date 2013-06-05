@@ -283,7 +283,11 @@ class GaiaData(object):
 
     @property
     def media_files(self):
-        return self.marionette.execute_async_script('return GaiaDataLayer.getAllMediaFiles();')
+        result = []
+        result.extend(self.marionette.execute_async_script('return GaiaDataLayer.getAllPictures();'))
+        result.extend(self.marionette.execute_async_script('return GaiaDataLayer.getAllVideos();'))
+        result.extend(self.marionette.execute_async_script('return GaiaDataLayer.getAllMusic();'))
+        return result
 
     def delete_all_sms(self):
         self.marionette.switch_to_frame()
