@@ -441,7 +441,7 @@ class GaiaTestCase(MarionetteTestCase):
 
     def cleanUp(self):
         # remove media
-        if self.device.is_android_build and self.data_layer.media_files:
+        if self.device.is_android_build:
             for filename in self.data_layer.media_files:
                 # filename is a fully qualified path
                 self.device.manager.removeFile(filename)
