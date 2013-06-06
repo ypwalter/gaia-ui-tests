@@ -84,12 +84,6 @@ class TestEverythingMeInstallApp(GaiaTestCase):
 
         self.assertTrue(self.app_installed, 'The app %s was not found to be installed on the home screen.' % self.first_app_name)
 
-    def tearDown(self):
-        if self.app_installed:
-            self.delete_bookmark(self.first_app_name)
-
-        GaiaTestCase.tearDown(self)
-
     def _go_to_next_page(self):
         self.marionette.execute_script('window.wrappedJSObject.GridManager.goToNextPage()')
 
@@ -99,19 +93,3 @@ class TestEverythingMeInstallApp(GaiaTestCase):
         return self.marionette.execute_script("""
         var pageHelper = window.wrappedJSObject.GridManager.pageHelper;
         return pageHelper.getCurrentPageNumber() < (pageHelper.getTotalPagesNumber() - 1);""")
-
-    def delete_bookmark(self, bookmark_name):
-        # TODO move this snippet to the Homescreen app object
-        
-        self.marionette.execute_script("""
-                                          name = arguments[0];
-                                          let apps = window.wrappedJSObject.GridManager.getApps();
-                                          apps.forEach (function(aApp) {
-                                            if (aApp.isBookmark) {
-                                              if (aApp.manifest.name == name) {
-                                                console.log('uninstalling app with name ' + aApp.manifest.name);
-                                                aApp.uninstall();
-                                              };
-                                            };
-                                          });
-                                        """, script_args=[bookmark_name])
