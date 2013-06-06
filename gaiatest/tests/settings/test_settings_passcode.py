@@ -46,7 +46,7 @@ class TestSettingsPasscode(GaiaTestCase):
 
         # switch to keyboard, input passcode
         self.wait_for_element_displayed(*self._phonelock_passcode_section_locator)
-        self.keyboard._switch_to_keyboard()
+        self.keyboard.switch_to_keyboard()
         for times in range(2):
             self.keyboard.send("".join(self._input_passcode))
 
