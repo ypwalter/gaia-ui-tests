@@ -283,7 +283,11 @@ class GaiaData(object):
 
     @property
     def media_files(self):
-        return self.marionette.execute_async_script('return GaiaDataLayer.getAllMediaFiles();')
+        result = []
+        result.extend(self.marionette.execute_async_script('return GaiaDataLayer.getAllPictures();'))
+        result.extend(self.marionette.execute_async_script('return GaiaDataLayer.getAllVideos();'))
+        result.extend(self.marionette.execute_async_script('return GaiaDataLayer.getAllMusic();'))
+        return result
 
     def delete_all_sms(self):
         self.marionette.switch_to_frame()
@@ -378,14 +382,13 @@ class GaiaDevice(object):
         self.marionette.wait_for_port()
         self.marionette.start_session()
         if self.is_android_build:
-            self.marionette.set_script_timeout(60000)
             self.marionette.execute_async_script("""
 window.addEventListener('mozbrowserloadend', function loaded(aEvent) {
   if (aEvent.target.src.indexOf('ftu') != -1 || aEvent.target.src.indexOf('homescreen') != -1) {
     window.removeEventListener('mozbrowserloadend', loaded);
     marionetteScriptFinished();
   }
-});""")
+});""", script_timeout=60000)
 
     def stop_b2g(self):
         if self.marionette.instance:
@@ -437,7 +440,7 @@ class GaiaTestCase(MarionetteTestCase):
 
     def cleanUp(self):
         # remove media
-        if self.device.is_android_build and self.data_layer.media_files:
+        if self.device.is_android_build:
             for filename in self.data_layer.media_files:
                 # filename is a fully qualified path
                 self.device.manager.removeFile(filename)
