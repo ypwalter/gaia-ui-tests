@@ -11,10 +11,6 @@ Installation
 
 Installation is simple:
 
-    easy_install gaiatest
-
-If you anticipate modifying gaiatest, you can instead:
-
     git clone git://github.com/mozilla/gaia-ui-tests.git
     cd gaia-ui-tests
     python setup.py develop
