@@ -35,6 +35,10 @@ class TestFtu(GaiaTestCase):
     _timezone_city_locator = ('css selector', '#time-form li:nth-child(2) > .change.icon.icon-dialog')
     _time_zone_title_locator = ('id', 'time-zone-title')
 
+    # Step Geolocation
+    _section_geolocation_locator = ('id', 'geolocation')
+    _enable_geolocation_checkbox_locator = ('css selector', '#geolocation .pack-end label')
+
     # Section Import contacts
     _section_import_contacts_locator = ('id', 'import_contacts')
     _import_from_sim_locator = ('id', 'sim-import-button')
@@ -161,8 +165,18 @@ class TestFtu(GaiaTestCase):
         self.assertEqual(self.marionette.find_element(*self._time_zone_title_locator).text,
                          "UTC+06:00 Asia/Almaty")
 
-        # Tap next
         self.marionette.find_element(*self._next_button_locator).tap()
+
+        # Verify Geolocation section appears
+        self.wait_for_element_displayed(*self._section_geolocation_locator)
+
+        # Disable geolocation
+        self.wait_for_element_displayed(*self._enable_geolocation_checkbox_locator)
+        self.marionette.find_element(*self._enable_geolocation_checkbox_locator).tap()
+        self.wait_for_condition(lambda m: not self.data_layer.get_setting('geolocation.enabled'),
+                                message="Geolocation was not disabled by the FTU app")
+        self.marionette.find_element(*self._next_button_locator).tap()
+
         self.wait_for_element_displayed(*self._section_import_contacts_locator)
 
         # Tap import from SIM
