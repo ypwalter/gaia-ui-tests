@@ -22,7 +22,6 @@ class FTUStep2(CostControl):
     def select_reset_report_value(self, value):
         self.wait_for_element_displayed(*self._reset_report_period_select_locator)
         reset_time = self.marionette.find_element(*self._reset_report_period_select_locator)
-        # TODO: Switch to using tap() when bug #869041 is fixed
         reset_time.tap()
         self.select(value)
 
