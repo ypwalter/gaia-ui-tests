@@ -41,8 +41,8 @@ class TestSettingsPasscode(GaiaTestCase):
         # enable passcode
         self.wait_for_element_displayed(*self._phonelock_section_locator)
         passcode_enable_item = self.marionette.find_element(*self._passcode_enable_locator)
-        # TODO Tap one pixel above bottom edge to dodge the System update notification banner bug 879192
-        passcode_enable_item.tap(y=(passcode_enable_item.size['height'] - 1))
+        self.wait_for_condition(lambda m: passcode_enable_item.location['x'] == 0)
+        passcode_enable_item.tap()
 
         # switch to keyboard, input passcode
         self.wait_for_element_displayed(*self._phonelock_passcode_section_locator)
