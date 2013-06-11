@@ -12,8 +12,8 @@ from marionette.marionette import Actions
 
 class NewAlarm(Clock):
 
-    _picker_container_locator = ('id', 'picker-container')
-    _alarm_name_locator = ('xpath', "//input[@placeholder='Alarm']")
+    _edit_alarm_fields_locator = ('id', 'edit-alarm')
+    _alarm_name_locator = ('xpath', "//input[@placeholder='Alarm name']")
     _repeat_menu_locator = ('id', 'repeat-menu')
     _sound_menu_locator = ('id', 'sound-menu')
     _snooze_menu_locator = ('id', 'snooze-menu')
@@ -22,10 +22,6 @@ class NewAlarm(Clock):
     _hour_picker_locator = ('css selector', '#value-picker-hours div')
     _minutes_picker_locator = ('css selector', '#value-picker-minutes div')
     _hour24_picker_locator = ('css selector', '#value-picker-hour24-state div')
-
-    @property
-    def alarm_label(self):
-        return self.marionette.find_element(*self._alarm_name_locator).text
 
     def type_alarm_label(self, value):
         label = self.marionette.find_element(*self._alarm_name_locator)
@@ -60,8 +56,8 @@ class NewAlarm(Clock):
         self.marionette.find_element(*self._sound_menu_locator).tap()
         self.select(value)
 
-    def wait_for_picker_to_be_visible(self):
-        self.wait_for_element_displayed(*self._picker_container_locator)
+    def wait_for_fields_to_be_visible(self):
+        self.wait_for_element_displayed(*self._edit_alarm_fields_locator)
 
     def tap_done(self):
         self.wait_for_element_displayed(*self._done_locator)
