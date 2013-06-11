@@ -11,8 +11,8 @@ class Clock(Base):
     name = 'Clock'
 
     _alarm_create_new_locator = ('id', 'alarm-new')
-    _analog_clock_display_locator = ('id', 'analog-clock-svg')
-    _digital_clock_display_locator = ('id', 'digital-clock-display')
+    _analog_clock_display_locator = ('id', 'analog-clock')
+    _digital_clock_display_locator = ('id', 'digital-clock')
     _clock_day_date_locator = ('id', 'clock-day-date')
     _digital_clock_hour24_state_locator = ('id', 'clock-hour24-state')
     _all_alarms_locator = ('css selector', '#alarms li')
