@@ -7,8 +7,10 @@ TITLE = 'Index of /data'
 
 class TestLaunchApp(GaiaTestCase):
     _yes_button_locator = ('id', 'app-install-install-button')
+    _installed_app_locator = ('css selector', 'li.icon[aria-label="%s"]' % APP_NAME)
+
     # locator for li.icon, because click on label doesn't work.
-    _icon_locator = ('css selector', 'li.icon[aria-label="%s"]' % APP_NAME)
+    _visible_icon_locator = ('css selector', 'div.page[style*="transform: translateX(0px);"] li.icon[aria-label="%s"]' % APP_NAME)
     _app_locator = ('css selector', 'iframe[src="http://mozqa.com/data"]')
     _header_locator = ('css selector', 'h1')
 
@@ -30,19 +32,18 @@ class TestLaunchApp(GaiaTestCase):
 
         # We don't need to check it's displayed, only present(installed)
         # We'll find the icon in the test instead
-        self.wait_for_element_present(*self._icon_locator)
+        self.wait_for_element_present(*self._installed_app_locator)
 
     def test_launch_app(self):
-        # click icon and wait for h1 element displayed
-        icon = self.marionette.find_element(*self._icon_locator)
-
-        # We iterate through the homescreen pages until we find the icon
+        # We iterate through the homescreen pages until we find the app icon visible
         # It can be on different screens depending on what is packaged with the build
         while self._homescreen_has_more_pages():
             self._go_to_next_page()
-            if icon.is_displayed():
+            if self.is_element_present(*self._visible_icon_locator):
                 break
-        icon.tap()
+
+        # click icon and wait for h1 element displayed
+        self.marionette.find_element(*self._visible_icon_locator).tap()
         self.marionette.switch_to_frame()
         iframe = self.marionette.find_element(*self._app_locator)
         self.marionette.switch_to_frame(iframe)
