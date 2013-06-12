@@ -34,6 +34,8 @@ class TestClockSetAlarmTime(GaiaTestCase):
         edit_alarm = self.clock.alarms[0].tap()
 
         # Set alarm time
+        edit_alarm.tap_time()
+        self.marionette.switch_to_frame()
         edit_alarm.spin_hour()
         edit_alarm.spin_minute()
         edit_alarm.spin_hour24()

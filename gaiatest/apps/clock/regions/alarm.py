@@ -18,6 +18,7 @@ class NewAlarm(Clock):
     _sound_menu_locator = ('id', 'sound-menu')
     _snooze_menu_locator = ('id', 'snooze-menu')
     _done_locator = ('id', 'alarm-done')
+    _time_button_locator = ('id', 'time-menu')
 
     _hour_picker_locator = ('css selector', '#value-picker-hours div')
     _minutes_picker_locator = ('css selector', '#value-picker-minutes div')
@@ -107,6 +108,9 @@ class NewAlarm(Clock):
             Actions(self.marionette).flick(hour24_picker, hour24_picker_mid_x, hour24_picker_mid_y, hour24_picker_mid_x, hour24_picker_mid_y + hour24_picker_move_y)
 
         time.sleep(1)
+
+    def tap_time(self):
+        self.marionette.find_element(*self._time_button_locator).tap()
 
     def _flick_menu_up(self, locator):
         self.wait_for_element_displayed(*self._current_element(*locator))
