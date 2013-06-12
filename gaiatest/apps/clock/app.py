@@ -78,7 +78,7 @@ class Clock(Base):
         _label_locator = ('css selector', '.label')
         _time_locator = ('css selector', '.time')
         _tap_locator = ('css selector', '.alarm-item')
-        _check_box_locator = ('id', 'input-enable')
+        _check_box_locator = ('css selector', '.alarmList .input-enable')
         _enable_button_locator = ('css selector', 'label.alarmList')
 
         @property
