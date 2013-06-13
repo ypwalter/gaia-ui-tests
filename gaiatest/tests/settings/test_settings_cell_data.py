@@ -33,6 +33,7 @@ class TestSettingsCellData(GaiaTestCase):
         self.wait_for_element_displayed(*self._cell_data_menu_item_locator)
         cell_data_menu_item = self.marionette.find_element(*self._cell_data_menu_item_locator)
         cell_data_menu_item.tap()
+        self.wait_for_condition(lambda m: cell_data_menu_item.location['x'] + cell_data_menu_item.size['width'] == 0)
 
         # verify that a carrier is displayed
         self.wait_for_element_displayed(*self._carrier_name_locator)

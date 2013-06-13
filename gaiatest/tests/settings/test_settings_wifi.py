@@ -33,6 +33,7 @@ class TestSettingsWifi(GaiaTestCase):
         self.wait_for_element_present(*self._wifi_menu_item_locator)
         wifi_menu_item = self.marionette.find_element(*self._wifi_menu_item_locator)
         wifi_menu_item.tap()
+        self.wait_for_condition(lambda m: wifi_menu_item.location['x'] + wifi_menu_item.size['width'] == 0)
 
         # enable wifi
         self.wait_for_element_present(*self._wifi_enabled_checkbox_locator)

@@ -60,6 +60,7 @@ class TestSettingsMediaStorage(GaiaTestCase):
 
         # Tap on 'Media storage'
         media_storage_item.tap()
+        self.wait_for_condition(lambda m: media_storage_item.location['x'] + media_storage_item.size['width'] == 0)
 
         self.wait_for_element_displayed(*self._music_space_locator)
         self.wait_for_element_displayed(*self._pictures_space_locator)

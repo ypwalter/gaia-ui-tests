@@ -37,11 +37,11 @@ class TestSettingsPasscode(GaiaTestCase):
         # TODO bug 878017 - remove the explicit scroll once bug is fixed
         self.marionette.execute_script("arguments[0].scrollIntoView(false);", [phonelock_menu_item])
         phonelock_menu_item.tap()
+        self.wait_for_condition(lambda m: phonelock_menu_item.location['x'] + phonelock_menu_item.size['width'] == 0)
 
         # enable passcode
         self.wait_for_element_displayed(*self._phonelock_section_locator)
         passcode_enable_item = self.marionette.find_element(*self._passcode_enable_locator)
-        self.wait_for_condition(lambda m: passcode_enable_item.location['x'] == 0)
         passcode_enable_item.tap()
 
         # switch to keyboard, input passcode

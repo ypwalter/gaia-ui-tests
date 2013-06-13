@@ -31,6 +31,7 @@ class TestChangeLanguage(GaiaTestCase):
         # TODO bug 878017 - remove the explicit scroll once bug is fixed
         self.marionette.execute_script("arguments[0].scrollIntoView(false);", [language_item])
         language_item.tap()
+        self.wait_for_condition(lambda m: language_item.location['x'] + language_item.size['width'] == 0)
 
         self.wait_for_element_displayed(*self._language_section_locator)
         self.wait_for_element_displayed(*self._select_language_locator)
