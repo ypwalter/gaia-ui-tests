@@ -75,9 +75,9 @@ class CostControl(Base):
         self.marionette.switch_to_frame(ftu_iframe)
 
     def turn_on_ftu(self):
-        self.marionette.execute_script("return window.wrappedJSObject.ConfigManager.setOption({ fte: true });")
-        self.marionette.refresh() 
+        self.marionette.execute_script("window.wrappedJSObject.ConfigManager.setOption({ fte: true });while(window.wrappedJSObject.ConfigManager.option('fte') != true);marionetteScriptFinished(true);")
+        self.marionette.refresh()
 
     def turn_off_ftu(self):
-        self.marionette.execute_script("return window.wrappedJSObject.ConfigManager.setOption({ fte: false });")
-        self.marionette.refresh() 
+        self.marionette.execute_script("window.wrappedJSObject.ConfigManager.setOption({ fte: false });while(window.wrappedJSObject.ConfigManager.option('fte') != false);marionetteScriptFinished(true);")
+        self.marionette.refresh()
