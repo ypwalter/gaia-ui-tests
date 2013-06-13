@@ -13,9 +13,6 @@ class TestCostControlFTU(GaiaTestCase):
         cost_control = CostControl(self.marionette)
         cost_control.launch()
 
-        # This is to turn on the ftu of cost control app
-        cost_control.turn_on_ftu()
-
         # This will switch to ftu iframe
         cost_control.switch_to_ftu()
 

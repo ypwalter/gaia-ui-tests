@@ -22,9 +22,6 @@ class TestCostControlDataAlertMobile(GaiaTestCase):
         cost_control = CostControl(self.marionette)
         cost_control.launch()
 
-        # This is to turn on the ftu of cost control app
-        cost_control.turn_on_ftu()
-
         cost_control.switch_to_ftu()
         cost_control.run_ftu_accepting_defaults()
         self.marionette.switch_to_frame(self.apps.displayed_app.frame)
