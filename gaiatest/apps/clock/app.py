@@ -66,6 +66,7 @@ class Clock(Base):
         self.wait_for_element_displayed(*self._analog_clock_display_locator)
 
     def tap_new_alarm(self):
+        self.wait_for_element_displayed(*self._alarm_create_new_locator)
         self.marionette.find_element(*self._alarm_create_new_locator).tap()
 
         from gaiatest.apps.clock.regions.alarm import NewAlarm
