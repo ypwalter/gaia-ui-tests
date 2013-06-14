@@ -2,7 +2,7 @@ import os
 from setuptools import setup, find_packages
 import shutil
 
-version = '0.12'
+from gaiatest import __version__
 
 # get documentation from the README
 try:
@@ -12,7 +12,7 @@ except (OSError, IOError):
     description = ''
 
 # dependencies
-deps = ['marionette_client==0.5.34', 'mozdevice']
+deps = ['marionette_client==0.5.34', 'mozdevice', 'py==1.4.14']
 
 # copy atoms directory over
 setupdir = os.path.dirname(__file__)
@@ -31,7 +31,7 @@ else:
         raise Exception('JS atoms not found in %s or %s!' % (jsdir, pythondir))
 
 setup(name='gaiatest',
-      version=version,
+      version=__version__,
       description="Marionette test automation client for Gaia",
       long_description=description,
       classifiers=[],  # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers

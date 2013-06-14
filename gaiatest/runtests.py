@@ -5,6 +5,7 @@
 import cgi
 import datetime
 import json
+import math
 import os
 import sys
 import textwrap
@@ -19,6 +20,8 @@ from marionette import MarionetteTestRunner
 from marionette import MarionetteTextTestRunner
 from marionette.runtests import cli
 
+from gaiatest import __name__
+from gaiatest import __version__
 from gaiatest import GaiaTestCase
 
 
@@ -27,12 +30,16 @@ class GaiaTestResult(MarionetteTestResult):
     def addError(self, test, err):
         self.errors.append((test, self._exc_info_to_string(err, test), self.gather_debug()))
 
+    def addExpectedFailure(self, test, err):
+        self.expectedFailures.append((test, self._exc_info_to_string(err, test), self.gather_debug()))
+
     def addFailure(self, test, err):
         self.failures.append((test, self._exc_info_to_string(err, test), self.gather_debug()))
 
     def gather_debug(self):
         debug = {}
         try:
+            # TODO make screenshot consistant size by using full viewport
             debug['screenshot'] = self.marionette.screenshot()[22:]
             debug['source'] = self.marionette.page_source
             self.marionette.switch_to_frame()
@@ -60,16 +67,24 @@ class GaiaTestOptions(MarionetteTestOptions):
         group.add_option('--html-output',
                          action='store',
                          dest='html_output',
-                         help='html output')
+                         help='html output',
+                         metavar='path')
+
+
+class GaiaTextTestRunner(MarionetteTextTestRunner):
+
+    resultclass = GaiaTestResult
+
 
 class GaiaTestRunner(MarionetteTestRunner):
 
+    textrunnerclass = GaiaTextTestRunner
+
     def __init__(self, html_output=None, **kwargs):
         MarionetteTestRunner.__init__(self, **kwargs)
-        self.textrunnerclass = GaiaTextTestRunner
 
         width = 80
-        if not self.testvars.get('acknowledged_risks') is True:
+        if not (self.testvars.get('acknowledged_risks') is True or os.environ.get('GAIATEST_ACKNOWLEDGED_RISKS')):
             url = 'https://developer.mozilla.org/en-US/docs/Gaia_Test_Runner#Risks'
             heading = 'Acknowledge risks'
             message = 'These tests are destructive and will remove data from the target Firefox OS instance as well ' \
@@ -79,8 +94,8 @@ class GaiaTestRunner(MarionetteTestRunner):
             print '\n'.join(textwrap.wrap(message, width))
             print url
             print '*' * width + '\n'
-            exit()
-        if not self.testvars.get('skip_warning') is True:
+            sys.exit(1)
+        if not (self.testvars.get('skip_warning') is True or os.environ.get('GAIATEST_SKIP_WARNING')):
             delay = 30
             heading = 'Warning'
             message = 'You are about to run destructive tests against a Firefox OS instance. These tests ' \
@@ -97,7 +112,7 @@ class GaiaTestRunner(MarionetteTestRunner):
                 time.sleep(delay)
             except KeyboardInterrupt:
                 print '\nTest run aborted by user.'
-                exit()
+                sys.exit(1)
             print 'Continuing with test run...\n'
 
         # for HTML output
@@ -123,29 +138,26 @@ class GaiaTestRunner(MarionetteTestRunner):
 
     def generate_html(self, results_list):
 
-        def failed_count(results):
-            count = len(results.failures)
-            if hasattr(results, 'unexpectedSuccesses'):
-                count += len(results.unexpectedSuccesses)
-            return count
-
         tests = sum([results.testsRun for results in results_list])
-        failures = sum([failed_count(results) for results in results_list])
-        skips = sum([len(results.skipped) + len(results.expectedFailures) for results in results_list])
+        failures = sum([len(results.failures) for results in results_list])
+        expected_failures = sum([len(results.expectedFailures) for results in results_list])
+        skips = sum([len(results.skipped) for results in results_list])
         errors = sum([len(results.errors) for results in results_list])
-        passes = 0
+        passes = sum([results.passed for results in results_list])
+        unexpected_passes = sum([len(results.unexpectedSuccesses) for results in results_list])
         test_time = self.elapsedtime.total_seconds()
         test_logs = []
 
         def _extract_html(test, text='', result='passed', debug=None):
             cls_name = test.__class__.__name__
             tc_name = unicode(test).split()[0]
-            tc_time = str(test.duration)
+            tc_time = hasattr(test, 'duration') and int(math.ceil(test.duration)) or 0
             additional_html = []
+            debug = debug or {}
             links_html = []
 
-            if result in ['failure', 'error', 'skipped']:
-                if debug and debug.get('screenshot'):
+            if result in ['skipped', 'failure', 'expected failure', 'error']:
+                if debug.get('screenshot'):
                     screenshot = 'data:image/png;base64,%s' % debug['screenshot']
                     additional_html.append(
                         html.div(
@@ -153,16 +165,23 @@ class GaiaTestRunner(MarionetteTestRunner):
                 for name, content in debug.items():
                     try:
                         if 'screenshot' in name:
-                            links_html.append(html.a(name, href='data:image/png;base64,%s' % content.encode('us-ascii')))
+                            links_html.append(html.a(
+                                name.title(),
+                                href='data:image/png;base64,%s' % content.encode('us-ascii'),
+                                target='_blank'))
                         else:
-                            # use base64 to avoid that some browser(such as Firefox, Opera) treats '#' as the start of another link if the data URL contains.
+                            # use base64 to avoid that some browser (such as Firefox, Opera)
+                            # treats '#' as the start of another link if the data URL contains.
                             # use 'charset=utf-8' to show special characters like Chinese.
-                            links_html.append(html.a(name, href='data:text/plain;charset=utf-8;base64,%s' % base64.b64encode(content)))
+                            links_html.append(html.a(
+                                name.title(),
+                                href='data:text/plain;charset=utf-8;base64,%s' % base64.b64encode(content),
+                                target='_blank'))
                         links_html.append(' ')
                     except:
                         pass
 
-                log = html.div(class_=result)
+                log = html.div(class_='log')
                 for line in text.splitlines():
                     separator = line.startswith(' ' * 10)
                     if separator:
@@ -176,7 +195,7 @@ class GaiaTestRunner(MarionetteTestRunner):
                 additional_html.append(log)
 
             test_logs.append(html.tr([
-                html.td(result, class_='col-result'),
+                html.td(result.title(), class_='col-result'),
                 html.td(cls_name, class_='col-class'),
                 html.td(tc_name, class_='col-name'),
                 html.td(tc_time, class_='col-duration'),
@@ -187,15 +206,21 @@ class GaiaTestRunner(MarionetteTestRunner):
         for results in results_list:
             for test in results.tests_passed:
                 _extract_html(test)
-                passes = passes + 1
+            for result in results.skipped:
+                _extract_html(result[0], text=result[1], result='skipped')
             for result in results.failures:
                 _extract_html(result[0], text=result[1], result='failure', debug=result[2])
+            for result in results.expectedFailures:
+                _extract_html(result[0], text=result[1], result='expected failure', debug=result[2])
+            for test in results.unexpectedSuccesses:
+                _extract_html(test, result='unexpected pass')
             for result in results.errors:
                 _extract_html(result[0], text=result[1], result='error', debug=result[2])
 
-            jquery_src = os.path.abspath(os.path.join(os.path.dirname(__file__), 'resources', 'jquery.js'))
-            main_src = os.path.abspath(os.path.join(os.path.dirname(__file__), 'resources', 'main.js'))
-            style_src = os.path.abspath(os.path.join(os.path.dirname(__file__), 'resources', 'style.css'))
+        # TODO move resources to subdirectory
+        jquery_src = os.path.abspath(os.path.join(os.path.dirname(__file__), 'resources', 'jquery.js'))
+        main_src = os.path.abspath(os.path.join(os.path.dirname(__file__), 'resources', 'main.js'))
+        style_src = os.path.abspath(os.path.join(os.path.dirname(__file__), 'resources', 'style.css'))
 
         generated = datetime.datetime.now()
         doc = html.html(
@@ -206,18 +231,23 @@ class GaiaTestRunner(MarionetteTestRunner):
                 html.script(src=jquery_src),
                 html.script(src=main_src)),
             html.body(
-                html.p('Report generated on %s at %s' % (
+                html.p('Report generated on %s at %s by %s %s' % (  # TODO get package name
                     generated.strftime('%d-%b-%Y'),
-                    generated.strftime('%H:%M:%S'))),
+                    generated.strftime('%H:%M:%S'),
+                    __name__, __version__)),
                 html.table(
                     html.h2('Summary'),
-                    html.p('%i tests ran. in %i seconds' % (tests, test_time),
+                    html.p('%i tests ran in %i seconds.' % (tests, test_time),
                            html.br(),
                            html.span('%i passed' % passes, class_='passed'), ', ',
-                           html.span('%i failed' % failures, class_='failed'), ', ',
                            html.span('%i skipped' % skips, class_='skipped'), ', ',
-                           html.span('%i error' % errors, class_='error'),
-                           html.br()),
+                           html.span('%i failed' % failures, class_='failed'), ', ',
+                           html.span('%i errors' % errors, class_='error'), '.',
+                           html.br(),
+                           html.span('%i expected failures' % expected_failures,
+                                     class_='expected failure'), ', ',
+                           html.span('%i unexpected passes' % unexpected_passes,
+                                     class_='unexpected pass'), '.'),
                     html.h2('Results'),
                     html.table([html.thead(
                         html.tr([
@@ -231,11 +261,6 @@ class GaiaTestRunner(MarionetteTestRunner):
             )
         )
         return doc.unicode(indent=2)
-
-
-class GaiaTextTestRunner(MarionetteTextTestRunner):
-
-    resultclass = GaiaTestResult
 
 
 def main():

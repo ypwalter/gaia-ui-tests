@@ -40,14 +40,17 @@ table {
 span.passed, .passed .col-result {
 	color: green;
 }
+span.expected.failure, .expected.failure .col-result {
+	color: orange;
+}
 span.skipped, .skipped .col-result {
 	color: orange;
 }
-span.failed,.failed .col-result {
-	color: orange;
+span.unexpected.pass, .unexpected.pass .col-result {
+	color: red;
 }
-span.failure,.failure .col-result {
-	color: orange;
+span.failed, .failure .col-result {
+	color: red;
 }
 span.error,.error .col-result  {
 	color: red;
@@ -101,20 +104,18 @@ span.error,.error .col-result  {
 	padding: 5px;
 	white-space: pre-wrap
 }
-.screenshot, .video {
+.screenshot {
 	border: 1px solid #e6e6e6;
 	float: right;
-	height: 240px;
 	margin-left: 5px;
-	overflow: hidden;
-	width: 320px
+	height: 240px
 }
 .screenshot img {
-	width: 320px
+	height: 240px
 }
 
 /*if the result is passed or xpassed don't show debug row*/
-.passed + .debug, .xpassed + .debug {
+.passed + .debug, .unexpected.pass + .debug {
 	display: none;
 }
 
