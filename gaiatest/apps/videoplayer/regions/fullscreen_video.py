@@ -14,7 +14,7 @@ class FullscreenVideo(Base):
     _video_player_locator = ('id', 'player')
     _video_frame_locator = ('css selector', "iframe[src^='app://video'][src$='view.html']")
     _video_player_frame_locator = ('id', 'fullscreen-view')
-    _video_loaded_locator = ('css selector', 'video[style]')
+    _spinner_overlay_locator = ('id','spinner-overlay')
 
     def wait_for_player_frame_displayed(self):
         self.wait_for_element_displayed(*self._video_player_frame_locator)
@@ -39,4 +39,4 @@ class FullscreenVideo(Base):
 
     def switch_to_video_frame(self):
         self.marionette.switch_to_frame(self.marionette.find_element(*self._video_frame_locator))
-        self.wait_for_element_displayed(*self._video_loaded_locator)
+        self.wait_for_element_not_displayed(*self._spinner_overlay_locator)
