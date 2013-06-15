@@ -37,7 +37,7 @@ class TestSettingsCellData(GaiaTestCase):
 
         # verify that a carrier is displayed
         self.wait_for_element_displayed(*self._carrier_name_locator)
-        self.assertTrue(len(self.marionette.find_element(*self._carrier_name_locator).text) > 0)
+        self.wait_for_condition(lambda m: len(m.find_element(*self._carrier_name_locator).text) > 0)
 
         # enable cell data
         enabled_checkbox = self.marionette.find_element(*self._cell_data_enabled_input_locator)
