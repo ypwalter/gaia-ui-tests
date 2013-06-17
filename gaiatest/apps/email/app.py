@@ -146,12 +146,11 @@ class Header(Base):
 
 
 class ToolBar(Base):
-    _toolbar_locator = ('css selector', '#cardContainer .fld-nav-toolbar')
-    _refresh_locator = ('css selector', '#cardContainer .msg-refresh-btn')
-    _search_locator = ('css selector', '#cardContainer .msg-search-btn')
-    _edit_locator = ('css selector', '#cardContainer .msg-edit-btn')
-    _settings_locator = ('css selector', '#cardContainer .fld-nav-settings-btn')
-
+    _toolbar_locator = ('css selector', '#cardContainer .card.center .fld-nav-toolbar')
+    _refresh_locator = ('css selector', '#cardContainer .card.center .msg-refresh-btn')
+    _search_locator = ('css selector', '#cardContainer .card.center .msg-search-btn')
+    _edit_locator = ('css selector', '#cardContainer .card.center .msg-edit-btn')
+    _settings_locator = ('css selector', '#cardContainer .card.center .fld-nav-settings-btn')
 
     def tap_refresh(self):
         self.marionette.find_element(*self._refresh_locator).tap()
@@ -184,7 +183,6 @@ class ToolBar(Base):
     @property
     def is_settings_visible(self):
         return self.is_element_displayed(*self._settings_locator)
-
 
 class Message(PageRegion):
     _subject_locator = ('css selector', '.msg-header-subject')
