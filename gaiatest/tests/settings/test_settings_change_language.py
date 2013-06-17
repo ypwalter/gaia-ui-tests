@@ -65,11 +65,17 @@ class TestChangeLanguage(GaiaTestCase):
 
         # Loop options until we find the match
         for option in options:
-            if option.text == match_string:
+
+            # We only use this 'in' logic for this test case.
+            # \u202a and \u202c are LTR/RTL directional placeholders in the 'option.text'
+            # that are not (yet) removed by Marionette. See https://bugzilla.mozilla.org/show_bug.cgi?id=883555
+            if match_string in option.text:
                 # TODO: remove the explicit scroll once bug 833370 is fixed
                 self.marionette.execute_script("arguments[0].scrollIntoView(false);", [option])
-                option.click()
+                option.tap()
                 break
+        else:
+            raise Exception("%s not found in Select wrapper")
 
         close_button.tap()
 
