@@ -47,9 +47,9 @@ class GaiaTestRunner(MarionetteTestRunner):
             heading = 'Warning'
             message = 'You are about to run destructive tests against a Firefox OS instance. These tests ' \
                       'will restore the target to a clean state, meaning any personal data such as contacts, ' \
-                      'messages, photos, videos, music, etc. will be removed. The tests may also attempt to ' \
-                      'initiate outgoing calls, or connect to services such as cellular data, wifi, gps, ' \
-                      'bluetooth, etc.'
+                      'messages, photos, videos, music, etc. will be removed. This may include data on the ' \
+                      'microSD card. The tests may also attempt to initiate outgoing calls, or connect to ' \
+                      'services such as cellular data, wifi, gps, bluetooth, etc.'
             try:
                 print '\n' + '*' * 5 + ' %s ' % heading.upper() + '*' * (width - len(heading) - 7)
                 print '\n'.join(textwrap.wrap(message, width))
