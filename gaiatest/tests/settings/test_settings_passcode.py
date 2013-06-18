@@ -66,12 +66,3 @@ class TestSettingsPasscode(GaiaTestCase):
         passcode_enabled = self.data_layer.get_setting('lockscreen.passcode-lock.enabled')
         self.assertEqual(passcode_code, "".join(self._input_passcode), 'Passcode is "%s", not "%s"' % (passcode_code, "".join(self._input_passcode)))
         self.assertEqual(passcode_enabled, True, 'Passcode is not enabled.')
-
-    def tearDown(self):
-        # switch to settings frame
-        self.marionette.switch_to_frame()
-        self.marionette.switch_to_frame(self.app.frame)
-
-        # disable passcode
-        self.data_layer.set_setting('lockscreen.passcode-lock.code', '1111')
-        self.data_layer.set_setting('lockscreen.passcode-lock.enabled', False)
