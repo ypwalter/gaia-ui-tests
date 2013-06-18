@@ -21,14 +21,17 @@ class TestCostControlDataAlertMobile(GaiaTestCase):
         self.data_layer.connect_to_cell_data()
         cost_control = CostControl(self.marionette)
         cost_control.launch()
+
+        cost_control.switch_to_ftu()
         cost_control.run_ftu_accepting_defaults()
+        self.marionette.switch_to_frame(self.apps.displayed_app.frame)
 
         self.assertTrue(cost_control.is_mobile_data_tracking_on)
         self.assertFalse(cost_control.is_wifi_data_tracking_on)
 
         settings = cost_control.tap_settings()
         settings.toggle_data_alert_switch(True)
-        settings.select_when_use_is_above_unit_and_value('MB', '0.1')
+        settings.select_when_use_is_above_unit_and_value(u'MB', '0.1')
         settings.reset_data_usage()
         settings.tap_done()
         self.assertTrue(cost_control.is_mobile_data_tracking_on)

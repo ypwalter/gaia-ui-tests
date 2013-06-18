@@ -31,7 +31,7 @@ class Settings(Base):
     def toggle_data_alert_switch(self, value):
         self.wait_for_element_displayed(*self._data_alert_label_locator)
         switch = self.marionette.find_element(*self._data_alert_switch_locator)
-        if switch.is_selected() is not value:
+        if switch.is_selected() != value:
             label = self.marionette.find_element(*self._data_alert_label_locator)
             label.tap()
 
@@ -45,7 +45,7 @@ class Settings(Base):
 
         self.wait_for_element_displayed(*self._unit_button_locator)
         current_unit = self.marionette.find_element(*self._unit_button_locator)
-        if current_unit.text is not unit:
+        if current_unit.text != unit:
             current_unit.tap()
             # We need to wait for the javascript to do its stuff
             self.wait_for_condition(lambda m: m.find_element(*self._unit_button_locator).text == unit)
