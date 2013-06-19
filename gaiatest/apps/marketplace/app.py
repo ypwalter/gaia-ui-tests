@@ -18,9 +18,20 @@ class Marketplace(Base):
     _error_message_locator = ('css selector', 'div.modal-dialog-message-container .message')
     _settings_button_locator = ('css selector', 'a.header-button.settings')
 
+    # Marketplace settings tabs
+    _account_tab_locator = ('css selector', 'a[href="/settings"]')
+    _myapps_tab_locator = ('css selector', 'a[href="/purchases"]')
+    _feedback_tab_locator = ('css selector', 'a[href="/feedback"]')
+    _feedback_textarea_locator = ('name', 'feedback')
+    _feedback_submit_button_locator = ('css selector', 'button[type="submit"]')
+
     # Marketplace search on home page
     _search_locator = ('id', 'search-q')
     _signed_in_notification_locator = ('css selector', '#notification.show')
+
+    # Marketplace notification
+    _notification_locator = ('id', 'notification')
+    _notification_content_locator = ('id', 'notification-content')
 
     def __init__(self, marionette, app_name=False):
         Base.__init__(self, marionette)
@@ -60,8 +71,33 @@ class Marketplace(Base):
     def wait_for_setting_displayed(self):
         self.wait_for_element_displayed(*self._settings_button_locator)
 
+    def select_setting_account(self):
+        self.marionette.find_element(*self._account_tab_locator).tap()
+
+    def select_setting_myapps(self):
+        self.marionette.find_element(*self._myapps_tab_locator).tap()
+
+    def select_setting_feedback(self):
+        self.marionette.find_element(*self._feedback_tab_locator).tap()
+
+    def enter_feedback(self, feedback_text):
+        feedback = self.marionette.find_element(*self._feedback_textarea_locator)
+        feedback.clear()
+        feedback.send_keys(feedback_text)
+        # this is to blur out focus on input field so that keyboard won't interfere with submit button
+        self.marionette.execute_script('document.getElementsByName("feedback")[0].blur();')
+
+    def submit_feedback(self):
+        self.wait_for_element_displayed(*self._feedback_submit_button_locator)
+        self.marionette.find_element(*self._feedback_submit_button_locator).tap()
+
     def wait_for_signed_in_notification(self):
         self.wait_for_element_displayed(*self._signed_in_notification_locator)
 
     def tap_signed_in_notification(self):
         self.marionette.find_element(*self._signed_in_notification_locator).tap()
+
+    def get_notification_message(self):
+        self.wait_for_element_displayed(*self._notification_locator)
+        message = self.marionette.find_element(*self._notification_content_locator)
+        return message.text
