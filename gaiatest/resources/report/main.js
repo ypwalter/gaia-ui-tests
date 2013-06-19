@@ -4,6 +4,16 @@ $(document).ready(function() {
 
 	split_debug_onto_two_rows();
 
+	$('.col-links a.screenshot').click(function(event) {
+		window.open($(this).parents('.results-table-row').next('.debug').find('.screenshot img').attr('src'));
+		event.preventDefault();
+	});
+
+	$('.screenshot a').click(function(event) {
+		window.open($(this).find('img').attr('src'));
+		event.preventDefault();
+	});
+
 	$('.sortable').click(toggle_sort_states);
 
 	$('.sortable').click(function() {

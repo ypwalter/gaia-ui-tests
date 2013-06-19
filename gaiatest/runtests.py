@@ -7,6 +7,7 @@ import datetime
 import json
 import math
 import os
+import pkg_resources
 import sys
 import textwrap
 import time
@@ -40,6 +41,7 @@ class GaiaTestResult(MarionetteTestResult):
         debug = {}
         try:
             # TODO make screenshot consistant size by using full viewport
+            # Bug 883294 - Add ability to take full viewport screenshots
             debug['screenshot'] = self.marionette.screenshot()[22:]
             debug['source'] = self.marionette.page_source
             self.marionette.switch_to_frame()
@@ -159,24 +161,23 @@ class GaiaTestRunner(MarionetteTestRunner):
             if result in ['skipped', 'failure', 'expected failure', 'error']:
                 if debug.get('screenshot'):
                     screenshot = 'data:image/png;base64,%s' % debug['screenshot']
-                    additional_html.append(
-                        html.div(
-                            html.a(html.img(src=screenshot), href=screenshot), class_='screenshot'))
+                    additional_html.append(html.div(
+                        html.a(html.img(src=screenshot), href="#"),
+                        class_='screenshot'))
                 for name, content in debug.items():
                     try:
                         if 'screenshot' in name:
-                            links_html.append(html.a(
-                                name.title(),
-                                href='data:image/png;base64,%s' % content.encode('us-ascii'),
-                                target='_blank'))
+                            href = '#'
                         else:
                             # use base64 to avoid that some browser (such as Firefox, Opera)
                             # treats '#' as the start of another link if the data URL contains.
                             # use 'charset=utf-8' to show special characters like Chinese.
-                            links_html.append(html.a(
-                                name.title(),
-                                href='data:text/plain;charset=utf-8;base64,%s' % base64.b64encode(content),
-                                target='_blank'))
+                            href = 'data:text/plain;charset=utf-8;base64,%s' % base64.b64encode(content)
+                        links_html.append(html.a(
+                            name.title(),
+                            class_=name,
+                            href=href,
+                            target='_blank'))
                         links_html.append(' ')
                     except:
                         pass
@@ -217,49 +218,46 @@ class GaiaTestRunner(MarionetteTestRunner):
             for result in results.errors:
                 _extract_html(result[0], text=result[1], result='error', debug=result[2])
 
-        # TODO move resources to subdirectory
-        jquery_src = os.path.abspath(os.path.join(os.path.dirname(__file__), 'resources', 'jquery.js'))
-        main_src = os.path.abspath(os.path.join(os.path.dirname(__file__), 'resources', 'main.js'))
-        style_src = os.path.abspath(os.path.join(os.path.dirname(__file__), 'resources', 'style.css'))
-
         generated = datetime.datetime.now()
         doc = html.html(
             html.head(
                 html.meta(charset='utf-8'),
                 html.title('Test Report'),
-                html.link(rel='stylesheet', href=style_src),
-                html.script(src=jquery_src),
-                html.script(src=main_src)),
+                html.style(raw(pkg_resources.resource_string(
+                    __name__, os.path.sep.join(['resources', 'report', 'style.css']))),
+                    type='text/css')),
             html.body(
-                html.p('Report generated on %s at %s by %s %s' % (  # TODO get package name
+                html.script(raw(pkg_resources.resource_string(
+                    __name__, os.path.sep.join(['resources', 'report', 'jquery.js']))),
+                    type='text/javascript'),
+                html.script(raw(pkg_resources.resource_string(
+                    __name__, os.path.sep.join(['resources', 'report', 'main.js']))),
+                    type='text/javascript'),
+                html.p('Report generated on %s at %s by %s %s' % (
                     generated.strftime('%d-%b-%Y'),
                     generated.strftime('%H:%M:%S'),
                     __name__, __version__)),
-                html.table(
-                    html.h2('Summary'),
-                    html.p('%i tests ran in %i seconds.' % (tests, test_time),
-                           html.br(),
-                           html.span('%i passed' % passes, class_='passed'), ', ',
-                           html.span('%i skipped' % skips, class_='skipped'), ', ',
-                           html.span('%i failed' % failures, class_='failed'), ', ',
-                           html.span('%i errors' % errors, class_='error'), '.',
-                           html.br(),
-                           html.span('%i expected failures' % expected_failures,
-                                     class_='expected failure'), ', ',
-                           html.span('%i unexpected passes' % unexpected_passes,
-                                     class_='unexpected pass'), '.'),
-                    html.h2('Results'),
-                    html.table([html.thead(
-                        html.tr([
-                            html.th('Result', class_='sortable', col='result'),
-                            html.th('Class', class_='sortable', col='class'),
-                            html.th('Test Name', class_='sortable', col='name'),
-                            html.th('Duration', class_='sortable numeric', col='duration'),
-                            html.th('Links')]), id='results-table-head'),
-                        html.tbody(test_logs, id='results-table-body')], id='results-table')
-                )
-            )
-        )
+                html.h2('Summary'),
+                html.p('%i tests ran in %i seconds.' % (tests, test_time),
+                       html.br(),
+                       html.span('%i passed' % passes, class_='passed'), ', ',
+                       html.span('%i skipped' % skips, class_='skipped'), ', ',
+                       html.span('%i failed' % failures, class_='failed'), ', ',
+                       html.span('%i errors' % errors, class_='error'), '.',
+                       html.br(),
+                       html.span('%i expected failures' % expected_failures,
+                                 class_='expected failure'), ', ',
+                       html.span('%i unexpected passes' % unexpected_passes,
+                                 class_='unexpected pass'), '.'),
+                html.h2('Results'),
+                html.table([html.thead(
+                    html.tr([
+                        html.th('Result', class_='sortable', col='result'),
+                        html.th('Class', class_='sortable', col='class'),
+                        html.th('Test Name', class_='sortable', col='name'),
+                        html.th('Duration', class_='sortable numeric', col='duration'),
+                        html.th('Links')]), id='results-table-head'),
+                    html.tbody(test_logs, id='results-table-body')], id='results-table')))
         return doc.unicode(indent=2)
 
 
