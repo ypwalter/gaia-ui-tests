@@ -24,7 +24,6 @@ class TestCostControlDataAlertMobile(GaiaTestCase):
 
         cost_control.switch_to_ftu()
         cost_control.run_ftu_accepting_defaults()
-        self.marionette.switch_to_frame(self.apps.displayed_app.frame)
 
         self.assertTrue(cost_control.is_mobile_data_tracking_on)
         self.assertFalse(cost_control.is_wifi_data_tracking_on)
@@ -37,7 +36,6 @@ class TestCostControlDataAlertMobile(GaiaTestCase):
         self.assertTrue(cost_control.is_mobile_data_tracking_on)
 
         # open browser to get some data downloaded
-        # please remove this once there is a better way than launching browser app/obj to do so
         browser = Browser(self.marionette)
         browser.launch()
         browser.go_to_url('http://developer.mozilla.org/')

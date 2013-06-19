@@ -20,8 +20,6 @@ class TestCostControlFTU(GaiaTestCase):
         ftu_step2 = ftu_step1.tap_next()
 
         ftu_step2.select_reset_report_value('Weekly')
-        #TODO: There is some issues after selecting 'Weekly'. It's required to switch to cost control ftu iframe again.
-        cost_control.switch_to_ftu()
         ftu_step3 = ftu_step2.tap_next()
 
         ftu_step3.toggle_data_alert_switch(True)

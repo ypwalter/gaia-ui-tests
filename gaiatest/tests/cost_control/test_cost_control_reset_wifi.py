@@ -21,7 +21,6 @@ class TestCostControlReset(GaiaTestCase):
 
         cost_control.switch_to_ftu()
         cost_control.run_ftu_accepting_defaults()
-        self.marionette.switch_to_frame(self.apps.displayed_app.frame)
 
         cost_control.toggle_mobile_data_tracking(False)
         cost_control.toggle_wifi_data_tracking(True)
