@@ -4,18 +4,18 @@
 
 from gaiatest import GaiaTestCase
 from gaiatest.apps.marketplace.app import Marketplace
-import time
 
 class TestMarketplaceFeedback(GaiaTestCase):
     MARKETPLACE_DEV_NAME = 'Marketplace Dev'
     cmp_message = u'Feedback submitted. Thanks!'
+    test_comment = 'This is a test comment.'
 
     _feedback_tab_locator = ('css selector', 'a[href="/feedback"]')
     _feedback_textarea_locator = ('name', 'feedback')
     _submit_button_locator = ('css selector', 'button[type="submit"]')
     _notification_locator = ('id', 'notification')
     _notification_content_locator = ('id', 'notification-content')
-    
+ 
     def setUp(self):
         GaiaTestCase.setUp(self)
         self.connect_to_network()
@@ -25,8 +25,6 @@ class TestMarketplaceFeedback(GaiaTestCase):
         # launch marketplace dev and go to marketplace
         self.marketplace = Marketplace(self.marionette, self.MARKETPLACE_DEV_NAME)
         self.marketplace.launch()
-        self.marionette.switch_to_frame()
-        self.marketplace.switch_to_marketplace_frame()
 
         # wait for settings button to come out
         self.marketplace.wait_for_setting_displayed()
@@ -36,7 +34,8 @@ class TestMarketplaceFeedback(GaiaTestCase):
         # enter your feedback
         feedback = self.marionette.find_element(*self._feedback_textarea_locator)
         feedback.clear()
-        feedback.send_keys('This is a test comment.')
+        feedback.send_keys(test_comment)
+        # blur out from input so that the keyboard would disappear
         self.marionette.execute_script('document.getElementsByName("feedback")[0].blur();')
 
         # submit your comment after keyboard disappears
