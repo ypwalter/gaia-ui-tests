@@ -11,8 +11,8 @@ class TestCameraMultipleShots(GaiaTestCase):
     _capture_button_locator = ('id', 'capture-button')
     _capture_button_enabled_locator = ('css selector', '#capture-button:not([disabled])')
     _focus_ring_locator = ('id', 'focus-ring')
-    _film_strip_image_locator = ('css selector', '#filmstrip > img.thumbnail')
-    _film_strip_locator = ('id', 'filmstrip')
+    _filmstrip_image_locator = ('css selector', '#filmstrip > img.thumbnail')
+    _filmstrip_locator = ('id', 'filmstrip')
     _camera_button_locator = ('id', 'camera-button')
     _image_preview_locator = ('css selector', '#media-frame > img')
     _view_finder_locator = ('id', 'viewfinder')
@@ -48,12 +48,16 @@ class TestCameraMultipleShots(GaiaTestCase):
         # Tap the view-finder, wait for the film-strip to appear
         # The event is on the id=viewFinder but marionette won't let us tap that
         body = self.marionette.find_element(*self._body_locator)
-        body.tap()
+        filmstrip = self.marionette.find_element(*self._filmstrip_locator)
 
-        self.wait_for_element_displayed(*self._film_strip_image_locator)
+        # The location coordinates are necessary
+        body.tap(x=1, y=1)
+
+        # Wait for filmstrip to appear
+        self.wait_for_condition(lambda m: filmstrip.location['y'] == 0)
 
         # Check that there are available thumbnails to select
-        images = self.marionette.find_elements(*self._film_strip_image_locator)
+        images = self.marionette.find_elements(*self._filmstrip_image_locator)
 
         self.assertGreater(len(images), 0, 'No images found')
         images[thumbnail].tap()
@@ -67,6 +71,8 @@ class TestCameraMultipleShots(GaiaTestCase):
 
     def take_photo(self):
 
+        filmstrip = self.marionette.find_element(*self._filmstrip_locator)
+
         # Tap the capture button
         capture_button = self.marionette.find_element(*self._capture_button_locator)
         capture_button.tap()
@@ -74,14 +80,11 @@ class TestCameraMultipleShots(GaiaTestCase):
         # Wait to complete focusing
         self.wait_for_condition(lambda m: m.find_element(*self._focus_ring_locator).get_attribute('data-state') == 'focused')
 
-        # Wait for image to be added in to filmstrip
-        self.wait_for_element_displayed(*self._film_strip_image_locator)
-
-        # Find the new picture in the film strip
-        self.assertTrue(self.marionette.find_element(*self._film_strip_image_locator).is_displayed())
+        # Wait for filmstrip to appear
+        self.wait_for_condition(lambda m: filmstrip.location['y'] == 0)
 
         # Wait for the camera's focus state to 'ready' for the next shot
         self.wait_for_condition(lambda m: m.find_element(*self._focus_ring_locator).get_attribute('data-state') is None)
 
-        # Wait for the filmstrip to hide
-        self.wait_for_element_not_displayed(*self._film_strip_locator)
+        # Wait for filmstrip to clear
+        self.wait_for_condition(lambda m: filmstrip.location['y'] == (0 - filmstrip.size['height']))
