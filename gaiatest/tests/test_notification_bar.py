@@ -61,7 +61,9 @@ class TestNotificationBar(GaiaTestCase):
         notification_clear = self.marionette.find_element(*self._notification_clear_locator)
         notification_clear.tap()
 
+        # wait for the notifications to be cleared
+        self.wait_for_condition(lambda m: len(self.marionette.find_elements(*self._notifications_in_container_locator)) == 0)
+
         # Assert there is no notification is listed in notifications-container
-        time.sleep(1)
         notifications_in_container = self.marionette.find_elements(*self._notifications_in_container_locator)
-        self.assertEqual(0, len(notifications_in_container), 'Expected 0 notifications.')
+        self.assertEqual(0, len(notifications_in_container), 'Expected 0 notifications. Found %s notifications' % len(notifications_in_container))
