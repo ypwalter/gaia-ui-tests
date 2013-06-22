@@ -50,7 +50,7 @@ SpecialPowers.addPermission('settings-read', true, document);
 var req = window.navigator.mozSettings.createLock().get('*');
 req.onsuccess = function() {
   marionetteScriptFinished(req.result);
-}""", special_powers=True))
+}""", special_powers=True), sort_keys=True, indent=4, separators=(',', ': '))
         except:
             pass
         return debug
