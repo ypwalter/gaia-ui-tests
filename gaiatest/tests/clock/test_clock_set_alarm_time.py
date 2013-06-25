@@ -54,9 +54,3 @@ class TestClockSetAlarmTime(GaiaTestCase):
         # Verify that alarm time has been changed
         new_alarm_text = self.clock.alarms[0].time
         self.assertNotEqual(old_alarm_text, new_alarm_text)
-
-    def tearDown(self):
-        # delete any existing alarms
-        self.data_layer.delete_all_alarms()
-
-        GaiaTestCase.tearDown(self)

@@ -496,14 +496,5 @@ var GaiaDataLayer = {
       SpecialPowers.removePermission("sms", document);
       SpecialPowers.clearUserPref("dom.sms.enabled");
     }
-  },
-
-  deleteAllAlarms: function() {
-    window.wrappedJSObject.AlarmManager.getAlarmList (function(aList) {
-      aList.forEach(function(aAlarm) {
-         console.log("Deleting alarm with id  '" + aAlarm.id + "'");
-         window.wrappedJSObject.AlarmManager.delete(aAlarm);
-      });
-    });
   }
 };
