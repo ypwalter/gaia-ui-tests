@@ -3,6 +3,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import time
+import unittest
+
 from gaiatest import GaiaTestCase
 from gaiatest.apps.email.app import Email
 
@@ -10,6 +12,11 @@ from gaiatest.apps.email.app import Email
 class TestSendIMAPEmail(GaiaTestCase):
 
     def setUp(self):
+        try:
+            account = self.testvars['email']['IMAP']
+        except KeyError:
+            raise unittest.SkipTest('account details not present in test variables')
+
         GaiaTestCase.setUp(self)
         self.connect_to_network()
 
@@ -17,7 +24,7 @@ class TestSendIMAPEmail(GaiaTestCase):
         self.email.launch()
 
         # setup IMAP account
-        self.email.setup_IMAP_email(self.testvars['email']['IMAP'])
+        self.email.setup_IMAP_email(account)
 
     def test_send_imap_email(self):
         # Bug 878772 - email app doesn't show the last emails by default

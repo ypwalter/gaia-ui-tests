@@ -2,6 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import unittest
+
 from gaiatest import GaiaTestCase
 from gaiatest.apps.email.app import Email
 
@@ -9,6 +11,11 @@ from gaiatest.apps.email.app import Email
 class TestSetupManualEmail(GaiaTestCase):
 
     def setUp(self):
+        try:
+            self.testvars['email']['IMAP']
+        except KeyError:
+            raise unittest.SkipTest('account details not present in test variables')
+
         GaiaTestCase.setUp(self)
         self.connect_to_network()
 
