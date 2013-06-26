@@ -7,7 +7,7 @@ from marionette.marionette import Actions
 from gaiatest import GaiaTestCase
 
 
-class TestEditMode(GaiaTestCase):
+class TestMoveApp(GaiaTestCase):
 
     _visible_apps_locator = ('css selector', 'div.page[style*="transform: translateX(0px);"] > ol > .icon')
     _edit_mode_locator = ('css selector', 'body[data-mode="edit"]')
@@ -63,6 +63,8 @@ class TestEditMode(GaiaTestCase):
 
     def _go_to_next_page(self):
         self.marionette.execute_script('window.wrappedJSObject.GridManager.goToNextPage()')
+        self.wait_for_condition(lambda m: m.find_element('tag name', 'body')
+            .get_attribute('data-transitioning') != 'true')
 
     def _activate_edit_mode(self):
         app = self.marionette.find_element(*self._visible_apps_locator)
