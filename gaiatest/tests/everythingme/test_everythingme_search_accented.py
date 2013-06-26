@@ -32,6 +32,8 @@ class TestEverythingMeSearchAccented(GaiaTestCase):
 
         # We'll use js to flick pages for reliability/Touch is unreliable
         self.marionette.execute_script("window.wrappedJSObject.GridManager.goToPreviousPage();")
+        self.wait_for_condition(lambda m: m.find_element('tag name', 'body')
+            .get_attribute('data-transitioning') != 'true')
 
         # Find the search box and clear it
         self.wait_for_element_displayed(*self._search_box_locator)
