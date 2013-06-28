@@ -3,7 +3,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import time
-import unittest
+
+from marionette import SkipTest
 
 from gaiatest import GaiaTestCase
 from gaiatest.apps.email.app import Email
@@ -15,7 +16,7 @@ class TestSendIMAPEmail(GaiaTestCase):
         try:
             account = self.testvars['email']['IMAP']
         except KeyError:
-            raise unittest.SkipTest('account details not present in test variables')
+            raise SkipTest('account details not present in test variables')
 
         GaiaTestCase.setUp(self)
         self.connect_to_network()
