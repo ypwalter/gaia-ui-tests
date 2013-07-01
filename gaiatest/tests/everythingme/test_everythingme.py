@@ -63,10 +63,3 @@ class TestEverythingMe(GaiaTestCase):
         self.marionette.switch_to_frame(app_iframe)
 
         self.assertIn("Twitter", self.marionette.title)
-
-    def tearDown(self):
-        # This will take us back to Everything.Me 'Social' category, from whence cleanUp can return to the home page
-        self.marionette.switch_to_frame()
-        self.marionette.execute_script("window.wrappedJSObject.dispatchEvent(new Event('home'));")
-
-        GaiaTestCase.tearDown(self)
