@@ -5,7 +5,7 @@
 from gaiatest import GaiaTestCase
 
 
-class TestEverythingMe(GaiaTestCase):
+class TestEverythingMeLaunchApp(GaiaTestCase):
 
     # Everything.Me locators
     _shortcut_items_locator = ('css selector', '#shortcuts-items li')
