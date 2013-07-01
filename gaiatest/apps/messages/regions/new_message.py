@@ -7,15 +7,16 @@ from gaiatest.apps.base import Base
 
 class NewMessage(Base):
 
-    _recipients_list_locator = ('id', 'messages-recipients-list')
     _receiver_input_locator = ('css selector', '#messages-recipients-list span.recipient')
     _message_field_locator = ('id', 'messages-input')
     _send_message_button_locator = ('id', 'messages-send-button')
     _message_sending_spinner_locator = ('css selector', "img[src='style/images/spinningwheel_small_animation.gif']")
+    _thread_messages_locator = ('id', 'thread-messages')
 
     def __init__(self, marionette):
         Base.__init__(self, marionette)
-        self.wait_for_element_displayed(*self._recipients_list_locator)
+        section = self.marionette.find_element(*self._thread_messages_locator)
+        self.wait_for_condition(lambda m: section.location['x'] == 0)
 
     def type_phone_number(self, value):
         contact_field = self.marionette.find_element(*self._receiver_input_locator)
