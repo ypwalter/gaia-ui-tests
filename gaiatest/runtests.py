@@ -22,20 +22,35 @@ from marionette import MarionetteTextTestRunner
 from marionette.runtests import cli
 
 from gaiatest import __name__
-from gaiatest import __version__
 from gaiatest import GaiaTestCase
+from version import __version__
 
 
 class GaiaTestResult(MarionetteTestResult):
 
     def addError(self, test, err):
         self.errors.append((test, self._exc_info_to_string(err, test), self.gather_debug()))
+        if self.showAll:
+            self.stream.writeln("ERROR")
+        elif self.dots:
+            self.stream.write('E')
+            self.stream.flush()
 
     def addExpectedFailure(self, test, err):
         self.expectedFailures.append((test, self._exc_info_to_string(err, test), self.gather_debug()))
+        if self.showAll:
+            self.stream.writeln("expected failure")
+        elif self.dots:
+            self.stream.write("x")
+            self.stream.flush()
 
     def addFailure(self, test, err):
         self.failures.append((test, self._exc_info_to_string(err, test), self.gather_debug()))
+        if self.showAll:
+            self.stream.writeln("FAIL")
+        elif self.dots:
+            self.stream.write('F')
+            self.stream.flush()
 
     def gather_debug(self):
         debug = {}

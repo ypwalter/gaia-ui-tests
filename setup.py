@@ -2,14 +2,16 @@ import os
 from setuptools import setup, find_packages
 import shutil
 
-from gaiatest import __version__
-
 # get documentation from the README
 try:
     here = os.path.dirname(os.path.abspath(__file__))
     description = file(os.path.join(here, 'README.md')).read()
 except (OSError, IOError):
     description = ''
+
+# version number
+version = {}
+execfile(os.path.join('gaiatest', 'version.py'), version)
 
 # dependencies
 deps = ['marionette_client==0.5.34', 'mozdevice', 'py==1.4.14']
@@ -31,7 +33,7 @@ else:
         raise Exception('JS atoms not found in %s or %s!' % (jsdir, pythondir))
 
 setup(name='gaiatest',
-      version=__version__,
+      version=version['__version__'],
       description="Marionette test automation client for Gaia",
       long_description=description,
       classifiers=[],  # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
