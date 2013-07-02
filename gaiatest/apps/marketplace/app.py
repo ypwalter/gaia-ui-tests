@@ -17,10 +17,10 @@ class Marketplace(Base):
     _error_title_locator = ('css selector', 'div.modal-dialog-message-container > h3.title')
     _error_message_locator = ('css selector', 'div.modal-dialog-message-container .message')
     _settings_button_locator = ('css selector', 'a.header-button.settings')
+    _notification_locator = ('id', 'notification-content')
 
     # Marketplace search on home page
     _search_locator = ('id', 'search-q')
-    _signed_in_notification_locator = ('css selector', '#notification.show')
 
     def __init__(self, marionette, app_name=False):
         Base.__init__(self, marionette)
@@ -43,6 +43,13 @@ class Marketplace(Base):
     def error_message_text(self):
         return self.marionette.find_element(*self._error_message_locator).text
 
+    def wait_for_notification_message_displayed(self):
+        self.wait_for_element_displayed(*self._notification_locator)
+
+    @property
+    def notification_message(self):
+        return self.marionette.find_element(*self._notification_locator).text
+
     def search(self, term):
         search_box = self.marionette.find_element(*self._search_locator)
 
@@ -59,9 +66,3 @@ class Marketplace(Base):
 
     def wait_for_setting_displayed(self):
         self.wait_for_element_displayed(*self._settings_button_locator)
-
-    def wait_for_signed_in_notification(self):
-        self.wait_for_element_displayed(*self._signed_in_notification_locator)
-
-    def tap_signed_in_notification(self):
-        self.marionette.find_element(*self._signed_in_notification_locator).tap()
