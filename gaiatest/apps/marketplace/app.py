@@ -17,6 +17,7 @@ class Marketplace(Base):
     _error_title_locator = ('css selector', 'div.modal-dialog-message-container > h3.title')
     _error_message_locator = ('css selector', 'div.modal-dialog-message-container .message')
     _settings_button_locator = ('css selector', 'a.header-button.settings')
+    _notification_locator = ('id', 'notification-content')
 
     # Marketplace settings tabs
     _account_tab_locator = ('css selector', 'a[href="/settings"]')
@@ -53,6 +54,13 @@ class Marketplace(Base):
     @property
     def error_message_text(self):
         return self.marionette.find_element(*self._error_message_locator).text
+
+    def wait_for_notification_message_displayed(self):
+        self.wait_for_element_displayed(*self._notification_locator)
+
+    @property
+    def notification_message(self):
+        return self.marionette.find_element(*self._notification_locator).text
 
     def search(self, term):
         search_box = self.marionette.find_element(*self._search_locator)

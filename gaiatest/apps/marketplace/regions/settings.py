@@ -27,8 +27,7 @@ class Settings(Base):
         self.wait_for_element_displayed(*self._sign_in_button_locator)
 
     def tap_sign_in(self):
-        # TODO: click works but not tap
-        self.marionette.find_element(*self._sign_in_button_locator).click()
+        self.marionette.find_element(*self._sign_in_button_locator).tap()
         from gaiatest.apps.persona.app import Persona
         return Persona(self.marionette)
 

@@ -113,8 +113,7 @@ var GaiaDataLayer = {
 
   getSIMContacts: function(aCallback) {
     var callback = aCallback || marionetteScriptFinished;
-    SpecialPowers.addPermission('contacts-read', true, document);
-    var req = window.navigator.mozContacts.getSimContacts('ADN');
+    var req = navigator.mozIccManager.readContacts("adn");
     req.onsuccess = function () {
       console.log('success finding contacts');
       SpecialPowers.removePermission('contacts-read', document);
@@ -497,14 +496,5 @@ var GaiaDataLayer = {
       SpecialPowers.removePermission("sms", document);
       SpecialPowers.clearUserPref("dom.sms.enabled");
     }
-  },
-
-  deleteAllAlarms: function() {
-    window.wrappedJSObject.AlarmManager.getAlarmList (function(aList) {
-      aList.forEach(function(aAlarm) {
-         console.log("Deleting alarm with id  '" + aAlarm.id + "'");
-         window.wrappedJSObject.AlarmManager.delete(aAlarm);
-      });
-    });
   }
 };
