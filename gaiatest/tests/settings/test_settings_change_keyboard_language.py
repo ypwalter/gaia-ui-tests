@@ -13,8 +13,8 @@ class TestChangeKeyboardLanguage(GaiaTestCase):
     # Test locators
     _select_keyb_frame_locator = ("css selector", "#keyboard-frame iframe")
     _language_key_locator = ("css selector", ".keyboard-row button[data-keycode='-3']")
-    _special_key_locator = ("css selector", ".keyboard-row button[data-keycode='241']")
-    _expected_key = u'\xf1'
+    _special_key_locator = ("css selector", ".keyboard-row button[data-keycode='209']")
+    _expected_key = u'\xd1'
 
     def test_change_keyboard_language_settings(self):
         settings = Settings(self.marionette)
