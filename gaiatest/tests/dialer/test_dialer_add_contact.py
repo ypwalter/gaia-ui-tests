@@ -2,8 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import time
-
 from gaiatest import GaiaTestCase
 from gaiatest.mocks.mock_contact import MockContact
 from gaiatest.apps.phone.app import Phone
@@ -69,9 +67,11 @@ class TestDialerAddContact(GaiaTestCase):
         self.wait_for_element_present(*self._new_contact_frame_locator)
         new_contact_frame = self.marionette.find_element(*self._new_contact_frame_locator)
         self.marionette.switch_to_frame(new_contact_frame)
+        done_button = self.marionette.find_element(*self._done_button_locator)
+        self.wait_for_condition(lambda m: done_button.location['y'] == 0)
 
         # Enter data into fields
-        self.wait_for_element_displayed(*self._done_button_locator)
+        self.wait_for_element_displayed(*self._given_name_field_locator)
         self.marionette.find_element(*self._given_name_field_locator).send_keys(self.contact['givenName'])
         self.marionette.find_element(*self._family_name_field_locator).send_keys(self.contact['familyName'])
 
