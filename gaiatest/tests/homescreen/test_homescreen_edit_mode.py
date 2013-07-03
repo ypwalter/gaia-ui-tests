@@ -43,3 +43,5 @@ class TestEditMode(GaiaTestCase):
 
     def _go_to_next_page(self):
         self.marionette.execute_script('window.wrappedJSObject.GridManager.goToNextPage()')
+        self.wait_for_condition(lambda m: m.find_element('tag name', 'body')
+            .get_attribute('data-transitioning') != 'true')
