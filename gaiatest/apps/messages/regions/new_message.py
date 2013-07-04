@@ -24,6 +24,7 @@ class NewMessage(Base):
 
     def type_message(self, value):
         # change the focus to the message field to enable the send button
+        self.wait_for_element_displayed(*self._message_field_locator)
         message_field = self.marionette.find_element(*self._message_field_locator)
         message_field.tap()
         message_field.send_keys(value)
