@@ -14,6 +14,7 @@ class Browser(Base):
     name = "Browser"
 
     _browser_frame_locator = ('css selector', 'iframe[mozbrowser]')
+    _main_screen_locator = ('id', 'main-screen')
 
     # Awesome bar/url bar
     _awesome_bar_locator = ('id', 'url-input')
@@ -21,6 +22,7 @@ class Browser(Base):
     _throbber_locator = ('id', 'throbber')
 
     # Tab list area
+    _tray_locator = ('id', 'tray')
     _tab_badge_locator = ('id', 'tabs-badge')
     _tabs_number_locator = ('css selector', '#toolbar-start > span')
     _new_tab_button_locator = ('id', 'new-tab-button')
@@ -128,16 +130,17 @@ class Browser(Base):
         tab_badge_button.tap(y=(tab_badge_button.size['height']-4))
         #tab_badge_button.tap()
 
-        # TODO Wait for visibility when Marionette can detect the state of the tab list correctly
-        self.wait_for_condition(lambda m: self._current_screen == 'tabs-screen')
+        self.wait_for_condition(lambda m:
+            m.find_element(*self._main_screen_locator).location['x'] == \
+            -abs(m.find_element(*self._tray_locator).size['width']))
 
     def tap_add_new_tab_button(self):
         new_tab_button = self.marionette.find_element(*self._new_tab_button_locator)
         # TODO Tap one pixel above bottom edge to dodge the System update notification banner bug 876723
         new_tab_button.tap(y=(new_tab_button.size['height']-1))
 
-        # TODO Wait for visibility when Marionette can detect the state of the tab list correctly
-        self.wait_for_condition(lambda m: self._current_screen == 'awesome-screen')
+        self.wait_for_condition(lambda m:
+            m.find_element(*self._main_screen_locator).location['x'] == 0)
 
     @property
     def displayed_tabs_number(self):
@@ -152,10 +155,6 @@ class Browser(Base):
     def tabs(self):
         return [self.Tab(marionette=self.marionette, element=tab)
                 for tab in self.marionette.find_elements(*self._tabs_list_locator)]
-
-    @property
-    def _current_screen(self):
-        return self.marionette.execute_script("return window.wrappedJSObject.Browser.currentScreen;")
 
     class Tab(PageRegion):
 

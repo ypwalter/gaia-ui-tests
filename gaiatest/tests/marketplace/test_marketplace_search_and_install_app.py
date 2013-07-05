@@ -10,8 +10,8 @@ class TestSearchMarketplaceAndInstallApp(GaiaTestCase):
 
     MARKETPLACE_DEV_NAME = 'Marketplace Dev'
 
-    APP_NAME = 'Lanyrd'
-    APP_DEVELOPER = 'Lanyrd'
+    APP_NAME = 'Twitter'
+    APP_DEVELOPER = 'Twitter'
     APP_INSTALLED = False
 
     # Label identifier for all homescreen apps
