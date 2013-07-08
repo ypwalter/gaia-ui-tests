@@ -8,8 +8,6 @@ from gaiatest.apps.email.app import Email
 
 class TestSetupGmail(GaiaTestCase):
 
-    email_configured = False
-
     def setUp(self):
         GaiaTestCase.setUp(self)
         self.connect_to_network()
@@ -22,7 +20,6 @@ class TestSetupGmail(GaiaTestCase):
         self.email.basic_setup_email(self.testvars['email']['gmail']['name'],
                                      self.testvars['email']['gmail']['email'],
                                      self.testvars['email']['gmail']['password'])
-        self.email_configured = True
 
         # check header area
         self.assertTrue(self.email.header.is_compose_visible)
@@ -36,8 +33,3 @@ class TestSetupGmail(GaiaTestCase):
         # check account has emails
         self.email.wait_for_emails_to_sync()
         self.assertGreater(len(self.email.mails), 0)
-
-    def tearDown(self):
-        if self.email_configured:
-            self.email.delete_email_account(0)
-        GaiaTestCase.tearDown(self)
