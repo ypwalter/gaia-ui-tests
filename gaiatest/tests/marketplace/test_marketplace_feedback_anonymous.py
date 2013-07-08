@@ -31,7 +31,8 @@ class TestMarketplaceFeedback(GaiaTestCase):
         self.marketplace.submit_feedback()
 
         # catch the notification
-        message_content = self.marketplace.get_notification_message()
+        self.marketplace.wait_for_notification_message_displayed()
+        message_content = self.marketplace.notification_message
 
         # verify if the notification is right
         self.assertEqual(message_content, self.feedback_submitted_message)

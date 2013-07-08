@@ -29,7 +29,7 @@ class TestMarketplaceFeedback(GaiaTestCase):
         self.marketplace.wait_for_setting_displayed()
         settings = self.marketplace.tap_settings()
 
-        # try to sign in persona
+        # sign in with persona
         persona = settings.tap_sign_in()
         persona.login(self.user.email, self.user.password)
 
@@ -47,7 +47,8 @@ class TestMarketplaceFeedback(GaiaTestCase):
         self.marketplace.submit_feedback()
 
         # catch the notification
-        message_content = self.marketplace.get_notification_message()
+        self.marketplace.wait_for_notification_message_displayed()
+        message_content = self.marketplace.notification_message
 
         # verify if the notification is right
         self.assertEqual(message_content, self.feedback_submitted_message)
