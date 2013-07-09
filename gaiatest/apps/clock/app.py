@@ -77,7 +77,7 @@ class Clock(Base):
 
         from gaiatest.apps.clock.regions.alarm import NewAlarm
         new_alarm = NewAlarm(self.marionette)
-        new_alarm.wait_for_fields_to_be_visible()
+        new_alarm.wait_for_panel_to_load()
         return new_alarm
 
     class Alarm(PageRegion):

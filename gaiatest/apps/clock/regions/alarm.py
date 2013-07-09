@@ -18,6 +18,7 @@ class NewAlarm(Clock):
     _sound_menu_locator = ('id', 'sound-menu')
     _snooze_menu_locator = ('id', 'snooze-menu')
     _done_locator = ('id', 'alarm-done')
+    _close_locator = ('id', 'alarm-close')
     _time_button_locator = ('id', 'time-menu')
 
     _hour_picker_locator = ('css selector', '#value-picker-hours div')
@@ -57,7 +58,8 @@ class NewAlarm(Clock):
         self.marionette.find_element(*self._sound_menu_locator).tap()
         self.select(value)
 
-    def wait_for_fields_to_be_visible(self):
+    def wait_for_panel_to_load(self):
+        self.wait_for_condition(lambda m: m.find_element(*self._close_locator).location['x'] == 0)
         self.wait_for_element_displayed(*self._edit_alarm_fields_locator)
 
     def tap_done(self):
