@@ -61,7 +61,7 @@ class Contacts(Base):
             return self.root_element.find_element(*self._full_name_locator).text
 
         def tap(self):
-            self.root_element.tap()
+            self.root_element.find_element(*self._name_locator).tap()
 
             from gaiatest.apps.contacts.regions.contact_details import ContactDetails
             return ContactDetails(self.marionette)
