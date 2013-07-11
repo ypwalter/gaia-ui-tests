@@ -19,8 +19,16 @@ class Marketplace(Base):
     _settings_button_locator = ('css selector', 'a.header-button.settings')
     _notification_locator = ('id', 'notification-content')
 
+    # Marketplace settings tabs
+    _account_tab_locator = ('css selector', 'a[href="/settings"]')
+    _my_apps_tab_locator = ('css selector', 'a[href="/purchases"]')
+    _feedback_tab_locator = ('css selector', 'a[href="/feedback"]')
+    _feedback_textarea_locator = ('name', 'feedback')
+    _feedback_submit_button_locator = ('css selector', 'button[type="submit"]')
+
     # Marketplace search on home page
     _search_locator = ('id', 'search-q')
+    _signed_in_notification_locator = ('css selector', '#notification.show')
 
     def __init__(self, marionette, app_name=False):
         Base.__init__(self, marionette)
@@ -66,3 +74,22 @@ class Marketplace(Base):
 
     def wait_for_setting_displayed(self):
         self.wait_for_element_displayed(*self._settings_button_locator)
+
+    def select_setting_account(self):
+        self.marionette.find_element(*self._account_tab_locator).tap()
+
+    def select_setting_my_apps(self):
+        self.marionette.find_element(*self._my_apps_tab_locator).tap()
+
+    def select_setting_feedback(self):
+        self.marionette.find_element(*self._feedback_tab_locator).tap()
+
+    def enter_feedback(self, feedback_text):
+        feedback = self.marionette.find_element(*self._feedback_textarea_locator)
+        feedback.clear()
+        feedback.send_keys(feedback_text)
+        self.dismiss_keyboard()
+
+    def submit_feedback(self):
+        self.wait_for_element_displayed(*self._feedback_submit_button_locator)
+        self.marionette.find_element(*self._feedback_submit_button_locator).tap()
